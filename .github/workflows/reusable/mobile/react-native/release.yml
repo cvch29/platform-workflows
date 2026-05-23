@@ -1,0 +1,50 @@
+name: Android Release Capability
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        default: dev
+      deploy:
+        type: boolean
+        default: false
+
+jobs:
+
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: cvch29/challenge-templates/.github/actions/shared/artifact_download@main
+        with:
+          artifact_name: android-release-files
+          download_path: ./artifacts
+
+      - name: Create GitHub Release
+        uses: cvch29/challenge-templates/.github/actions/shared/artifact_release_tag@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  distribute:
+    if: inputs.deploy == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: cvch29/challenge-templates/.github/actions/shared/artifact_download@main
+        with:
+          artifact_name: android-release-files
+          download_path: ./artifacts
+
+      - name: Firebase Distribution
+        uses: cvch29/challenge-templates/.github/actions/mobile/distribute/firebase-app@main
+        with:
+          app_id: 1:432490436563:android:fee35c44f2f2ccf59b4126
+          apk_path: artifacts/**/*.apk
+          release_notes: "Automated release from GitHub Actions"

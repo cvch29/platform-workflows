@@ -1,0 +1,27 @@
+name: Android Security Capability
+
+on:
+  workflow_call:
+
+jobs:
+
+  sast:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: CodeQL SAST
+        uses: cvch29/challenge-templates/.github/actions/security_quality/sast/codeql@main
+        with:
+          language: java, kotlin
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  sca:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dependency Review
+        uses: cvch29/challenge-templates/.github/actions/security_quality/sca/dependency-review@main
