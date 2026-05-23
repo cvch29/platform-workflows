@@ -24,10 +24,10 @@ jobs:
 
       - name: Setup Android
         id: meta
-        uses: cvch29/challenge-templates/.github/actions/mobile/setup/android@main
+        uses: cvch29/platform-actions.github/actions/domains/mobile/android-native/setup@main
 
       - name: Build Android App
-        uses: cvch29/challenge-templates/.github/actions/mobile/build/android@main
+        uses: cvch29/platform-actions.github/actions/domains/mobile/android-native/build@main
         with:
           keystore_path: android-keystore.jks
           store_password: ${{ secrets.keystore_password }}
@@ -36,7 +36,7 @@ jobs:
           keystore_base64: ${{ secrets.android_keystore_base64 }}
 
       - name: Remote Config
-        uses: cvch29/challenge-templates/.github/actions/mobile/config/remote-config@main
+        uses: cvch29/platform-actions.github/actions/domains/mobile/android-native/remote-config@main
 
       - name: Upload artifacts
-        uses: cvch29/challenge-templates/.github/actions/shared/artifact_manage@main
+        uses: cvch29/platform-actions.github/actions/domains/mobile/android-native/upload-artifacts@main

@@ -11,10 +11,10 @@ permissions:
 jobs:
 
   unit_test:
-    uses: cvch29/platform-workflows/.github/workflows/mobile-unit-test.yml@main
+    uses: cvch29/platform-workflows/.github/workflows/reusable/mobile/android-native/unit-test.yml@main
 
   security:
-    uses: cvch29/platform-workflows/.github/workflows/mobile-security.yml@main
+    uses: cvch29/platform-workflows/.github/workflows/reusable/mobile/android-native/security.yml@main
 
   quality:
-    uses: cvch29/platform-workflows/.github/workflows/mobile-quality.yml@main
+    uses: cvch29/platform-workflows/.github/workflows/reusable/mobile/android-native/quality.yml@main
