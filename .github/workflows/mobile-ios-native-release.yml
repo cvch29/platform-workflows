@@ -97,7 +97,7 @@ jobs:
           download_path: ./artifacts
 
       - name: Artifact Release
-        uses: cvch29/platform-actions/.github/actions/shared/artifact-release_tag@main
+        uses: cvch29/platform-actions/.github/actions/shared/artifact-release-tag@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           app-version: ${{ inputs.app_version }}
@@ -120,14 +120,14 @@ jobs:
           download_path: ./artifacts
 
       - name: Distribute to Firebase App Distribution
-        uses: cvch29/platform-actions/.github/actions/mobile/distribute/firebase-app@main
+        uses: cvch29/platform-actions/.github/actions/domains/mobile/android-native/distribute/firebase-app@main
         with:
           app_id: 1:432490436563:android:fee35c44f2f2ccf59b4126
           apk_path: "artifacts/app/build/outputs/apk/release/${{ inputs.app_name }}-${{ inputs.app_version }}.apk"
           release_notes: 'Automated distribution from GitHub Actions'
 
       - name: Artifact Release
-        uses: cvch29/platform-actions/.github/actions/shared/artifact-release@main
+        uses: cvch29/platform-actions/.github/actions/shared/artifact-release-tag@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           app-version: ${{ inputs.app_version }}
