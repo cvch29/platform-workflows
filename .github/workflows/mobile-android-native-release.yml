@@ -13,9 +13,9 @@ on:
       environment:
         type: string
         default: dev
-      gradle-build-path:
-        type: string
-        default: app/build.gradle.kts
+      # gradle-build-path:
+      #   type: string
+      #   default: app/build.gradle.kts
       keystore_path:
         type: string
         default: android-keystore.jks
@@ -49,19 +49,19 @@ jobs:
         uses: cvch29/platform-actions/.github/actions/domains/mobile/android-native/build@main
         with:
           keystore_path: ${{ inputs.keystore_path }}
-          store_password: ${{ secrets.KEYSTORE_PASSWORD }}
+          store_password: ${{ secrets.keystore_password }}
           key_alias: ${{ inputs.key_alias }}
-          key_password: ${{ secrets.KEY_PASSWORD }}
-          keystore_base64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          key_password: ${{ secrets.key_password }}
+          keystore_base64: ${{ secrets.android_keystore_base64 }}
 
       - name: Android build Firebase Remote Config
         uses: cvch29/platform-actions/.github/actions/domains/mobile/android-native/config/remote-config@main
         with:
           keystore_path: ${{ inputs.keystore_path }}
-          store_password: ${{ secrets.KEYSTORE_PASSWORD }}
+          store_password: ${{ secrets.keystore_password }}
           key_alias: ${{ inputs.key_alias }}
-          key_password: ${{ secrets.KEY_PASSWORD }}
-          keystore_base64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          key_password: ${{ secrets.key_password }}
+          keystore_base64: ${{ secrets.android_keystore_base64 }}
 
       - name: Artifact Management
         uses: cvch29/platform-actions/.github/actions/shared/artifact-manage@main
@@ -106,7 +106,6 @@ jobs:
     name: Distribute
     needs: [build, artifact_release]
     runs-on: ubuntu-latest
-
     environment:
       name: ${{ inputs.environment }}
 
