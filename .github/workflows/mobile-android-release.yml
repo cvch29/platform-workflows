@@ -45,6 +45,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install Dependencies
+        uses: cvch29/platform-actions/.github/actions/tooling/node/install@main
+
       - name: Android build
         uses: cvch29/platform-actions/.github/actions/domains/mobile/android/build@main
         with:
