@@ -59,15 +59,6 @@ jobs:
           key_password: ${{ secrets.key_password }}
           keystore_base64: ${{ secrets.android_keystore_base64 }}
 
-      - name: Android build Firebase Remote Config
-        uses: cvch29/platform-actions/.github/actions/domains/mobile/android/config/remote-config@main
-        with:
-          keystore_path: ${{ inputs.keystore_path }}
-          store_password: ${{ secrets.keystore_password }}
-          key_alias: ${{ inputs.key_alias }}
-          key_password: ${{ secrets.key_password }}
-          keystore_base64: ${{ secrets.android_keystore_base64 }}
-
       - name: Artifact Management
         uses: cvch29/platform-actions/.github/actions/shared/artifact-manage@main
         with:
