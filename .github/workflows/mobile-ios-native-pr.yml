@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Android Unit Test
-        uses: cvch29/challenge-templates/.github/actions/mobile/unit_test/android@main
+        uses: cvch29/platform-actions/.github/actions/domains/mobile/android-native/unit-test@main
 
   security:
     name: Security Analysis
@@ -36,14 +36,14 @@ jobs:
 
       - name: Run SAST Analysis
         if: matrix.analysis == 'sast'
-        uses: cvch29/challenge-templates/.github/actions/security_quality/sast/codeql@main
+        uses: cvch29/platform-actions/.github/actions/security-quality/sast/codeql@main
         with:
           language: java, kotlin
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run SCA Analysis
         if: matrix.analysis == 'sca'
-        uses: cvch29/challenge-templates/.github/actions/security_quality/sca/dependency-review@main
+        uses: cvch29/platform-actions/.github/actions/security-quality/sca/dependency-review@main
 
   quality:
     name: Quality Analysis
@@ -53,4 +53,4 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Quality Analysis
-        uses: cvch29/challenge-templates/.github/actions/security_quality/sast/sonar@main
+        uses: cvch29/platform-actions/.github/actions/security-quality/sast/sonar@main

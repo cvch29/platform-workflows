@@ -29,7 +29,7 @@ jobs:
 
       - name: Setup Environment
         id: setup_android
-        uses: cvch29/challenge-templates/.github/actions/mobile/setup/android@main
+        uses: cvch29/platform-actions/.github/actions/domains/mobile/android-native/setup@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           build-gradle-path: app/build.gradle.kts
@@ -40,7 +40,7 @@ jobs:
 
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
-    uses: ./.github/workflows/mobile-android-react-native-release.yml
+    uses: ./.github/workflows/mobile-react-native-release.yml
 
     with:
       app_version: ${{ needs.setup.outputs.app_version }}
@@ -57,4 +57,4 @@ jobs:
 
     if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
 
-    uses: ./.github/workflows/mobile-android-react-native-pr.yml
+    uses: ./.github/workflows/mobile-react-native-pr.yml
