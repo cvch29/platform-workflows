@@ -1,11 +1,30 @@
 name: Mobile Android React Native CI/CD
 
 on:
-  push:
-    branches:
-      - main
-
-  pull_request:
+  workflow_call:
+    secrets:
+      key_password:
+        required: true
+      keystore_password:
+        required: true
+      android_keystore_base64:
+        required: true
+    inputs:
+      deploy:
+        type: boolean
+        default: false
+      environment:
+        type: string
+        default: dev
+      gradle-build-path:
+        type: string
+        default: app/build.gradle.kts
+      keystore_path:
+        type: string
+        default: android-keystore.jks
+      key_alias:
+        type: string
+        default: "keyAlias"
 
 permissions:
   id-token: write
