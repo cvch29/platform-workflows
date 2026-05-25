@@ -1,0 +1,133 @@
+name: Mobile Android React Native Release
+
+on:
+  workflow_call:
+    secrets:
+      key_password:
+        required: true
+      keystore_password:
+        required: true
+      android_keystore_base64:
+        required: true
+    inputs:
+      environment:
+        type: string
+        default: dev
+      gradle-build-path:
+        type: string
+        default: app/build.gradle.kts
+      keystore_path:
+        type: string
+        default: android-keystore.jks
+      key_alias:
+        type: string
+        default: "keyAlias"
+      app_version:
+        required: true
+        type: string
+      app_name:
+        required: true
+        type: string
+
+permissions:
+  id-token: write
+  contents: write
+  security-events: write
+  pull-requests: write
+  actions: write
+  checks: write
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Android build
+        uses: cvch29/challenge-templates/.github/actions/mobile/build/android@main
+        with:
+          keystore_path: ${{ inputs.keystore_path }}
+          store_password: ${{ secrets.KEYSTORE_PASSWORD }}
+          key_alias: ${{ inputs.key_alias }}
+          key_password: ${{ secrets.KEY_PASSWORD }}
+          keystore_base64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+
+      - name: Android build Firebase Remote Config
+        uses: cvch29/challenge-templates/.github/actions/mobile/config/remote-config@main
+        with:
+          keystore_path: ${{ inputs.keystore_path }}
+          store_password: ${{ secrets.KEYSTORE_PASSWORD }}
+          key_alias: ${{ inputs.key_alias }}
+          key_password: ${{ secrets.KEY_PASSWORD }}
+          keystore_base64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+
+      - name: Artifact Management
+        uses: cvch29/challenge-templates/.github/actions/shared/artifact_manage@main
+        with:
+          app_name: ${{ inputs.app_name }}
+          app_version: ${{ inputs.app_version }}
+          path: app/build/outputs
+          pattern: |
+            apk/release/*.apk
+            bundle/release/*.aab
+            remote-config/config.json
+          name: android-release-files
+          retention-days: 1
+          if-no-files-found: warn
+          compression-level: 6
+          upload_path: |
+            app/build/outputs/apk/release/*.apk
+            app/build/outputs/bundle/release/*.aab
+            remote-config/*.json
+
+  artifact_release:
+    name: Artifact Release
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Artifacts
+        uses: cvch29/challenge-templates/.github/actions/shared/artifact_download@main
+        with:
+          artifact_name: android-release-files
+          download_path: ./artifacts
+
+      - name: Artifact Release
+        uses: cvch29/challenge-templates/.github/actions/shared/artifact_release_tag@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          app-version: ${{ inputs.app_version }}
+
+  distribute:
+    name: Distribute
+    needs: [build, artifact_release]
+    runs-on: ubuntu-latest
+
+    environment:
+      name: ${{ inputs.environment }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Artifacts
+        uses: cvch29/challenge-templates/.github/actions/shared/artifact_download@main
+        with:
+          artifact_name: android-release-files
+          download_path: ./artifacts
+
+      - name: Distribute to Firebase App Distribution
+        uses: cvch29/challenge-templates/.github/actions/mobile/distribute/firebase-app@main
+        with:
+          app_id: 1:432490436563:android:fee35c44f2f2ccf59b4126
+          apk_path: "artifacts/app/build/outputs/apk/release/${{ inputs.app_name }}-${{ inputs.app_version }}.apk"
+          release_notes: 'Automated distribution from GitHub Actions'
+
+      - name: Artifact Release
+        uses: cvch29/challenge-templates/.github/actions/shared/artifact_release@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          app-version: ${{ inputs.app_version }}

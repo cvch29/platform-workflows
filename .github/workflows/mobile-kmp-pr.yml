@@ -1,0 +1,56 @@
+name: Mobile Android React Native PR
+
+on:
+  workflow_call:
+
+permissions:
+  id-token: write
+  contents: write
+  security-events: write
+  pull-requests: write
+  actions: write
+  checks: write
+
+jobs:
+  unit_test:
+    name: Unit Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Android Unit Test
+        uses: cvch29/challenge-templates/.github/actions/mobile/unit_test/android@main
+
+  security:
+    name: Security Analysis
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        analysis: [sast, sca]
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run SAST Analysis
+        if: matrix.analysis == 'sast'
+        uses: cvch29/challenge-templates/.github/actions/security_quality/sast/codeql@main
+        with:
+          language: java, kotlin
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run SCA Analysis
+        if: matrix.analysis == 'sca'
+        uses: cvch29/challenge-templates/.github/actions/security_quality/sca/dependency-review@main
+
+  quality:
+    name: Quality Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Quality Analysis
+        uses: cvch29/challenge-templates/.github/actions/security_quality/sast/sonar@main

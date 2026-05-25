@@ -1,0 +1,60 @@
+name: Mobile Android React Native CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+
+permissions:
+  id-token: write
+  contents: write
+  security-events: write
+  pull-requests: write
+  actions: write
+  checks: write
+
+jobs:
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+
+    outputs:
+      app_version: ${{ steps.setup_android.outputs.app_version }}
+      app_name: ${{ steps.setup_android.outputs.app_name }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Environment
+        id: setup_android
+        uses: cvch29/challenge-templates/.github/actions/mobile/setup/android@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          build-gradle-path: app/build.gradle.kts
+
+  release:
+    name: Release Workflow
+    needs: setup
+
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    uses: ./.github/workflows/mobile-android-react-native-release.yml
+
+    with:
+      app_version: ${{ needs.setup.outputs.app_version }}
+      app_name: ${{ needs.setup.outputs.app_name }}
+      environment: dev
+
+    secrets:
+      key_password: ${{ secrets.KEY_PASSWORD }}
+      keystore_password: ${{ secrets.KEYSTORE_PASSWORD }}
+      android_keystore_base64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+
+  pr_checks:
+    name: PR Checks
+
+    if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
+
+    uses: ./.github/workflows/mobile-android-react-native-pr.yml
