@@ -13,9 +13,9 @@ on:
       environment:
         type: string
         default: dev
-      # gradle-build-path:
-      #   type: string
-      #   default: app/build.gradle.kts
+      technology:
+        type: string
+        default: react-native
       keystore_path:
         type: string
         default: android-keystore.jks
@@ -46,7 +46,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install Dependencies
-        uses: cvch29/platform-actions/.github/actions/tooling/node/install@main
+        uses: cvch29/platform-actions/.github/actions/tooling/node@main
+        with:
+          working-directory: .
 
       - name: Android build
         uses: cvch29/platform-actions/.github/actions/domains/mobile/android/build@main
