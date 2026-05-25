@@ -120,7 +120,7 @@ jobs:
           download_path: ./artifacts
 
       - name: Distribute to Firebase App Distribution
-        uses: cvch29/platform-actions/.github/actions/mobile/distribute/firebase-app@main
+        uses: cvch29/platform-actions/.github/actions/mobile/android-native/distribute/firebase-app@main
         with:
           app_id: 1:432490436563:android:fee35c44f2f2ccf59b4126
           apk_path: "artifacts/app/build/outputs/apk/release/${{ inputs.app_name }}-${{ inputs.app_version }}.apk"
