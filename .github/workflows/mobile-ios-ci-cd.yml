@@ -76,4 +76,4 @@ jobs:
 
     if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
 
-    uses: ./.github/workflows/mobile-react-native-pr.yml
+    uses: ./.github/workflows/mobile-ios-pr.yml
