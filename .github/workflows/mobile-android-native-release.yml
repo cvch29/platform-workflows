@@ -97,7 +97,7 @@ jobs:
           download_path: ./artifacts
 
       - name: Artifact Release
-        uses: cvch29/platform-actions/.github/actions/shared/artifact-release_tag@main
+        uses: cvch29/platform-actions/.github/actions/shared/artifact-release-tag@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           app-version: ${{ inputs.app_version }}
@@ -127,7 +127,7 @@ jobs:
           release_notes: 'Automated distribution from GitHub Actions'
 
       - name: Artifact Release
-        uses: cvch29/platform-actions/.github/actions/shared/artifact-release@main
+        uses: cvch29/platform-actions/.github/actions/shared/artifact-release-tag@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           app-version: ${{ inputs.app_version }}
