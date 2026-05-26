@@ -45,6 +45,13 @@ jobs:
     container:
       image: localhost:5000/android:35-gradle7.3-jdk17
       options: --cpus 8 -m 16g
+      volumes:
+        - /opt/repos/dev/${{ github.repository }}/${{ github.ref_name }}/yarn:/opt/yarn
+        - /opt/repos/dev/${{ github.repository }}/${{ github.ref_name }}/gradle/caches:/opt/gradle/caches
+        - /opt/repos/dev/${{ github.repository }}/${{ github.ref_name }}/gradle/jdks:/opt/gradle/jdks
+        - /opt/repos/dev/${{ github.repository }}/${{ github.ref_name }}/gradle/native:/opt/gradle/native
+        - /opt/repos/dev/${{ github.repository }}/${{ github.ref_name }}/gradle/notifications:/opt/gradle/notifications
+        - /opt/repos/dev/${{ github.repository }}/${{ github.ref_name }}/gradle/project-cache:/opt/gradle/project-cache
     steps:
       - uses: actions/checkout@v4
 
