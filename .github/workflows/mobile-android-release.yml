@@ -44,7 +44,7 @@ jobs:
       group: dso-linux
     container:
       image: localhost:5000/android:35-gradle7.3-jdk17
-      options: --cpus 8 -m 20g
+      options: --cpus 8 -m 12g
     steps:
       - uses: actions/checkout@v4
 
