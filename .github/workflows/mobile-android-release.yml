@@ -52,6 +52,7 @@ jobs:
         - /opt/repos/dev/${{ github.repository }}/${{ github.ref_name }}/gradle/native:/opt/gradle/native
         - /opt/repos/dev/${{ github.repository }}/${{ github.ref_name }}/gradle/notifications:/opt/gradle/notifications
         - /opt/repos/dev/${{ github.repository }}/${{ github.ref_name }}/gradle/project-cache:/opt/gradle/project-cache
+        - /opt/repos/dev/${{ github.repository }}/${{ github.ref_name }}/node_modules:/workspace/node_modules
     steps:
       - uses: actions/checkout@v4
 
