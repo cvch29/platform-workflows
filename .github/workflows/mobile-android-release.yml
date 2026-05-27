@@ -100,7 +100,7 @@ jobs:
       GRADLE_USER_HOME: /tmp/gradle-${{ github.run_id }}-${{ github.run_attempt }}
 
     container:
-      image: localhost:5000/android:35-gradle8-jdk17
+      image: localhost:5000/android:35-gradle7.3-jdk17
       options: --cpus 8 -m 16g
       volumes:
         # Yarn cache
