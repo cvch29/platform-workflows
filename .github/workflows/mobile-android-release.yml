@@ -88,51 +88,51 @@ jobs:
             android/app/build/outputs/bundle/release/*.aab
             android/remote-config/*.json
 
-  artifact_release:
-    name: Artifact Release
-    needs: build
-    runs-on: ubuntu-latest
+  # artifact_release:
+  #   name: Artifact Release
+  #   needs: build
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v4
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Download Artifacts
-        uses: cvch29/platform-actions/.github/actions/shared/artifact-download@main
-        with:
-          artifact_name: android-release-files
-          download_path: ./artifacts
+  #     - name: Download Artifacts
+  #       uses: cvch29/platform-actions/.github/actions/shared/artifact-download@main
+  #       with:
+  #         artifact_name: android-release-files
+  #         download_path: ./artifacts
 
-      - name: Artifact Release
-        uses: cvch29/platform-actions/.github/actions/shared/artifact-release-tag@main
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          app-version: ${{ inputs.app_version }}
+  #     - name: Artifact Release
+  #       uses: cvch29/platform-actions/.github/actions/shared/artifact-release-tag@main
+  #       with:
+  #         github-token: ${{ secrets.GITHUB_TOKEN }}
+  #         app-version: ${{ inputs.app_version }}
 
-  distribute:
-    name: Distribute
-    needs: [build, artifact_release]
-    runs-on: ubuntu-latest
-    environment:
-      name: ${{ inputs.environment }}
+  # distribute:
+  #   name: Distribute
+  #   needs: [build, artifact_release]
+  #   runs-on: ubuntu-latest
+  #   environment:
+  #     name: ${{ inputs.environment }}
 
-    steps:
-      - uses: actions/checkout@v4
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Download Artifacts
-        uses: cvch29/platform-actions/.github/actions/shared/artifact-download@main
-        with:
-          artifact_name: android-release-files
-          download_path: ./artifacts
+  #     - name: Download Artifacts
+  #       uses: cvch29/platform-actions/.github/actions/shared/artifact-download@main
+  #       with:
+  #         artifact_name: android-release-files
+  #         download_path: ./artifacts
 
-      - name: Distribute to Firebase App Distribution
-        uses: cvch29/platform-actions/.github/actions/domains/mobile/android/distribute/firebase-app@main
-        with:
-          app_id: 1:432490436563:android:fee35c44f2f2ccf59b4126
-          apk_path: "artifacts/android/app/build/outputs/apk/release/${{ inputs.app_name }}-${{ inputs.app_version }}.apk"
-          release_notes: 'Automated distribution from GitHub Actions'
+  #     - name: Distribute to Firebase App Distribution
+  #       uses: cvch29/platform-actions/.github/actions/domains/mobile/android/distribute/firebase-app@main
+  #       with:
+  #         app_id: 1:432490436563:android:fee35c44f2f2ccf59b4126
+  #         apk_path: "artifacts/android/app/build/outputs/apk/release/${{ inputs.app_name }}-${{ inputs.app_version }}.apk"
+  #         release_notes: 'Automated distribution from GitHub Actions'
 
-      - name: Artifact Release
-        uses: cvch29/platform-actions/.github/actions/shared/artifact-release-tag@main
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          app-version: ${{ inputs.app_version }}
+  #     - name: Artifact Release
+  #       uses: cvch29/platform-actions/.github/actions/shared/artifact-release-tag@main
+  #       with:
+  #         github-token: ${{ secrets.GITHUB_TOKEN }}
+  #         app-version: ${{ inputs.app_version }}
