@@ -37,24 +37,100 @@ permissions:
   actions: write
   checks: write
 
+# jobs:
+#   build:
+#     name: Build
+#     runs-on: 
+#       group: dso-linux
+#     container:
+#       image: localhost:5000/android:35-gradle7.3-jdk17
+#       options: --cpus 8 -m 16g
+#       volumes:
+#         - /opt/repos/dev/${{ github.repository }}/${{ github.ref_name }}/yarn:/opt/yarn
+#         - /opt/repos/dev/${{ github.repository }}/${{ github.ref_name }}/gradle/caches:/opt/gradle/caches
+#         - /opt/repos/dev/${{ github.repository }}/${{ github.ref_name }}/gradle/jdks:/opt/gradle/jdks
+#         - /opt/repos/dev/${{ github.repository }}/${{ github.ref_name }}/gradle/native:/opt/gradle/native
+#         - /opt/repos/dev/${{ github.repository }}/${{ github.ref_name }}/gradle/notifications:/opt/gradle/notifications
+#         - /opt/repos/dev/${{ github.repository }}/${{ github.ref_name }}/gradle/project-cache:/opt/gradle/project-cache
+#         - /opt/repos/dev/${{ github.repository }}/${{ github.ref_name }}/node_modules:/workspace/node_modules
+#     steps:
+#       - uses: actions/checkout@v4
+
+#       - name: Install Dependencies
+#         uses: cvch29/platform-actions/.github/actions/tooling/node@main
+#         with:
+#           working-directory: .
+
+#       - name: Android build
+#         uses: cvch29/platform-actions/.github/actions/domains/mobile/android/build@main
+#         with:
+#           keystore_path: ${{ inputs.keystore_path }}
+#           store_password: ${{ secrets.keystore_password }}
+#           key_alias: ${{ inputs.key_alias }}
+#           key_password: ${{ secrets.key_password }}
+#           keystore_base64: ${{ secrets.android_keystore_base64 }}
+
+#       - name: Artifact Management
+#         uses: cvch29/platform-actions/.github/actions/shared/artifact-manage@main
+#         with:
+#           app_name: ${{ inputs.app_name }}
+#           app_version: ${{ inputs.app_version }}
+#           path: android/app/build/outputs
+#           pattern: |
+#             apk/release/*.apk
+#             bundle/release/*.aab
+#             remote-config/config.json
+#           name: android-release-files
+#           retention-days: 1
+#           if-no-files-found: warn
+#           compression-level: 6
+#           upload_path: |
+#             android/app/build/outputs/apk/release/*.apk
+#             android/app/build/outputs/bundle/release/*.aab
+#             android/remote-config/*.json
+
+
 jobs:
   build:
     name: Build
-    runs-on: 
+    runs-on:
       group: dso-linux
+
+    env:
+      GRADLE_USER_HOME: /tmp/gradle-${{ github.run_id }}-${{ github.run_attempt }}
+
     container:
-      image: localhost:5000/android:35-gradle7.3-jdk17
+      image: localhost:5000/android:35-gradle8-jdk17
       options: --cpus 8 -m 16g
       volumes:
-        - /opt/repos/dev/${{ github.repository }}/${{ github.ref_name }}/yarn:/opt/yarn
-        - /opt/repos/dev/${{ github.repository }}/${{ github.ref_name }}/gradle/caches:/opt/gradle/caches
-        - /opt/repos/dev/${{ github.repository }}/${{ github.ref_name }}/gradle/jdks:/opt/gradle/jdks
-        - /opt/repos/dev/${{ github.repository }}/${{ github.ref_name }}/gradle/native:/opt/gradle/native
-        - /opt/repos/dev/${{ github.repository }}/${{ github.ref_name }}/gradle/notifications:/opt/gradle/notifications
-        - /opt/repos/dev/${{ github.repository }}/${{ github.ref_name }}/gradle/project-cache:/opt/gradle/project-cache
-        - /opt/repos/dev/${{ github.repository }}/${{ github.ref_name }}/node_modules:/workspace/node_modules
+        # Yarn cache
+        - /opt/cache/yarn:/opt/yarn
+
+        # Shared gradle dependency cache
+        - /opt/cache/gradle/modules-2:/opt/gradle-shared/modules-2
+        - /opt/cache/gradle/transforms-3:/opt/gradle-shared/transforms-3
+
+        # Shared build cache
+        - /opt/cache/gradle/build-cache-1:/opt/gradle-shared/build-cache-1
+
+        # Shared configuration cache
+        - /opt/cache/gradle/project-cache:/opt/gradle/project-cache
+
     steps:
       - uses: actions/checkout@v4
+
+      - name: Restore shared gradle cache
+        run: |
+          mkdir -p $GRADLE_USER_HOME/caches
+
+          ln -s /opt/gradle-shared/modules-2 \
+            $GRADLE_USER_HOME/caches/modules-2
+
+          ln -s /opt/gradle-shared/transforms-3 \
+            $GRADLE_USER_HOME/caches/transforms-3
+
+          ln -s /opt/gradle-shared/build-cache-1 \
+            $GRADLE_USER_HOME/caches/build-cache-1
 
       - name: Install Dependencies
         uses: cvch29/platform-actions/.github/actions/tooling/node@main
@@ -69,25 +145,6 @@ jobs:
           key_alias: ${{ inputs.key_alias }}
           key_password: ${{ secrets.key_password }}
           keystore_base64: ${{ secrets.android_keystore_base64 }}
-
-      - name: Artifact Management
-        uses: cvch29/platform-actions/.github/actions/shared/artifact-manage@main
-        with:
-          app_name: ${{ inputs.app_name }}
-          app_version: ${{ inputs.app_version }}
-          path: android/app/build/outputs
-          pattern: |
-            apk/release/*.apk
-            bundle/release/*.aab
-            remote-config/config.json
-          name: android-release-files
-          retention-days: 1
-          if-no-files-found: warn
-          compression-level: 6
-          upload_path: |
-            android/app/build/outputs/apk/release/*.apk
-            android/app/build/outputs/bundle/release/*.aab
-            android/remote-config/*.json
 
   # artifact_release:
   #   name: Artifact Release
