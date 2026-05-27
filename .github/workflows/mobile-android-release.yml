@@ -74,7 +74,7 @@ jobs:
         with:
           app_name: ${{ inputs.app_name }}
           app_version: ${{ inputs.app_version }}
-          path: app/build/outputs
+          path: android/app/build/outputs
           pattern: |
             apk/release/*.apk
             bundle/release/*.aab
@@ -84,9 +84,9 @@ jobs:
           if-no-files-found: warn
           compression-level: 6
           upload_path: |
-            app/build/outputs/apk/release/*.apk
-            app/build/outputs/bundle/release/*.aab
-            remote-config/*.json
+            android/app/build/outputs/apk/release/*.apk
+            android/app/build/outputs/bundle/release/*.aab
+            android/remote-config/*.json
 
   artifact_release:
     name: Artifact Release
