@@ -161,6 +161,27 @@ jobs:
           key_password: ${{ secrets.key_password }}
           keystore_base64: ${{ secrets.android_keystore_base64 }}
 
+      - name: Artifact Management
+        uses: cvch29/platform-actions/.github/actions/shared/artifact-manage@main
+        with:
+          app_name: ${{ inputs.app_name }}
+          app_version: ${{ inputs.app_version }}
+          path: android/app/build
+          pattern: |
+            outputs/apk/release/*.apk
+            outputs/bundle/release/*.aab
+            outputs/remote-config/config.json
+            reports/profile/*.html
+          name: android-release-files
+          retention-days: 1
+          if-no-files-found: warn
+          compression-level: 6
+          upload_path: |
+            android/app/build/outputs/apk/release/*.apk
+            android/app/build/outputs/bundle/release/*.aab
+            android/remote-config/*.json
+            android/build/reports/profile/*.html
+
   # artifact_release:
   #   name: Artifact Release
   #   needs: build
