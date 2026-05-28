@@ -108,13 +108,15 @@ jobs:
 
         # Shared gradle dependency cache
         - /opt/cache/gradle/modules-2:/opt/gradle-shared/modules-2
+
+        # Shared transforms cache
         - /opt/cache/gradle/transforms-3:/opt/gradle-shared/transforms-3
 
         # Shared build cache
         - /opt/cache/gradle/build-cache-1:/opt/gradle-shared/build-cache-1
 
-        # Shared configuration cache
-        - /opt/cache/gradle/project-cache:/opt/gradle/project-cache
+        # Shared wrapper cache
+        - /opt/cache/gradle/wrapper:/opt/gradle-shared/wrapper
 
     steps:
       - uses: actions/checkout@v4
@@ -122,15 +124,19 @@ jobs:
       - name: Restore shared gradle cache
         run: |
           mkdir -p $GRADLE_USER_HOME/caches
+          mkdir -p $GRADLE_USER_HOME/wrapper
 
-          ln -s /opt/gradle-shared/modules-2 \
+          ln -snf /opt/gradle-shared/modules-2 \
             $GRADLE_USER_HOME/caches/modules-2
 
-          ln -s /opt/gradle-shared/transforms-3 \
+          ln -snf /opt/gradle-shared/transforms-3 \
             $GRADLE_USER_HOME/caches/transforms-3
 
-          ln -s /opt/gradle-shared/build-cache-1 \
+          ln -snf /opt/gradle-shared/build-cache-1 \
             $GRADLE_USER_HOME/caches/build-cache-1
+
+          ln -snf /opt/gradle-shared/wrapper \
+            $GRADLE_USER_HOME/wrapper/dists
 
       - name: Install Dependencies
         uses: cvch29/platform-actions/.github/actions/tooling/node@main
