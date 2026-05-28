@@ -98,6 +98,7 @@ jobs:
 
     env:
       GRADLE_USER_HOME: /tmp/gradle-${{ github.run_id }}-${{ github.run_attempt }}
+      METRO_CACHE: /tmp/metro-cache
 
     container:
       image: localhost:5000/android:35-gradle7.3-jdk17
@@ -117,7 +118,9 @@ jobs:
 
         # Shared wrapper cache
         - /opt/cache/gradle/wrapper:/opt/gradle-shared/wrapper
-
+        
+        # Metro cache
+        - /opt/cache/metro:/tmp/metro-cache
     steps:
       - uses: actions/checkout@v4
 
