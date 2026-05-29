@@ -51,9 +51,9 @@ jobs:
       version-code: ${{ steps.build.outputs.version-code }}
     steps:
       - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@main
-      # - uses: cvch29/platform-actions/.github/actions/tooling-v2/java/setup-jdk@main
-      #   with:
-      #     java-version: ${{ inputs.java-version }}
+      - uses: cvch29/platform-actions/.github/actions/tooling-v2/java/setup-jdk@main
+        with:
+          java-version: ${{ inputs.java-version }}
       # - uses: cvch29/platform-actions/.github/actions/shared-v2/cache@main
       #   with:
       #     runtime: gradle
