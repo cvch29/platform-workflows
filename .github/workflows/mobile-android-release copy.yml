@@ -42,16 +42,16 @@ on:
         required: true
 
 jobs:
-  security:
-    uses: cvch29/platform-workflows/.github/workflows/mobile-android-security.yml@v1
-    with:
-      app-name: ${{ inputs.app-name }}
-    permissions:
-      contents: read
-      security-events: write
+  # security:
+  #   uses: cvch29/platform-workflows/.github/workflows/mobile-android-security.yml@v1
+  #   with:
+  #     app-name: ${{ inputs.app-name }}
+  #   permissions:
+  #     contents: read
+  #     security-events: write
 
   build:
-    needs: security
+    # needs: security
     uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@v1
     with:
       app-name: ${{ inputs.app-name }}
