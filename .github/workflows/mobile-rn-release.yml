@@ -72,17 +72,16 @@ jobs:
     name: Setup
     runs-on: ubuntu-latest
     outputs:
-      app-version: ${{ steps.setup_android.outputs.app-version }}
-      app-name: ${{ steps.setup_android.outputs.app-name }}
+      app-version: ${{ steps.setup-android.outputs.app-version }}
+      app-name: ${{ steps.setup-android.outputs.app-name }}
     steps:
       - uses: actions/checkout@v4
       - name: Setup Environment
-        id: setup_android
+        id: setup-android
         uses: cvch29/platform-actions/.github/actions/domains/mobile/android/setup@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           build-gradle-path: ${{ inputs.gradle-build-path }}
-
 
   build_android:
     if: ${{ vars.ENABLE_ANDROID_BUILD == 'true' }}
