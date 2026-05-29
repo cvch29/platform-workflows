@@ -93,9 +93,9 @@ jobs:
 
       - name: Setup Keystore
         if: ${{ inputs.sign }}
-        uses: cvch29/platform-actions/.github/actions/shared-v2/signing-keystore@main
+        uses: cvch29/platform-actions/.github/actions/shared-v2/setup-keystore@main
         with:
-          keystore-base64: ${{ secrets.keystore_base64 }}
+          keystore-base64: ${{ secrets.keystore-base64 }}
           keystore-path: ${{ secrets.keystore-path }}
 
       - name: Android build

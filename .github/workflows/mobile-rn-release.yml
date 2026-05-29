@@ -41,9 +41,9 @@ on:
         required: false
       keystore-password:
         required: false
-      key-alias:
+      keystore-alias:
         required: false
-      key-password:
+      keystore-path:
         required: false
       github-token:
         required: true
@@ -94,6 +94,7 @@ jobs:
       keystore-base64: ${{ secrets.keystore-base64 }}
       keystore-password: ${{ secrets.keystore-password }}
       keystore-alias: ${{ secrets.keystore-alias }}
+      keystore-path: ${{ secrets.keystore-path }}
 
   build_ios:
     if: success() && (inputs.enable-ios == true)
