@@ -80,7 +80,7 @@ jobs:
   build_android:
     if: ${{ inputs.enable-android == 'true' }}
     needs: setup
-    name: Build
+    name: Build Android
     uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@main
     with:
       app-name: ${{ needs.setup.outputs.app-name }}
@@ -98,7 +98,7 @@ jobs:
   build_ios:
     if: ${{ inputs.enable-ios == 'true' }}
     needs: setup
-    name: Build
+    name: Build iOS
     uses: cvch29/platform-workflows/.github/workflows/mobile-ios-build.yml@main
     with:
       app-name: ${{ needs.setup.outputs.app-name }}
