@@ -1,0 +1,61 @@
+name: 'Mobile iOS — Build'
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      scheme:
+        type: string
+        required: true
+      workspace:
+        type: string
+        required: false
+        default: ''
+      bundle-id:
+        type: string
+        required: true
+      export-method:
+        description: 'app-store | ad-hoc | enterprise'
+        type: string
+        required: false
+        default: 'app-store'
+    outputs:
+      ipa-path:
+        value: ${{ jobs.build.outputs.ipa-path }}
+    secrets:
+      p12-base64:
+        required: true
+      p12-password:
+        required: true
+      provisioning-profile-base64:
+        required: true
+
+jobs:
+  build:
+    name: Build & Sign IPA
+    runs-on: macos-latest
+    permissions:
+      contents: read
+    outputs:
+      ipa-path: ${{ steps.build.outputs.ipa-path }}
+    steps:
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - uses: cvch29/platform-actions/.github/actions/mobile/ios/sign@v1
+        with:
+          p12-base64: ${{ secrets.p12-base64 }}
+          p12-password: ${{ secrets.p12-password }}
+          provisioning-profile-base64: ${{ secrets.provisioning-profile-base64 }}
+          bundle-id: ${{ inputs.bundle-id }}
+      - id: build
+        uses: cvch29/platform-actions/.github/actions/mobile/ios/build@v1
+        with:
+          scheme: ${{ inputs.scheme }}
+          workspace: ${{ inputs.workspace }}
+          export-method: ${{ inputs.export-method }}
+      - uses: cvch29/platform-actions/.github/actions/shared/artifact-upload@v1
+        with:
+          name: ios-ipa-${{ inputs.app-name }}
+          path: ${{ steps.build.outputs.ipa-path }}
+          retention-days: 30

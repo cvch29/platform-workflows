@@ -1,0 +1,62 @@
+name: 'Router — Backend PR'
+# Called from app repos. Auto-detects runtime, routes to the right pr workflow.
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      runtime:
+        description: 'java | spring | node | python. Empty = auto-detect'
+        type: string
+        required: false
+        default: ''
+    secrets:
+      azure-artifacts-token:
+        required: false
+
+jobs:
+  detect:
+    name: Detect Runtime
+    runs-on: ubuntu-latest
+    outputs:
+      runtime: ${{ steps.detect.outputs.runtime || inputs.runtime }}
+    steps:
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - name: Auto-detect
+        if: inputs.runtime == ''
+        id: detect
+        uses: cvch29/platform-actions/.github/actions/intelligence/detect-runtime@v1
+
+  java-pr:
+    needs: detect
+    if: contains(fromJSON('["java","kotlin"]'), needs.detect.outputs.runtime)
+    uses: cvch29/platform-workflows/.github/workflows/backend-java-pr.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+    secrets:
+      azure-artifacts-token: ${{ secrets.azure-artifacts-token }}
+
+  spring-pr:
+    needs: detect
+    if: needs.detect.outputs.runtime == 'spring-boot'
+    uses: cvch29/platform-workflows/.github/workflows/backend-spring-pr.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+    secrets:
+      azure-artifacts-token: ${{ secrets.azure-artifacts-token }}
+
+  node-pr:
+    needs: detect
+    if: needs.detect.outputs.runtime == 'node'
+    uses: cvch29/platform-workflows/.github/workflows/backend-node-pr.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+
+  python-pr:
+    needs: detect
+    if: needs.detect.outputs.runtime == 'python'
+    uses: cvch29/platform-workflows/.github/workflows/backend-python-pr.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}

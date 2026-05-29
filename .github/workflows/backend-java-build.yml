@@ -1,0 +1,84 @@
+name: 'Backend Java — Build'
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      java-version:
+        type: string
+        required: false
+        default: '17'
+      image-tag:
+        type: string
+        required: false
+        default: ''
+      acr-registry:
+        type: string
+        required: true
+      push-image:
+        type: boolean
+        required: false
+        default: true
+    outputs:
+      image-ref:
+        value: ${{ jobs.build.outputs.image-ref }}
+      version:
+        value: ${{ jobs.build.outputs.version }}
+    secrets:
+      azure-client-id:
+        required: true
+      azure-tenant-id:
+        required: true
+      azure-subscription-id:
+        required: true
+      azure-artifacts-token:
+        required: false
+
+jobs:
+  build:
+    name: Build & Push to ACR
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      image-ref: ${{ steps.push.outputs.image-ref }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+        with:
+          fetch-depth: 0
+      - uses: cvch29/platform-actions/.github/actions/shared/setup-env@v1
+        with:
+          environment: dev
+          app-name: ${{ inputs.app-name }}
+          azure-client-id: ${{ secrets.azure-client-id }}
+          azure-tenant-id: ${{ secrets.azure-tenant-id }}
+          azure-subscription-id: ${{ secrets.azure-subscription-id }}
+      - name: Calculate version
+        id: version
+        uses: cvch29/platform-actions/.github/actions/intelligence/versioning@v1
+      - uses: cvch29/platform-actions/.github/actions/tooling/java/setup-jdk@v1
+        with:
+          java-version: ${{ inputs.java-version }}
+      - uses: cvch29/platform-actions/.github/actions/tooling/java/gradle-build@v1
+        with:
+          tasks: build -x test
+          azure-artifacts-token: ${{ secrets.azure-artifacts-token }}
+      - uses: cvch29/platform-actions/.github/actions/governance/sbom@v1
+        with:
+          artifact-path: .
+          upload-artifact: true
+      - name: Build & push Docker image
+        id: push
+        if: inputs.push-image
+        uses: cvch29/platform-actions/.github/actions/backend/java/deploy@v1
+        with:
+          app-name: ${{ inputs.app-name }}
+          environment: dev
+          image-tag: ${{ inputs.image-tag || steps.version.outputs.version }}
+          acr-registry: ${{ inputs.acr-registry }}
+          aks-cluster-name: placeholder
+          aks-resource-group: placeholder

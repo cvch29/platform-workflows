@@ -1,0 +1,68 @@
+name: 'Governance — SBOM & Provenance'
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      artifact-path:
+        type: string
+        required: false
+        default: '.'
+      image:
+        type: string
+        required: false
+        default: ''
+      generate-provenance:
+        type: boolean
+        required: false
+        default: true
+      storage-account:
+        type: string
+        required: false
+        default: ''
+    outputs:
+      sbom-path:
+        value: ${{ jobs.generate.outputs.sbom-path }}
+      component-count:
+        value: ${{ jobs.generate.outputs.component-count }}
+
+jobs:
+  generate:
+    name: SBOM + Provenance
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    outputs:
+      sbom-path: ${{ steps.sbom.outputs.sbom-path }}
+      component-count: ${{ steps.sbom.outputs.component-count }}
+    steps:
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - id: sbom
+        uses: cvch29/platform-actions/.github/actions/governance/sbom@v1
+        with:
+          artifact-path: ${{ inputs.artifact-path }}
+          image: ${{ inputs.image }}
+          format: 'cyclonedx-json,spdx-json'
+          upload-artifact: true
+      - name: Attest build provenance
+        if: inputs.generate-provenance
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: ${{ inputs.artifact-path }}
+      - if: inputs.generate-provenance
+        uses: cvch29/platform-actions/.github/actions/governance/provenance@v1
+        with:
+          artifact-path: ${{ inputs.artifact-path }}
+          artifact-name: ${{ inputs.app-name }}
+      - uses: cvch29/platform-actions/.github/actions/governance/audit-log@v1
+        with:
+          event-type: build
+          environment: dev
+          outcome: success
+          app-name: ${{ inputs.app-name }}
+          storage-account: ${{ inputs.storage-account }}
+          metadata: '{"sbomComponents":"${{ steps.sbom.outputs.component-count }}"}'

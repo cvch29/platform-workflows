@@ -1,0 +1,76 @@
+name: 'Frontend React — Release'
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      acr-registry:
+        type: string
+        required: false
+        default: ''
+      aks-cluster-name:
+        type: string
+        required: false
+        default: ''
+      aks-resource-group:
+        type: string
+        required: false
+        default: ''
+      node-version:
+        type: string
+        required: false
+        default: '20'
+    outputs:
+      version:
+        value: ${{ jobs.tag.outputs.version }}
+    secrets:
+      azure-client-id:
+        required: false
+      azure-tenant-id:
+        required: false
+      azure-subscription-id:
+        required: false
+      github-token:
+        required: true
+
+jobs:
+  security:
+    uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+      language: javascript
+      run-codeql: true
+      run-sca: true
+      run-secrets: true
+      run-sast: true
+    permissions:
+      contents: read
+      security-events: write
+
+  build:
+    needs: security
+    uses: cvch29/platform-workflows/.github/workflows/frontend-react-build.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+      environment: prod
+      node-version: ${{ inputs.node-version }}
+
+  quality-gate:
+    needs: build
+    uses: cvch29/platform-workflows/.github/workflows/shared-quality-gates.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+      environment: prod
+      require-sbom: true
+      require-sast: true
+      require-sca: true
+
+  tag:
+    needs: quality-gate
+    uses: cvch29/platform-workflows/.github/workflows/shared-release-tag.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+    secrets:
+      github-token: ${{ secrets.github-token }}

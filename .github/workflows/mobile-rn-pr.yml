@@ -1,0 +1,63 @@
+name: 'Mobile React Native — PR'
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      platforms:
+        description: 'android | ios | both'
+        type: string
+        required: false
+        default: 'android'
+      package-manager:
+        type: string
+        required: false
+        default: 'yarn'
+      node-version:
+        type: string
+        required: false
+        default: '20'
+
+jobs:
+  pr-validate:
+    uses: cvch29/platform-workflows/.github/workflows/shared-pr-validation.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+      runtime: react-native
+
+  js-checks:
+    name: JS Lint & Test
+    needs: pr-validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - uses: cvch29/platform-actions/.github/actions/tooling/node/install@v1
+        with:
+          node-version: ${{ inputs.node-version }}
+          package-manager: ${{ inputs.package-manager }}
+      - name: TypeScript & Lint
+        shell: bash
+        run: |
+          ${{ inputs.package-manager }} run tsc --noEmit 2>/dev/null || true
+          ${{ inputs.package-manager }} run lint 2>/dev/null || true
+      - uses: cvch29/platform-actions/.github/actions/tooling/node/test@v1
+        with:
+          package-manager: ${{ inputs.package-manager }}
+          coverage: true
+          coverage-threshold: 70
+
+  security:
+    needs: pr-validate
+    uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+      language: javascript
+      run-codeql: true
+      run-sca: true
+      run-secrets: true
+      run-sast: true
+    permissions:
+      contents: read
+      security-events: write

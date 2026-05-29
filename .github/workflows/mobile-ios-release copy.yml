@@ -1,0 +1,89 @@
+name: 'Mobile iOS — Release'
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      scheme:
+        type: string
+        required: true
+      workspace:
+        type: string
+        required: false
+        default: ''
+      bundle-id:
+        type: string
+        required: true
+    outputs:
+      version:
+        value: ${{ jobs.release.outputs.version }}
+    secrets:
+      p12-base64:
+        required: true
+      p12-password:
+        required: true
+      provisioning-profile-base64:
+        required: true
+      app-store-connect-api-key:
+        required: false
+      github-token:
+        required: true
+
+jobs:
+  build:
+    uses: cvch29/platform-workflows/.github/workflows/mobile-ios-build.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+      scheme: ${{ inputs.scheme }}
+      workspace: ${{ inputs.workspace }}
+      bundle-id: ${{ inputs.bundle-id }}
+    secrets:
+      p12-base64: ${{ secrets.p12-base64 }}
+      p12-password: ${{ secrets.p12-password }}
+      provisioning-profile-base64: ${{ secrets.provisioning-profile-base64 }}
+
+  quality-gate:
+    needs: build
+    uses: cvch29/platform-workflows/.github/workflows/shared-quality-gates.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+      environment: prod
+      require-sbom: true
+      require-sast: false
+      require-sca: false
+
+  release:
+    name: Upload to App Store Connect
+    needs: [build, quality-gate]
+    runs-on: macos-latest
+    permissions:
+      contents: write
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+        with:
+          fetch-depth: 0
+      - id: version
+        uses: cvch29/platform-actions/.github/actions/intelligence/versioning@v1
+      - uses: cvch29/platform-actions/.github/actions/shared/artifact-download@v1
+        with:
+          name: ios-ipa-${{ inputs.app-name }}
+      - name: Upload to TestFlight
+        if: secrets.app-store-connect-api-key != ''
+        shell: bash
+        run: |
+          IPA=$(find . -name "*.ipa" | head -1)
+          xcrun altool --upload-app --type ios --file "$IPA" \
+            --apiKey "${{ secrets.app-store-connect-api-key }}" \
+            --apiIssuer "${{ vars.APP_STORE_ISSUER_ID }}"
+      - if: always()
+        uses: cvch29/platform-actions/.github/actions/governance/audit-log@v1
+        with:
+          event-type: release
+          environment: prod
+          outcome: ${{ job.status }}
+          app-name: ${{ inputs.app-name }}
+          metadata: '{"platform":"ios","version":"${{ steps.version.outputs.version }}"}'

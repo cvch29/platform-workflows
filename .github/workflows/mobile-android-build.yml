@@ -1,0 +1,83 @@
+name: 'Mobile Android — Build'
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      build-type:
+        type: string
+        required: false
+        default: 'release'
+      flavor:
+        type: string
+        required: false
+        default: ''
+      java-version:
+        type: string
+        required: false
+        default: '17'
+      sign:
+        type: boolean
+        required: false
+        default: true
+    outputs:
+      artifact-path:
+        value: ${{ jobs.build.outputs.artifact-path }}
+      version-name:
+        value: ${{ jobs.build.outputs.version-name }}
+      version-code:
+        value: ${{ jobs.build.outputs.version-code }}
+    secrets:
+      keystore-base64:
+        required: false
+      keystore-password:
+        required: false
+      key-alias:
+        required: false
+      key-password:
+        required: false
+
+jobs:
+  build:
+    name: Android Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      artifact-path: ${{ steps.sign.outputs.signed-path || steps.build.outputs.artifact-path }}
+      version-name: ${{ steps.build.outputs.version-name }}
+      version-code: ${{ steps.build.outputs.version-code }}
+    steps:
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - uses: cvch29/platform-actions/.github/actions/tooling/java/setup-jdk@v1
+        with:
+          java-version: ${{ inputs.java-version }}
+      - uses: cvch29/platform-actions/.github/actions/shared/cache@v1
+        with:
+          runtime: gradle
+      - id: build
+        uses: cvch29/platform-actions/.github/actions/mobile/android/build@v1
+        with:
+          build-type: ${{ inputs.build-type }}
+          flavor: ${{ inputs.flavor }}
+          output-type: aab
+      - id: sign
+        if: inputs.sign && inputs.build-type == 'release'
+        uses: cvch29/platform-actions/.github/actions/mobile/android/sign@v1
+        with:
+          artifact-path: ${{ steps.build.outputs.artifact-path }}
+          keystore-base64: ${{ secrets.keystore-base64 }}
+          keystore-password: ${{ secrets.keystore-password }}
+          key-alias: ${{ secrets.key-alias }}
+          key-password: ${{ secrets.key-password }}
+      - uses: cvch29/platform-actions/.github/actions/governance/sbom@v1
+        with:
+          artifact-path: .
+          upload-artifact: true
+      - uses: cvch29/platform-actions/.github/actions/shared/artifact-upload@v1
+        with:
+          name: android-build-${{ inputs.app-name }}
+          path: ${{ steps.sign.outputs.signed-path || steps.build.outputs.artifact-path }}
+          retention-days: 30

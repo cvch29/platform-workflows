@@ -1,0 +1,217 @@
+name: 'Shared — Security Scan'
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      language:
+        description: 'javascript | java | kotlin | android | python | swift'
+        type: string
+        required: true
+      environment:
+        type: string
+        required: false
+        default: 'dev'
+      # ── Tool toggles ────────────────────────────────────────────────────────
+      run-codeql:
+        type: boolean
+        required: false
+        default: true
+      run-sonar:
+        type: boolean
+        required: false
+        default: true
+      run-sast:
+        type: boolean
+        required: false
+        default: true
+      run-sca:
+        type: boolean
+        required: false
+        default: true
+      run-secrets:
+        type: boolean
+        required: false
+        default: true
+      severity-threshold:
+        description: 'low | moderate | high | critical'
+        type: string
+        required: false
+        default: 'high'
+      # ── CodeQL inputs ───────────────────────────────────────────────────────
+      android-module:
+        description: 'Android Gradle module for CodeQL (default: app)'
+        type: string
+        required: false
+        default: 'app'
+      android-flavor:
+        description: 'Android product flavor for CodeQL. Empty = autobuild.'
+        type: string
+        required: false
+        default: ''
+      codeql-scheme:
+        description: 'Xcode scheme for Swift CodeQL'
+        type: string
+        required: false
+        default: ''
+      # ── Sonar inputs ────────────────────────────────────────────────────────
+      sonar-host-url:
+        description: 'SonarQube server URL (e.g. https://sonar.mybank.com)'
+        type: string
+        required: false
+        default: ''
+      sonar-project-key:
+        description: 'SonarQube project key. Default: repo slug.'
+        type: string
+        required: false
+        default: ''
+      sonar-quality-gate-wait:
+        description: 'Break the build if Quality Gate fails. Bank policy: true.'
+        type: boolean
+        required: false
+        default: true
+      sonar-coverage-report:
+        description: 'Path to coverage report for Sonar (lcov.info / jacoco XML / coverage.xml)'
+        type: string
+        required: false
+        default: ''
+      sonar-android-flavor:
+        description: 'Android flavor for Sonar report paths'
+        type: string
+        required: false
+        default: ''
+    secrets:
+      sonar-token:
+        required: false
+
+    outputs:
+      codeql-status:
+        value: ${{ jobs.codeql.result }}
+      sonar-status:
+        value: ${{ jobs.sonar.result }}
+      sonar-quality-gate:
+        value: ${{ jobs.sonar.outputs.quality-gate-status }}
+      sast-status:
+        value: ${{ jobs.sast.result }}
+      sca-status:
+        value: ${{ jobs.sca.result }}
+      secrets-status:
+        value: ${{ jobs.secrets.result }}
+
+jobs:
+
+  # ── CodeQL ──────────────────────────────────────────────────────────────────
+  codeql:
+    name: CodeQL
+    if: inputs.run-codeql
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+        with:
+          fetch-depth: 2
+
+      - uses: cvch29/platform-actions/.github/actions/security/codeql@v1
+        with:
+          language: ${{ inputs.language }}
+          android-module: ${{ inputs.android-module }}
+          android-flavor: ${{ inputs.android-flavor }}
+          scheme: ${{ inputs.codeql-scheme }}
+
+  # ── SonarQube ───────────────────────────────────────────────────────────────
+  # Runs in parallel with CodeQL.
+  # sonar.qualitygate.wait=true means the Sonar Gradle/scanner task itself fails
+  # when the Quality Gate does not pass → this job fails → workflow fails.
+  # That is the "break the build" behavior.
+  sonar:
+    name: SonarQube + Quality Gate
+    if: inputs.run-sonar && inputs.sonar-host-url != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      quality-gate-status: ${{ steps.sonar.outputs.quality-gate-status }}
+      dashboard-url: ${{ steps.sonar.outputs.dashboard-url }}
+
+    steps:
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+        with:
+          fetch-depth: 0   # Sonar needs full history for blame/new code detection
+
+      - name: Run SonarQube
+        id: sonar
+        uses: cvch29/platform-actions/.github/actions/security/sonar@v1
+        with:
+          language: ${{ inputs.language }}
+          sonar-host-url: ${{ inputs.sonar-host-url }}
+          sonar-token: ${{ secrets.sonar-token }}
+          project-key: ${{ inputs.sonar-project-key }}
+          coverage-report-path: ${{ inputs.sonar-coverage-report }}
+          android-module: ${{ inputs.android-module }}
+          android-flavor: ${{ inputs.sonar-android-flavor }}
+          scheme: ${{ inputs.codeql-scheme }}
+          quality-gate-wait: ${{ inputs.sonar-quality-gate-wait }}
+          # quality-gate-wait: true is the break-the-build switch.
+          # The scanner task exits with code 1 when QG status = FAILED.
+          # This propagates as a workflow failure with a clear message.
+
+      - name: Enforce Quality Gate
+        if: always() && steps.sonar.outputs.quality-gate-status != '' && steps.sonar.outputs.quality-gate-status != 'OK'
+        shell: bash
+        run: |
+          echo "::error::SonarQube Quality Gate FAILED for ${{ inputs.app-name }}"
+          echo "::error::Status: ${{ steps.sonar.outputs.quality-gate-status }}"
+          echo "::error::Dashboard: ${{ steps.sonar.outputs.dashboard-url }}"
+          echo ""
+          echo "Bank policy requires Quality Gate to pass before merge."
+          echo "Fix the issues at: ${{ steps.sonar.outputs.dashboard-url }}"
+          exit 1
+
+  # ── SAST (Semgrep) ──────────────────────────────────────────────────────────
+  sast:
+    name: SAST (Semgrep)
+    if: inputs.run-sast
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - uses: cvch29/platform-actions/.github/actions/security/sast@v1
+        with:
+          config: p/owasp-top-ten
+          severity-threshold: ${{ inputs.severity-threshold == 'low' && 'INFO' || inputs.severity-threshold == 'moderate' && 'WARNING' || 'ERROR' }}
+
+  # ── SCA (Trivy) ─────────────────────────────────────────────────────────────
+  sca:
+    name: SCA (Trivy)
+    if: inputs.run-sca
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - uses: cvch29/platform-actions/.github/actions/security/sca@v1
+        with:
+          runtime: ${{ inputs.language }}
+          severity-threshold: ${{ inputs.severity-threshold }}
+
+  # ── Secrets scan ────────────────────────────────────────────────────────────
+  secrets:
+    name: Secrets Scan
+    if: inputs.run-secrets
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+        with:
+          fetch-depth: 50
+      - uses: cvch29/platform-actions/.github/actions/security/secrets-scan@v1
+        with:
+          fail-on-findings: true

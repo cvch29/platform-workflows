@@ -1,0 +1,30 @@
+name: 'Backend Spring — PR'
+# Spring Boot is a Java superset — delegates to backend-java-pr with spring defaults
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      java-version:
+        type: string
+        required: false
+        default: '21'   # Spring Boot 3+ recommends Java 21
+      coverage-threshold:
+        type: number
+        required: false
+        default: 80
+    secrets:
+      azure-artifacts-token:
+        required: false
+
+jobs:
+  pr:
+    uses: cvch29/platform-workflows/.github/workflows/backend-java-pr.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+      java-version: ${{ inputs.java-version }}
+      coverage-threshold: ${{ inputs.coverage-threshold }}
+    secrets:
+      azure-artifacts-token: ${{ secrets.azure-artifacts-token }}

@@ -1,0 +1,87 @@
+name: 'Backend Python — PR'
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      python-version:
+        type: string
+        required: false
+        default: '3.12'
+      package-manager:
+        description: 'pip | poetry | pipenv'
+        type: string
+        required: false
+        default: 'poetry'
+      coverage-threshold:
+        type: number
+        required: false
+        default: 80
+
+jobs:
+  pr-validate:
+    uses: cvch29/platform-workflows/.github/workflows/shared-pr-validation.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+      runtime: python
+
+  build-test:
+    name: Build & Test
+    needs: pr-validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+      - uses: cvch29/platform-actions/.github/actions/shared/cache@v1
+        with:
+          runtime: python
+      - name: Install deps
+        shell: bash
+        run: |
+          case "${{ inputs.package-manager }}" in
+            poetry)  pip install poetry && poetry install --no-root ;;
+            pipenv)  pip install pipenv && pipenv install --dev ;;
+            pip)     pip install -r requirements.txt ;;
+          esac
+      - name: Lint
+        shell: bash
+        run: |
+          PRE="${{ inputs.package-manager == 'poetry' && 'poetry run ' || '' }}"
+          ${PRE}ruff check . || true
+          ${PRE}mypy . --ignore-missing-imports || true
+      - name: Test with coverage
+        shell: bash
+        run: |
+          PRE="${{ inputs.package-manager == 'poetry' && 'poetry run ' || '' }}"
+          ${PRE}pytest \
+            --cov=. \
+            --cov-report=xml \
+            --cov-fail-under=${{ inputs.coverage-threshold }} \
+            --junitxml=pytest-results.xml -v
+      - uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Pytest Results
+          path: pytest-results.xml
+          reporter: java-junit
+
+  security:
+    needs: pr-validate
+    uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+      language: python
+      run-codeql: true
+      run-sca: true
+      run-secrets: true
+      run-sast: true
+    permissions:
+      contents: read
+      security-events: write

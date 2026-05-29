@@ -1,0 +1,50 @@
+name: 'Router — Mobile PR'
+# Called from app repos. Routes to the correct mobile platform PR workflow.
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      mobile-platform:
+        description: 'android | ios | react-native | kmp'
+        type: string
+        required: true
+      scheme:
+        description: 'Xcode scheme (iOS only)'
+        type: string
+        required: false
+        default: ''
+      targets:
+        description: 'KMP targets (kmp only), e.g. android,ios'
+        type: string
+        required: false
+        default: 'android,ios'
+
+jobs:
+  android-pr:
+    if: inputs.mobile-platform == 'android'
+    uses: cvch29/platform-workflows/.github/workflows/mobile-android-pr.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+
+  ios-pr:
+    if: inputs.mobile-platform == 'ios'
+    uses: cvch29/platform-workflows/.github/workflows/mobile-ios-pr.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+      scheme: ${{ inputs.scheme }}
+
+  rn-pr:
+    if: inputs.mobile-platform == 'react-native'
+    uses: cvch29/platform-workflows/.github/workflows/mobile-rn-pr.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+
+  kmp-pr:
+    if: inputs.mobile-platform == 'kmp'
+    uses: cvch29/platform-workflows/.github/workflows/mobile-kmp-pr.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+      targets: ${{ inputs.targets }}

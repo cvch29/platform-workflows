@@ -1,0 +1,98 @@
+name: 'Backend Node — Deploy'
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      environment:
+        type: string
+        required: true
+      image-tag:
+        type: string
+        required: true
+      acr-registry:
+        type: string
+        required: true
+      aks-cluster-name:
+        type: string
+        required: true
+      aks-resource-group:
+        type: string
+        required: true
+      namespace:
+        type: string
+        required: false
+        default: 'default'
+    outputs:
+      deployment-url:
+        value: ${{ jobs.deploy.outputs.deployment-url }}
+    secrets:
+      azure-client-id:
+        required: true
+      azure-tenant-id:
+        required: true
+      azure-subscription-id:
+        required: true
+
+jobs:
+  policy-check:
+    runs-on: ubuntu-latest
+    outputs:
+      audit-token: ${{ steps.policy.outputs.audit-token }}
+    steps:
+      - uses: cvch29/platform-actions/.github/actions/intelligence/policy-engine@v1
+        id: policy
+        with:
+          environment: ${{ inputs.environment }}
+          event-type: ${{ github.event_name }}
+          actor: ${{ github.actor }}
+          ref: ${{ github.ref }}
+
+  deploy:
+    name: Deploy → ${{ inputs.environment }}
+    needs: policy-check
+    runs-on: ${{ (inputs.environment == 'prod' || inputs.environment == 'staging') && 'self-hosted' || 'ubuntu-latest' }}
+    environment:
+      name: ${{ inputs.environment }}
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      deployment-url: ${{ steps.deploy.outputs.deployment-url }}
+    steps:
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - uses: cvch29/platform-actions/.github/actions/shared/setup-env@v1
+        with:
+          environment: ${{ inputs.environment }}
+          app-name: ${{ inputs.app-name }}
+          azure-client-id: ${{ secrets.azure-client-id }}
+          azure-tenant-id: ${{ secrets.azure-tenant-id }}
+          azure-subscription-id: ${{ secrets.azure-subscription-id }}
+      - id: deploy
+        uses: cvch29/platform-actions/.github/actions/backend/node/deploy@v1
+        with:
+          app-name: ${{ inputs.app-name }}
+          environment: ${{ inputs.environment }}
+          image-tag: ${{ inputs.image-tag }}
+          acr-registry: ${{ inputs.acr-registry }}
+          aks-cluster-name: ${{ inputs.aks-cluster-name }}
+          aks-resource-group: ${{ inputs.aks-resource-group }}
+          namespace: ${{ inputs.namespace }}
+      - if: always()
+        uses: cvch29/platform-actions/.github/actions/governance/audit-log@v1
+        with:
+          event-type: deploy
+          environment: ${{ inputs.environment }}
+          outcome: ${{ job.status }}
+          app-name: ${{ inputs.app-name }}
+          audit-token: ${{ needs.policy-check.outputs.audit-token }}
+      - if: always()
+        uses: cvch29/platform-actions/.github/actions/governance/dora-metrics@v1
+        with:
+          metric-type: deployment-frequency
+          environment: ${{ inputs.environment }}
+          app-name: ${{ inputs.app-name }}
+          version: ${{ inputs.image-tag }}
+          outcome: ${{ job.status == 'success' && 'success' || 'failure' }}

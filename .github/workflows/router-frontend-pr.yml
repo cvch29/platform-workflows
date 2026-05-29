@@ -1,0 +1,62 @@
+name: 'Router — Frontend PR'
+# Called from app repos. Routes to the correct frontend framework PR workflow.
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      framework:
+        description: 'react | nextjs | vue. Empty = auto-detect'
+        type: string
+        required: false
+        default: ''
+      node-version:
+        type: string
+        required: false
+        default: '20'
+      package-manager:
+        type: string
+        required: false
+        default: 'npm'
+
+jobs:
+  detect:
+    name: Detect Framework
+    runs-on: ubuntu-latest
+    outputs:
+      framework: ${{ steps.detect.outputs.framework || inputs.framework }}
+    steps:
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - name: Auto-detect
+        if: inputs.framework == ''
+        id: detect
+        uses: cvch29/platform-actions/.github/actions/intelligence/detect-runtime@v1
+
+  react-pr:
+    needs: detect
+    if: needs.detect.outputs.framework == 'react'
+    uses: cvch29/platform-workflows/.github/workflows/frontend-react-pr.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+      node-version: ${{ inputs.node-version }}
+      package-manager: ${{ inputs.package-manager }}
+
+  nextjs-pr:
+    needs: detect
+    if: needs.detect.outputs.framework == 'nextjs'
+    uses: cvch29/platform-workflows/.github/workflows/frontend-nextjs-pr.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+      node-version: ${{ inputs.node-version }}
+      package-manager: ${{ inputs.package-manager }}
+
+  vue-pr:
+    needs: detect
+    if: needs.detect.outputs.framework == 'vue'
+    uses: cvch29/platform-workflows/.github/workflows/frontend-vue-pr.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+      node-version: ${{ inputs.node-version }}
+      package-manager: ${{ inputs.package-manager }}

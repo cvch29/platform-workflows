@@ -1,0 +1,109 @@
+name: 'Mobile Android — Release'
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      channel:
+        description: 'firebase | play-internal | play-alpha | play-beta | play-production'
+        type: string
+        required: true
+      flavor:
+        type: string
+        required: false
+        default: ''
+      package-name:
+        type: string
+        required: false
+        default: ''
+      firebase-app-id:
+        type: string
+        required: false
+        default: ''
+    outputs:
+      version:
+        value: ${{ jobs.distribute.outputs.version }}
+    secrets:
+      keystore-base64:
+        required: true
+      keystore-password:
+        required: true
+      key-alias:
+        required: true
+      key-password:
+        required: true
+      firebase-service-account:
+        required: false
+      google-play-service-account-json:
+        required: false
+      github-token:
+        required: true
+
+jobs:
+  security:
+    uses: cvch29/platform-workflows/.github/workflows/mobile-android-security.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+    permissions:
+      contents: read
+      security-events: write
+
+  build:
+    needs: security
+    uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+      build-type: release
+      flavor: ${{ inputs.flavor }}
+      sign: true
+    secrets:
+      keystore-base64: ${{ secrets.keystore-base64 }}
+      keystore-password: ${{ secrets.keystore-password }}
+      key-alias: ${{ secrets.key-alias }}
+      key-password: ${{ secrets.key-password }}
+
+  quality-gate:
+    needs: build
+    uses: cvch29/platform-workflows/.github/workflows/shared-quality-gates.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+      environment: ${{ inputs.channel == 'play-production' && 'prod' || 'staging' }}
+      require-sbom: true
+      require-sast: true
+      require-sca: true
+
+  distribute:
+    name: Tag & Distribute
+    needs: [build, quality-gate]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+        with:
+          fetch-depth: 0
+      - uses: cvch29/platform-actions/.github/actions/shared/artifact-download@v1
+        with:
+          name: android-build-${{ inputs.app-name }}
+      - id: version
+        uses: cvch29/platform-actions/.github/actions/intelligence/versioning@v1
+      - uses: cvch29/platform-actions/.github/actions/mobile/android/distribute@v1
+        with:
+          artifact-path: ${{ needs.build.outputs.artifact-path }}
+          channel: ${{ inputs.channel }}
+          release-notes: "Release ${{ steps.version.outputs.version }}"
+          firebase-app-id: ${{ inputs.firebase-app-id }}
+          google-play-service-account-json: ${{ secrets.google-play-service-account-json }}
+          package-name: ${{ inputs.package-name }}
+      - if: always()
+        uses: cvch29/platform-actions/.github/actions/governance/audit-log@v1
+        with:
+          event-type: release
+          environment: ${{ inputs.channel == 'play-production' && 'prod' || 'staging' }}
+          outcome: ${{ job.status }}
+          app-name: ${{ inputs.app-name }}
+          metadata: '{"channel":"${{ inputs.channel }}","version":"${{ steps.version.outputs.version }}"}'

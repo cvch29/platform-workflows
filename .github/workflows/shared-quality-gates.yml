@@ -1,0 +1,79 @@
+name: 'Shared — Quality Gates'
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      environment:
+        type: string
+        required: true
+      require-sbom:
+        type: boolean
+        required: false
+        default: true
+      require-sast:
+        type: boolean
+        required: false
+        default: true
+      require-sca:
+        type: boolean
+        required: false
+        default: true
+      audit-token:
+        type: string
+        required: false
+        default: ''
+    outputs:
+      compliant:
+        value: ${{ jobs.gate.outputs.compliant }}
+      audit-token:
+        value: ${{ jobs.gate.outputs.audit-token }}
+
+jobs:
+  gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    outputs:
+      compliant: ${{ steps.compliance.outputs.compliant }}
+      audit-token: ${{ steps.policy.outputs.audit-token }}
+
+    steps:
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+
+      - name: Policy evaluation
+        id: policy
+        uses: cvch29/platform-actions/.github/actions/intelligence/policy-engine@v1
+        with:
+          environment: ${{ inputs.environment }}
+          event-type: ${{ github.event_name }}
+          actor: ${{ github.actor }}
+          ref: ${{ github.ref }}
+
+      - name: Compliance check
+        id: compliance
+        uses: cvch29/platform-actions/.github/actions/intelligence/compliance-check@v1
+        with:
+          environment: ${{ inputs.environment }}
+          require-sbom: ${{ inputs.require-sbom }}
+          require-sast: ${{ inputs.require-sast }}
+          require-sca: ${{ inputs.require-sca }}
+          audit-token: ${{ inputs.audit-token || steps.policy.outputs.audit-token }}
+        env:
+          SBOM_STATUS: ${{ vars.SBOM_STATUS || 'success' }}
+          SAST_STATUS: ${{ vars.SAST_STATUS || 'success' }}
+          SCA_STATUS: ${{ vars.SCA_STATUS || 'success' }}
+          SECRETS_SCAN_STATUS: ${{ vars.SECRETS_SCAN_STATUS || 'success' }}
+
+      - name: Gate summary
+        if: always()
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << MD
+          ## Quality Gate — ${{ inputs.app-name }} → ${{ inputs.environment }}
+          | Check | Result |
+          |-------|--------|
+          | Compliant | ${{ steps.compliance.outputs.compliant }} |
+          | Gate level | ${{ steps.policy.outputs.gate-level }} |
+          | Audit token | ${{ steps.policy.outputs.audit-token }} |
+          MD

@@ -1,0 +1,77 @@
+name: 'Mobile Android — PR'
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      java-version:
+        type: string
+        required: false
+        default: '17'
+      run-lint:
+        type: boolean
+        required: false
+        default: true
+      run-unit-tests:
+        type: boolean
+        required: false
+        default: true
+
+jobs:
+  pr-validate:
+    uses: cvch29/platform-workflows/.github/workflows/shared-pr-validation.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+      runtime: android
+
+  build-test:
+    name: Build & Test
+    needs: pr-validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - uses: cvch29/platform-actions/.github/actions/tooling/java/setup-jdk@v1
+        with:
+          java-version: ${{ inputs.java-version }}
+      - uses: cvch29/platform-actions/.github/actions/shared/cache@v1
+        with:
+          runtime: gradle
+      - name: Android Lint
+        if: inputs.run-lint
+        shell: bash
+        run: ./gradlew lint
+      - uses: actions/upload-artifact@v4
+        if: inputs.run-lint && always()
+        with:
+          name: lint-results-${{ github.run_id }}
+          path: '**/build/reports/lint-results*.html'
+          retention-days: 7
+      - name: Unit tests
+        if: inputs.run-unit-tests
+        uses: cvch29/platform-actions/.github/actions/tooling/java/gradle-test@v1
+        with:
+          tasks: testDebugUnitTest
+      - name: Debug build smoke
+        uses: cvch29/platform-actions/.github/actions/mobile/android/build@v1
+        with:
+          build-type: debug
+          output-type: apk
+
+  security:
+    needs: pr-validate
+    uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+      language: java
+      run-codeql: true
+      run-sca: true
+      run-secrets: true
+      run-sast: false
+    permissions:
+      contents: read
+      security-events: write

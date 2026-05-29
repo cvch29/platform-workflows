@@ -1,0 +1,55 @@
+name: 'Mobile KMP — Build'
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      targets:
+        type: string
+        required: false
+        default: 'android,ios'
+      java-version:
+        type: string
+        required: false
+        default: '17'
+      build-type:
+        type: string
+        required: false
+        default: 'release'
+    outputs:
+      android-aar:
+        value: ${{ jobs.build.outputs.android-aar }}
+      ios-framework:
+        value: ${{ jobs.build.outputs.ios-framework }}
+
+jobs:
+  build:
+    name: KMP Build
+    runs-on: ${{ contains(inputs.targets, 'ios') && 'macos-latest' || 'ubuntu-latest' }}
+    outputs:
+      android-aar: ${{ steps.build.outputs.android-aar }}
+      ios-framework: ${{ steps.build.outputs.ios-framework }}
+    steps:
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - uses: cvch29/platform-actions/.github/actions/tooling/kmp/setup@v1
+        with:
+          java-version: ${{ inputs.java-version }}
+          targets: ${{ inputs.targets }}
+      - id: build
+        uses: cvch29/platform-actions/.github/actions/tooling/kmp/build@v1
+        with:
+          targets: ${{ inputs.targets }}
+          build-type: ${{ inputs.build-type }}
+      - uses: cvch29/platform-actions/.github/actions/governance/sbom@v1
+        with:
+          artifact-path: .
+          upload-artifact: true
+      - uses: cvch29/platform-actions/.github/actions/shared/artifact-upload@v1
+        with:
+          name: kmp-build-${{ inputs.app-name }}
+          path: |
+            **/build/outputs/**/*.aar
+            **/*.xcframework
+          retention-days: 30

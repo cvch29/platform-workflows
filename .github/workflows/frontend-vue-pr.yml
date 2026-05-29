@@ -1,0 +1,25 @@
+name: 'Frontend Vue — PR'
+# Vue follows same pattern as React, delegating with vue-specific defaults
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      node-version:
+        type: string
+        required: false
+        default: '20'
+      package-manager:
+        type: string
+        required: false
+        default: 'npm'
+
+jobs:
+  pr:
+    uses: cvch29/platform-workflows/.github/workflows/frontend-react-pr.yml@v1
+    with:
+      app-name: ${{ inputs.app-name }}
+      node-version: ${{ inputs.node-version }}
+      package-manager: ${{ inputs.package-manager }}

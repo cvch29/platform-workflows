@@ -1,0 +1,91 @@
+name: 'Shared — PR Validation'
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      runtime:
+        type: string
+        required: false
+        default: ''
+      require-conventional-commits:
+        type: boolean
+        required: false
+        default: true
+      skip-dependency-review:
+        type: boolean
+        required: false
+        default: false
+    secrets:
+      github-token:
+        required: false
+
+jobs:
+  validate:
+    name: PR Validation
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+        with:
+          fetch-depth: 0
+
+      - name: Detect runtime
+        id: runtime
+        if: inputs.runtime == ''
+        uses: cvch29/platform-actions/.github/actions/intelligence/detect-runtime@v1
+
+      - name: Validate PR title (conventional commits)
+        if: inputs.require-conventional-commits
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.github-token || github.token }}
+        with:
+          types: |
+            feat
+            fix
+            perf
+            refactor
+            style
+            test
+            docs
+            build
+            ci
+            chore
+            revert
+            security
+          requireScope: false
+
+      - name: Check branch naming convention
+        shell: bash
+        run: |
+          BRANCH="${{ github.head_ref }}"
+          if ! echo "$BRANCH" | grep -qE '^(feature|fix|hotfix|release|chore|refactor|docs)/[a-z0-9-]+'; then
+            echo "::warning::Branch '$BRANCH' does not follow bank convention: (feature|fix|hotfix|release|chore)/description"
+          fi
+
+      - name: Dependency review
+        if: '!inputs.skip-dependency-review'
+        uses: cvch29/platform-actions/.github/actions/security/dependency-review@v1
+        with:
+          fail-on-severity: high
+          deny-licenses: 'GPL-2.0, GPL-3.0, AGPL-3.0'
+
+      - name: Add PR labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runtime = '${{ steps.runtime.outputs.runtime || inputs.runtime }}';
+            const labels = ['needs-review'];
+            if (runtime) labels.push(`runtime:${runtime}`);
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels
+            });

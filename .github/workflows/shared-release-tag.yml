@@ -1,0 +1,70 @@
+name: 'Shared — Release Tag'
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      version-strategy:
+        description: 'semver | calver'
+        type: string
+        required: false
+        default: 'semver'
+      create-github-release:
+        type: boolean
+        required: false
+        default: true
+    outputs:
+      version:
+        value: ${{ jobs.tag.outputs.version }}
+      version-bare:
+        value: ${{ jobs.tag.outputs.version-bare }}
+    secrets:
+      github-token:
+        required: true
+
+jobs:
+  tag:
+    name: Tag Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      version-bare: ${{ steps.version.outputs.version-bare }}
+
+    steps:
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+        with:
+          fetch-depth: 0
+
+      - name: Calculate version
+        id: version
+        uses: cvch29/platform-actions/.github/actions/intelligence/versioning@v1
+        with:
+          strategy: ${{ inputs.version-strategy }}
+
+      - name: Create Git tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.github-token }}
+        shell: bash
+        run: |
+          git config user.name "platform-bot"
+          git config user.email "platform-bot@mybank.com"
+          git tag -a "${{ steps.version.outputs.version }}" \
+            -m "Release ${{ steps.version.outputs.version }} — ${{ inputs.app-name }}"
+          git push origin "${{ steps.version.outputs.version }}"
+
+      - name: Create GitHub Release
+        if: inputs.create-github-release && steps.version.outputs.is-release == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: "${{ inputs.app-name }} ${{ steps.version.outputs.version }}"
+          body: |
+            ## Changes
+            ${{ steps.version.outputs.changelog }}
+
+            **CI Run:** [#${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          prerelease: ${{ steps.version.outputs.is-release != 'true' }}
