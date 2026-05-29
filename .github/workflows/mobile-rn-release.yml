@@ -78,7 +78,7 @@ jobs:
           build-gradle-path: ${{ inputs.gradle-build-path }}
 
   build_android:
-    if: ${{ inputs.enable-android == 'true' }}
+    if: success() && (inputs.enable-android == true)
     needs: setup
     name: Build Android
     uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@main
@@ -96,7 +96,7 @@ jobs:
       keystore-alias: ${{ secrets.keystore-alias }}
 
   build_ios:
-    if: ${{ inputs.enable-ios == 'true' }}
+    if: success() && (inputs.enable-ios == true)
     needs: setup
     name: Build iOS
     uses: cvch29/platform-workflows/.github/workflows/mobile-ios-build.yml@main
