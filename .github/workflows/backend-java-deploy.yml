@@ -49,7 +49,7 @@ jobs:
       audit-token: ${{ steps.policy.outputs.audit-token }}
       gate-level: ${{ steps.policy.outputs.gate-level }}
     steps:
-      - uses: cvch29/platform-actions/.github/actions/intelligence/policy-engine@v1
+      - uses: cvch29/platform-actions/.github/actions/intelligence/policy-engine@main
         id: policy
         with:
           environment: ${{ inputs.environment }}
@@ -69,8 +69,8 @@ jobs:
     outputs:
       deployment-url: ${{ steps.deploy.outputs.deployment-url }}
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
-      - uses: cvch29/platform-actions/.github/actions/shared/setup-env@v1
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
+      - uses: cvch29/platform-actions/.github/actions/shared/setup-env@main
         with:
           environment: ${{ inputs.environment }}
           app-name: ${{ inputs.app-name }}
@@ -79,7 +79,7 @@ jobs:
           azure-subscription-id: ${{ secrets.azure-subscription-id }}
       - name: Deploy to AKS
         id: deploy
-        uses: cvch29/platform-actions/.github/actions/backend/java/deploy@v1
+        uses: cvch29/platform-actions/.github/actions/backend/java/deploy@main
         with:
           app-name: ${{ inputs.app-name }}
           environment: ${{ inputs.environment }}
@@ -91,7 +91,7 @@ jobs:
           namespace: ${{ inputs.namespace }}
       - name: Audit log
         if: always()
-        uses: cvch29/platform-actions/.github/actions/governance/audit-log@v1
+        uses: cvch29/platform-actions/.github/actions/governance/audit-log@main
         with:
           event-type: deploy
           environment: ${{ inputs.environment }}
@@ -101,7 +101,7 @@ jobs:
           metadata: '{"imageTag":"${{ inputs.image-tag }}","cluster":"${{ inputs.aks-cluster-name }}"}'
       - name: DORA metric
         if: always()
-        uses: cvch29/platform-actions/.github/actions/governance/dora-metrics@v1
+        uses: cvch29/platform-actions/.github/actions/governance/dora-metrics@main
         with:
           metric-type: deployment-frequency
           environment: ${{ inputs.environment }}
@@ -113,7 +113,7 @@ jobs:
     name: Post-deploy Security (prod only)
     needs: deploy
     if: inputs.environment == 'prod'
-    uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@v1
+    uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@main
     with:
       app-name: ${{ inputs.app-name }}
       language: java

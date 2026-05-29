@@ -13,7 +13,7 @@ on:
 
 jobs:
   security:
-    uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@v1
+    uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@main
     with:
       app-name: ${{ inputs.app-name }}
       language: java

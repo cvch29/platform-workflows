@@ -35,13 +35,13 @@ jobs:
       version-bare: ${{ steps.version.outputs.version-bare }}
 
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
         with:
           fetch-depth: 0
 
       - name: Calculate version
         id: version
-        uses: cvch29/platform-actions/.github/actions/intelligence/versioning@v1
+        uses: cvch29/platform-actions/.github/actions/intelligence/versioning@main
         with:
           strategy: ${{ inputs.version-strategy }}
 

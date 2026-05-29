@@ -21,7 +21,7 @@ on:
 
 jobs:
   pr:
-    uses: cvch29/platform-workflows/.github/workflows/backend-java-pr.yml@v1
+    uses: cvch29/platform-workflows/.github/workflows/backend-java-pr.yml@main
     with:
       app-name: ${{ inputs.app-name }}
       java-version: ${{ inputs.java-version }}

@@ -33,7 +33,7 @@ on:
 
 jobs:
   build:
-    uses: cvch29/platform-workflows/.github/workflows/mobile-ios-build.yml@v1
+    uses: cvch29/platform-workflows/.github/workflows/mobile-ios-build.yml@main
     with:
       app-name: ${{ inputs.app-name }}
       scheme: ${{ inputs.scheme }}
@@ -46,7 +46,7 @@ jobs:
 
   quality-gate:
     needs: build
-    uses: cvch29/platform-workflows/.github/workflows/shared-quality-gates.yml@v1
+    uses: cvch29/platform-workflows/.github/workflows/shared-quality-gates.yml@main
     with:
       app-name: ${{ inputs.app-name }}
       environment: prod
@@ -63,12 +63,12 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
         with:
           fetch-depth: 0
       - id: version
-        uses: cvch29/platform-actions/.github/actions/intelligence/versioning@v1
-      - uses: cvch29/platform-actions/.github/actions/shared/artifact-download@v1
+        uses: cvch29/platform-actions/.github/actions/intelligence/versioning@main
+      - uses: cvch29/platform-actions/.github/actions/shared/artifact-download@main
         with:
           name: ios-ipa-${{ inputs.app-name }}
       - name: Upload to TestFlight
@@ -80,7 +80,7 @@ jobs:
             --apiKey "${{ secrets.app-store-connect-api-key }}" \
             --apiIssuer "${{ vars.APP_STORE_ISSUER_ID }}"
       - if: always()
-        uses: cvch29/platform-actions/.github/actions/governance/audit-log@v1
+        uses: cvch29/platform-actions/.github/actions/governance/audit-log@main
         with:
           event-type: release
           environment: prod

@@ -40,9 +40,9 @@ jobs:
       sbom-path: ${{ steps.sbom.outputs.sbom-path }}
       component-count: ${{ steps.sbom.outputs.component-count }}
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
       - id: sbom
-        uses: cvch29/platform-actions/.github/actions/governance/sbom@v1
+        uses: cvch29/platform-actions/.github/actions/governance/sbom@main
         with:
           artifact-path: ${{ inputs.artifact-path }}
           image: ${{ inputs.image }}
@@ -50,15 +50,15 @@ jobs:
           upload-artifact: true
       - name: Attest build provenance
         if: inputs.generate-provenance
-        uses: actions/attest-build-provenance@v1
+        uses: actions/attest-build-provenance@main
         with:
           subject-path: ${{ inputs.artifact-path }}
       - if: inputs.generate-provenance
-        uses: cvch29/platform-actions/.github/actions/governance/provenance@v1
+        uses: cvch29/platform-actions/.github/actions/governance/provenance@main
         with:
           artifact-path: ${{ inputs.artifact-path }}
           artifact-name: ${{ inputs.app-name }}
-      - uses: cvch29/platform-actions/.github/actions/governance/audit-log@v1
+      - uses: cvch29/platform-actions/.github/actions/governance/audit-log@main
         with:
           event-type: build
           environment: dev

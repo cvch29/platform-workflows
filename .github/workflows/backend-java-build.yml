@@ -47,10 +47,10 @@ jobs:
       image-ref: ${{ steps.push.outputs.image-ref }}
       version: ${{ steps.version.outputs.version }}
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
         with:
           fetch-depth: 0
-      - uses: cvch29/platform-actions/.github/actions/shared/setup-env@v1
+      - uses: cvch29/platform-actions/.github/actions/shared/setup-env@main
         with:
           environment: dev
           app-name: ${{ inputs.app-name }}
@@ -59,22 +59,22 @@ jobs:
           azure-subscription-id: ${{ secrets.azure-subscription-id }}
       - name: Calculate version
         id: version
-        uses: cvch29/platform-actions/.github/actions/intelligence/versioning@v1
-      - uses: cvch29/platform-actions/.github/actions/tooling-v2/java/setup-jdk@v1
+        uses: cvch29/platform-actions/.github/actions/intelligence/versioning@main
+      - uses: cvch29/platform-actions/.github/actions/tooling-v2/java/setup-jdk@main
         with:
           java-version: ${{ inputs.java-version }}
-      - uses: cvch29/platform-actions/.github/actions/tooling-v2/java/gradle-build@v1
+      - uses: cvch29/platform-actions/.github/actions/tooling-v2/java/gradle-build@main
         with:
           tasks: build -x test
           azure-artifacts-token: ${{ secrets.azure-artifacts-token }}
-      - uses: cvch29/platform-actions/.github/actions/governance/sbom@v1
+      - uses: cvch29/platform-actions/.github/actions/governance/sbom@main
         with:
           artifact-path: .
           upload-artifact: true
       - name: Build & push Docker image
         id: push
         if: inputs.push-image
-        uses: cvch29/platform-actions/.github/actions/backend/java/deploy@v1
+        uses: cvch29/platform-actions/.github/actions/backend/java/deploy@main
         with:
           app-name: ${{ inputs.app-name }}
           environment: dev

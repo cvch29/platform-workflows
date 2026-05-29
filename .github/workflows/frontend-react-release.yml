@@ -37,7 +37,7 @@ on:
 
 jobs:
   security:
-    uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@v1
+    uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@main
     with:
       app-name: ${{ inputs.app-name }}
       language: javascript
@@ -51,7 +51,7 @@ jobs:
 
   build:
     needs: security
-    uses: cvch29/platform-workflows/.github/workflows/frontend-react-build.yml@v1
+    uses: cvch29/platform-workflows/.github/workflows/frontend-react-build.yml@main
     with:
       app-name: ${{ inputs.app-name }}
       environment: prod
@@ -59,7 +59,7 @@ jobs:
 
   quality-gate:
     needs: build
-    uses: cvch29/platform-workflows/.github/workflows/shared-quality-gates.yml@v1
+    uses: cvch29/platform-workflows/.github/workflows/shared-quality-gates.yml@main
     with:
       app-name: ${{ inputs.app-name }}
       environment: prod
@@ -69,7 +69,7 @@ jobs:
 
   tag:
     needs: quality-gate
-    uses: cvch29/platform-workflows/.github/workflows/shared-release-tag.yml@v1
+    uses: cvch29/platform-workflows/.github/workflows/shared-release-tag.yml@main
     with:
       app-name: ${{ inputs.app-name }}
     secrets:

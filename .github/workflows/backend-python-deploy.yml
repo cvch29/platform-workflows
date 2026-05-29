@@ -32,7 +32,7 @@ on:
 jobs:
   deploy:
     # Python deploys reuse the node deploy workflow (same Docker/Helm path)
-    uses: cvch29/platform-workflows/.github/workflows/backend-node-deploy.yml@v1
+    uses: cvch29/platform-workflows/.github/workflows/backend-node-deploy.yml@main
     with:
       app-name: ${{ inputs.app-name }}
       environment: ${{ inputs.environment }}

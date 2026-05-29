@@ -32,25 +32,25 @@ jobs:
       build-path: ${{ steps.build.outputs.build-path }}
       version: ${{ steps.version.outputs.version }}
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
         with:
           fetch-depth: 0
-      - uses: cvch29/platform-actions/.github/actions/tooling-v2/node/install@v1
+      - uses: cvch29/platform-actions/.github/actions/tooling-v2/node/install@main
         with:
           node-version: ${{ inputs.node-version }}
           package-manager: ${{ inputs.package-manager }}
       - id: version
-        uses: cvch29/platform-actions/.github/actions/intelligence/versioning@v1
+        uses: cvch29/platform-actions/.github/actions/intelligence/versioning@main
       - id: build
-        uses: cvch29/platform-actions/.github/actions/tooling-v2/node/build@v1
+        uses: cvch29/platform-actions/.github/actions/tooling-v2/node/build@main
         with:
           package-manager: ${{ inputs.package-manager }}
           environment: ${{ inputs.environment }}
-      - uses: cvch29/platform-actions/.github/actions/governance/sbom@v1
+      - uses: cvch29/platform-actions/.github/actions/governance/sbom@main
         with:
           artifact-path: .
           upload-artifact: true
-      - uses: cvch29/platform-actions/.github/actions/shared/artifact-upload@v1
+      - uses: cvch29/platform-actions/.github/actions/shared/artifact-upload@main
         with:
           name: frontend-build-${{ inputs.app-name }}
           path: ${{ steps.build.outputs.build-path }}

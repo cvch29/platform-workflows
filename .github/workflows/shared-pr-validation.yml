@@ -31,14 +31,14 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
         with:
           fetch-depth: 0
 
       - name: Detect runtime
         id: runtime
         if: inputs.runtime == ''
-        uses: cvch29/platform-actions/.github/actions/intelligence/detect-runtime@v1
+        uses: cvch29/platform-actions/.github/actions/intelligence/detect-runtime@main
 
       - name: Validate PR title (conventional commits)
         if: inputs.require-conventional-commits
@@ -71,7 +71,7 @@ jobs:
 
       - name: Dependency review
         if: '!inputs.skip-dependency-review'
-        uses: cvch29/platform-actions/.github/actions/security/dependency-review@v1
+        uses: cvch29/platform-actions/.github/actions/security/dependency-review@main
         with:
           fail-on-severity: high
           deny-licenses: 'GPL-2.0, GPL-3.0, AGPL-3.0'

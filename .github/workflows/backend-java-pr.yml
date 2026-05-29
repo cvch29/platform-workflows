@@ -25,7 +25,7 @@ on:
 jobs:
   pr-validate:
     name: PR Validation
-    uses: cvch29/platform-workflows/.github/workflows/shared-pr-validation.yml@v1
+    uses: cvch29/platform-workflows/.github/workflows/shared-pr-validation.yml@main
     with:
       app-name: ${{ inputs.app-name }}
       runtime: java
@@ -39,17 +39,17 @@ jobs:
       checks: write
       pull-requests: write
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
         with:
           fetch-depth: 0
-      - uses: cvch29/platform-actions/.github/actions/tooling-v2/java/setup-jdk@v1
+      - uses: cvch29/platform-actions/.github/actions/tooling-v2/java/setup-jdk@main
         with:
           java-version: ${{ inputs.java-version }}
-      - uses: cvch29/platform-actions/.github/actions/tooling-v2/java/gradle-test@v1
+      - uses: cvch29/platform-actions/.github/actions/tooling-v2/java/gradle-test@main
         with:
           tasks: test jacocoTestReport jacocoTestCoverageVerification
           coverage-threshold: ${{ inputs.coverage-threshold }}
-      - uses: cvch29/platform-actions/.github/actions/tooling-v2/java/gradle-build@v1
+      - uses: cvch29/platform-actions/.github/actions/tooling-v2/java/gradle-build@main
         with:
           azure-artifacts-feed: ${{ inputs.azure-artifacts-feed }}
           azure-artifacts-token: ${{ secrets.azure-artifacts-token }}
@@ -57,7 +57,7 @@ jobs:
   security:
     name: Security Scan
     needs: pr-validate
-    uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@v1
+    uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@main
     with:
       app-name: ${{ inputs.app-name }}
       language: java
@@ -72,7 +72,7 @@ jobs:
   quality-gate:
     name: Quality Gate
     needs: [build-test, security]
-    uses: cvch29/platform-workflows/.github/workflows/shared-quality-gates.yml@v1
+    uses: cvch29/platform-workflows/.github/workflows/shared-quality-gates.yml@main
     with:
       app-name: ${{ inputs.app-name }}
       environment: dev

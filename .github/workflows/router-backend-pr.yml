@@ -23,16 +23,16 @@ jobs:
     outputs:
       runtime: ${{ steps.detect.outputs.runtime || inputs.runtime }}
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
       - name: Auto-detect
         if: inputs.runtime == ''
         id: detect
-        uses: cvch29/platform-actions/.github/actions/intelligence/detect-runtime@v1
+        uses: cvch29/platform-actions/.github/actions/intelligence/detect-runtime@main
 
   java-pr:
     needs: detect
     if: contains(fromJSON('["java","kotlin"]'), needs.detect.outputs.runtime)
-    uses: cvch29/platform-workflows/.github/workflows/backend-java-pr.yml@v1
+    uses: cvch29/platform-workflows/.github/workflows/backend-java-pr.yml@main
     with:
       app-name: ${{ inputs.app-name }}
     secrets:
@@ -41,7 +41,7 @@ jobs:
   spring-pr:
     needs: detect
     if: needs.detect.outputs.runtime == 'spring-boot'
-    uses: cvch29/platform-workflows/.github/workflows/backend-spring-pr.yml@v1
+    uses: cvch29/platform-workflows/.github/workflows/backend-spring-pr.yml@main
     with:
       app-name: ${{ inputs.app-name }}
     secrets:
@@ -50,13 +50,13 @@ jobs:
   node-pr:
     needs: detect
     if: needs.detect.outputs.runtime == 'node'
-    uses: cvch29/platform-workflows/.github/workflows/backend-node-pr.yml@v1
+    uses: cvch29/platform-workflows/.github/workflows/backend-node-pr.yml@main
     with:
       app-name: ${{ inputs.app-name }}
 
   python-pr:
     needs: detect
     if: needs.detect.outputs.runtime == 'python'
-    uses: cvch29/platform-workflows/.github/workflows/backend-python-pr.yml@v1
+    uses: cvch29/platform-workflows/.github/workflows/backend-python-pr.yml@main
     with:
       app-name: ${{ inputs.app-name }}

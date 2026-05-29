@@ -18,7 +18,7 @@ on:
 
 jobs:
   pr:
-    uses: cvch29/platform-workflows/.github/workflows/frontend-react-pr.yml@v1
+    uses: cvch29/platform-workflows/.github/workflows/frontend-react-pr.yml@main
     with:
       app-name: ${{ inputs.app-name }}
       node-version: ${{ inputs.node-version }}

@@ -25,26 +25,26 @@ on:
 jobs:
   android-pr:
     if: inputs.mobile-platform == 'android'
-    uses: cvch29/platform-workflows/.github/workflows/mobile-android-pr.yml@v1
+    uses: cvch29/platform-workflows/.github/workflows/mobile-android-pr.yml@main
     with:
       app-name: ${{ inputs.app-name }}
 
   ios-pr:
     if: inputs.mobile-platform == 'ios'
-    uses: cvch29/platform-workflows/.github/workflows/mobile-ios-pr.yml@v1
+    uses: cvch29/platform-workflows/.github/workflows/mobile-ios-pr.yml@main
     with:
       app-name: ${{ inputs.app-name }}
       scheme: ${{ inputs.scheme }}
 
   rn-pr:
     if: inputs.mobile-platform == 'react-native'
-    uses: cvch29/platform-workflows/.github/workflows/mobile-rn-pr.yml@v1
+    uses: cvch29/platform-workflows/.github/workflows/mobile-rn-pr.yml@main
     with:
       app-name: ${{ inputs.app-name }}
 
   kmp-pr:
     if: inputs.mobile-platform == 'kmp'
-    uses: cvch29/platform-workflows/.github/workflows/mobile-kmp-pr.yml@v1
+    uses: cvch29/platform-workflows/.github/workflows/mobile-kmp-pr.yml@main
     with:
       app-name: ${{ inputs.app-name }}
       targets: ${{ inputs.targets }}
