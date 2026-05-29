@@ -103,9 +103,6 @@ jobs:
         with:
           keystore-base64: ${{ secrets.keystore_base64 }}
           keystore-path: ${{ inputs.keystore_path }}
-          store-password: ${{ secrets.keystore_password }}
-          key-alias: ${{ secrets.key_alias }}
-          key-password: ${{ secrets.key_password }}
 
       - name: Android build
         uses: cvch29/platform-actions/.github/actions/domains/mobile/android/build@main
@@ -115,15 +112,11 @@ jobs:
           key_alias: ${{ inputs.key_alias }}
           key_password: ${{ secrets.key_password }}
 
-      # - uses: cvch29/platform-actions/.github/actions/governance/sbom@main
-      #   with:
-      #     artifact-path: .
-      #     upload-artifact: true
-      # - uses: cvch29/platform-actions/.github/actions/shared-v2/artifact-upload@main
-      #   with:
-      #     name: android-build-${{ inputs.app-name }}
-      #     path: "android-app/build/outputs/apk/${{ inputs.flavor }}/${{ inputs.build-type }}/*.apk"
-      #     retention-days: 30
+      - uses: cvch29/platform-actions/.github/actions/governance/sbom@main
+        with:
+          artifact-path: .
+          upload-artifact: true
+
       - name: Artifact Management
         uses: cvch29/platform-actions/.github/actions/shared/artifact-manage@main
         with:
