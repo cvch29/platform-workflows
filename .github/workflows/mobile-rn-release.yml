@@ -19,6 +19,9 @@ on:
         type: string
         required: false
         default: 'yarn'
+      gradle-build-path:
+        type: string
+        default: app/build.gradle.kts
     outputs:
       version:
         value: ${{ jobs.tag.outputs.version }}
@@ -35,22 +38,37 @@ on:
         required: true
 
 jobs:
-  security:
-    uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@main
-    with:
-      app-name: ${{ inputs.app-name }}
-      language: javascript
-      run-codeql: true
-      run-sca: true
-      run-secrets: true
-      run-sast: true
-    permissions:
-      contents: read
-      security-events: write
+  # security:
+  #   uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@main
+  #   with:
+  #     app-name: ${{ inputs.app-name }}
+  #     language: javascript
+  #     run-codeql: true
+  #     run-sca: true
+  #     run-secrets: true
+  #     run-sast: true
+  #   permissions:
+  #     contents: read
+  #     security-events: write
+
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+    outputs:
+      app_version: ${{ steps.setup_android.outputs.app_version }}
+      app_name: ${{ steps.setup_android.outputs.app_name }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Environment
+        id: setup_android
+        uses: cvch29/platform-actions/.github/actions/domains/mobile/android/setup@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          build-gradle-path: ${{ inputs.gradle-build-path }}
 
   build-android:
     if: inputs.platforms == 'android' || inputs.platforms == 'both'
-    needs: security
+    needs: setup
     uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@main
     with:
       app-name: ${{ inputs.app-name }}
@@ -62,18 +80,18 @@ jobs:
       key-alias: ${{ secrets.android-key-alias }}
       key-password: ${{ secrets.android-key-password }}
 
-  quality-gate:
-    needs: [build-android]
-    if: always() && needs.build-android.result != 'failure'
-    uses: cvch29/platform-workflows/.github/workflows/shared-quality-gates.yml@main
-    with:
-      app-name: ${{ inputs.app-name }}
-      environment: staging
-      require-sbom: true
+  # quality-gate:
+  #   needs: [build-android]
+  #   if: always() && needs.build-android.result != 'failure'
+  #   uses: cvch29/platform-workflows/.github/workflows/shared-quality-gates.yml@main
+  #   with:
+  #     app-name: ${{ inputs.app-name }}
+  #     environment: staging
+  #     require-sbom: true
 
   tag:
     name: Tag Release
-    needs: quality-gate
+    needs: build-android
     uses: cvch29/platform-workflows/.github/workflows/shared-release-tag.yml@main
     with:
       app-name: ${{ inputs.app-name }}

@@ -134,7 +134,7 @@ jobs:
             $GRADLE_USER_HOME/wrapper/dists
 
       - name: Install Dependencies
-        uses: cvch29/platform-actions/.github/actions/tooling/node@main
+        uses: cvch29/platform-actions/.github/actions/tooling-v2/node@main
         with:
           working-directory: .
 
