@@ -6,6 +6,9 @@ on:
       app-name:
         type: string
         required: true
+      app-version:
+        type: string
+        required: true
       build-type:
         type: string
         required: false
@@ -22,13 +25,18 @@ on:
         type: boolean
         required: false
         default: true
-    outputs:
-      artifact-path:
-        value: ${{ jobs.build.outputs.artifact-path }}
-      version-name:
-        value: ${{ jobs.build.outputs.version-name }}
-      version-code:
-        value: ${{ jobs.build.outputs.version-code }}
+      keystore_path:
+        type: string
+        default: android-keystore.jks
+      key_alias:
+        type: string
+        default: "keyAlias"
+      app_version:
+        required: true
+        type: string
+      app_name:
+        required: true
+        type: string
     secrets:
       keystore-base64:
         required: false
@@ -41,37 +49,58 @@ on:
 
 jobs:
   build:
-    name: Android Build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    outputs:
-      artifact-path: ${{ steps.sign.outputs.signed-path || steps.build.outputs.artifact-path }}
-      version-name: ${{ steps.build.outputs.version-name }}
-      version-code: ${{ steps.build.outputs.version-code }}
+    name: Build
+    runs-on:
+      group: dso-linux
+    env:
+      GRADLE_USER_HOME: /tmp/gradle-${{ github.run_id }}-${{ github.run_attempt }}
+      METRO_CACHE: /tmp/metro-cache
+      NODE_OPTIONS: --max-old-space-size=8192
+    container:
+      image: localhost:5000/android:35-gradle7.3-jdk17
+      options: --cpus 8 -m 16g
+      volumes:
+        - /opt/cache/yarn:/opt/yarn
+        - /opt/cache/gradle/modules-2:/opt/gradle-shared/modules-2
+        - /opt/cache/gradle/transforms-3:/opt/gradle-shared/transforms-3
+        - /opt/cache/gradle/build-cache-1:/opt/gradle-shared/build-cache-1
+        - /opt/cache/gradle/wrapper:/opt/gradle-shared/wrapper
+        - /opt/cache/metro:/tmp/metro-cache
+        - /opt/cache/cxx:/workspace/android/.cxx
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@main
-      - uses: cvch29/platform-actions/.github/actions/tooling-v2/java/setup-jdk@main
+      - uses: actions/checkout@v4
+
+      - name: Restore shared gradle cache
+        run: |
+          mkdir -p $GRADLE_USER_HOME/caches
+          mkdir -p $GRADLE_USER_HOME/wrapper
+
+          ln -snf /opt/gradle-shared/modules-2 \
+            $GRADLE_USER_HOME/caches/modules-2
+
+          ln -snf /opt/gradle-shared/transforms-3 \
+            $GRADLE_USER_HOME/caches/transforms-3
+
+          ln -snf /opt/gradle-shared/build-cache-1 \
+            $GRADLE_USER_HOME/caches/build-cache-1
+
+          ln -snf /opt/gradle-shared/wrapper \
+            $GRADLE_USER_HOME/wrapper/dists
+
+      - name: Install Dependencies
+        uses: cvch29/platform-actions/.github/actions/tooling/node@main
         with:
-          java-version: ${{ inputs.java-version }}
-      # - uses: cvch29/platform-actions/.github/actions/shared-v2/cache@main
-      #   with:
-      #     runtime: gradle
-      # - id: build
-      #   uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/android/build@main
-      #   with:
-      #     build-type: ${{ inputs.build-type }}
-      #     flavor: ${{ inputs.flavor }}
-      #     output-type: aab
-      # - id: sign
-      #   if: inputs.sign && inputs.build-type == 'release'
-      #   uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/android/sign@main
-      #   with:
-      #     artifact-path: ${{ steps.build.outputs.artifact-path }}
-      #     keystore-base64: ${{ secrets.keystore-base64 }}
-      #     keystore-password: ${{ secrets.keystore-password }}
-      #     key-alias: ${{ secrets.key-alias }}
-      #     key-password: ${{ secrets.key-password }}
+          working-directory: .
+
+      - name: Android build
+        uses: cvch29/platform-actions/.github/actions/domains/mobile/android/build@main
+        with:
+          # keystore_path: ${{ inputs.keystore_path }}
+          command: ${{ inputs.flavor }}${{ inputs.build-type }}
+          store_password: ${{ secrets.keystore_password }}
+          key_alias: ${{ inputs.key_alias }}
+          key_password: ${{ secrets.key_password }}
+          # keystore_base64: ${{ secrets.android_keystore_base64 }}
       # - uses: cvch29/platform-actions/.github/actions/governance/sbom@main
       #   with:
       #     artifact-path: .
@@ -79,5 +108,25 @@ jobs:
       # - uses: cvch29/platform-actions/.github/actions/shared-v2/artifact-upload@main
       #   with:
       #     name: android-build-${{ inputs.app-name }}
-      #     path: ${{ steps.sign.outputs.signed-path || steps.build.outputs.artifact-path }}
+      #     path: "android-app/build/outputs/apk/${{ inputs.flavor }}/${{ inputs.build-type }}/*.apk"
       #     retention-days: 30
+      - name: Artifact Management
+        uses: cvch29/platform-actions/.github/actions/shared/artifact-manage@main
+        with:
+          app_name: ${{ inputs.app-name }}
+          app_version: ${{ inputs.app-version }}
+          path: android/app/build
+          pattern: |
+            outputs/apk/release/*.apk
+            outputs/bundle/release/*.aab
+            outputs/remote-config/config.json
+            reports/profile/*.html
+          name: android-release-files
+          retention-days: 1
+          if-no-files-found: warn
+          compression-level: 6
+          upload_path: |
+            android/app/build/outputs/apk/release/*.apk
+            android/app/build/outputs/bundle/release/*.aab
+            android/remote-config/*.json
+            android/build/reports/profile/*.html
