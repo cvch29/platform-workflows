@@ -3,10 +3,10 @@ name: 'Mobile Android — Build'
 on:
   workflow_call:
     inputs:
-      platform:
+      technology:
         description: 'react-native | native'
         type: string
-        required: false
+        required: true
         default: 'native'
       app-name:
         type: string
@@ -96,7 +96,7 @@ jobs:
       #       $GRADLE_USER_HOME/wrapper/dists
 
       - name: Install Dependencies
-        if: ${{ inputs.platform == 'react-native' }}
+        if: ${{ inputs.technology == 'react-native' }}
         uses: cvch29/platform-actions/.github/actions/tooling/node@main
         with:
           working-directory: .

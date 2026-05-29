@@ -3,14 +3,10 @@ name: 'Mobile React Native — Release'
 on:
   workflow_call:
     inputs:
-      app-name:
+      technology:
+        description: 'react-native | native'
         type: string
         required: true
-      platforms:
-        description: 'android | ios | both'
-        type: string
-        required: false
-        default: 'android'
       android-channel:
         type: string
         required: false
@@ -22,20 +18,9 @@ on:
       gradle-build-path:
         type: string
         default: app/build.gradle.kts
-      build-android:
-        type: boolean
-        required: false
-        default: true
-      build-ios:
-        type: boolean
-        required: false
-        default: false
       environment:
         type: string
         default: dev
-      technology:
-        type: string
-        default: react-native
       keystore_path:
         type: string
         default: android-keystore.jks
@@ -93,6 +78,7 @@ jobs:
       app-version: ${{ needs.setup.outputs.app-version }}
       build-type: release
       flavor: ${{ inputs.flavor }}
+      technology: ${{ inputs.technology }}
       sign: true
     secrets:
       keystore-base64: ${{ secrets.keystore-base64 }}
@@ -107,13 +93,13 @@ jobs:
     uses: cvch29/platform-workflows/.github/workflows/mobile-ios-build.yml@main
     with:
       app-name: ${{ needs.setup.outputs.app-name }}
-      scheme: ${{ inputs.app-name }}
+      scheme: ${{ needs.setup.outputs.app-name }}
       bundle-id: com.yourcompany.${{ needs.setup.outputs.app-name }}
     secrets:
       p12-base64: ${{ secrets.p12-base64 }}
       p12-password: ${{ secrets.p12-password }}
       provisioning-profile-base64: ${{ secrets.provisioning-profile-base64 }}
-      
+
   # quality-gate:
   #   needs: [build-android]
   #   if: always() && needs.build-android.result != 'failure'
