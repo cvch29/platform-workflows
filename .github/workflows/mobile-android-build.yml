@@ -50,7 +50,7 @@ jobs:
       version-name: ${{ steps.build.outputs.version-name }}
       version-code: ${{ steps.build.outputs.version-code }}
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@v1
       - uses: cvch29/platform-actions/.github/actions/tooling/java/setup-jdk@v1
         with:
           java-version: ${{ inputs.java-version }}
@@ -76,7 +76,7 @@ jobs:
         with:
           artifact-path: .
           upload-artifact: true
-      - uses: cvch29/platform-actions/.github/actions/shared/artifact-upload@v1
+      - uses: cvch29/platform-actions/.github/actions/shared-v2/artifact-upload@v1
         with:
           name: android-build-${{ inputs.app-name }}
           path: ${{ steps.sign.outputs.signed-path || steps.build.outputs.artifact-path }}
