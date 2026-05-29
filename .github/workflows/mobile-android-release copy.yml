@@ -83,7 +83,7 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@v1
         with:
           fetch-depth: 0
       - uses: cvch29/platform-actions/.github/actions/shared-v2/artifact-download@v1
