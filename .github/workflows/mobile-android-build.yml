@@ -45,6 +45,10 @@ on:
       key-password:
         type: string
         required: false
+      command:
+        type: string
+        required: false
+        default: assembleRelease
     secrets:
       keystore-base64:
         required: false

@@ -75,6 +75,7 @@ jobs:
     uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@main
     with:
       app-name: ${{ needs.setup.outputs.app-name }}
+      command: assemble${{ inputs.flavor }}Release
       app-version: ${{ needs.setup.outputs.app-version }}
       build-type: release
       flavor: ${{ inputs.flavor }}
