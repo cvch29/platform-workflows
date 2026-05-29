@@ -42,20 +42,20 @@ jobs:
       ipa-path: ${{ steps.build.outputs.ipa-path }}
     steps:
       - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
-      - uses: cvch29/platform-actions/.github/actions/mobile/ios/sign@main
-        with:
-          p12-base64: ${{ secrets.p12-base64 }}
-          p12-password: ${{ secrets.p12-password }}
-          provisioning-profile-base64: ${{ secrets.provisioning-profile-base64 }}
-          bundle-id: ${{ inputs.bundle-id }}
-      - id: build
-        uses: cvch29/platform-actions/.github/actions/mobile/ios/build@main
-        with:
-          scheme: ${{ inputs.scheme }}
-          workspace: ${{ inputs.workspace }}
-          export-method: ${{ inputs.export-method }}
-      - uses: cvch29/platform-actions/.github/actions/shared/artifact-upload@main
-        with:
-          name: ios-ipa-${{ inputs.app-name }}
-          path: ${{ steps.build.outputs.ipa-path }}
-          retention-days: 30
+      # - uses: cvch29/platform-actions/.github/actions/mobile/ios/sign@main
+      #   with:
+      #     p12-base64: ${{ secrets.p12-base64 }}
+      #     p12-password: ${{ secrets.p12-password }}
+      #     provisioning-profile-base64: ${{ secrets.provisioning-profile-base64 }}
+      #     bundle-id: ${{ inputs.bundle-id }}
+      # - id: build
+      #   uses: cvch29/platform-actions/.github/actions/mobile/ios/build@main
+      #   with:
+      #     scheme: ${{ inputs.scheme }}
+      #     workspace: ${{ inputs.workspace }}
+      #     export-method: ${{ inputs.export-method }}
+      # - uses: cvch29/platform-actions/.github/actions/shared/artifact-upload@main
+      #   with:
+      #     name: ios-ipa-${{ inputs.app-name }}
+      #     path: ${{ steps.build.outputs.ipa-path }}
+      #     retention-days: 30

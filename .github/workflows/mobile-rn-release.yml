@@ -84,7 +84,8 @@ jobs:
           build-gradle-path: ${{ inputs.gradle-build-path }}
 
 
-  build:
+  build_android:
+    if: ${{ vars.ENABLE_ANDROID_BUILD == 'true' }}
     needs: setup
     name: Build
     uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@main
@@ -100,6 +101,19 @@ jobs:
       key-alias: ${{ secrets.key-alias }}
       key-password: ${{ secrets.key-password }}
 
+  build_ios:
+    if: ${{ vars.ENABLE_IOS_BUILD == 'true' }}
+    needs: setup
+    name: Build
+    uses: cvch29/platform-workflows/.github/workflows/mobile-ios-build.yml@main
+    with:
+      app-name: ${{ needs.setup.outputs.app-name }}
+      scheme: ${{ inputs.app-name }}
+      bundle-id: com.yourcompany.${{ needs.setup.outputs.app-name }}
+    secrets:
+      p12-base64: ${{ secrets.p12-base64 }}
+      p12-password: ${{ secrets.p12-password }}
+      provisioning-profile-base64: ${{ secrets.provisioning-profile-base64 }}
   # quality-gate:
   #   needs: [build-android]
   #   if: always() && needs.build-android.result != 'failure'
