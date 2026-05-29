@@ -27,6 +27,9 @@ on:
       flavor:
         type: string
         default: ''
+      command:
+        type: string
+        default: assembleRelease
     secrets:
       keystore-base64:
         required: false
@@ -75,7 +78,7 @@ jobs:
     uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@main
     with:
       app-name: ${{ needs.setup.outputs.app-name }}
-      command: assemble${{ inputs.flavor }}Release
+      command: ${{ inputs.command }}
       app-version: ${{ needs.setup.outputs.app-version }}
       build-type: release
       flavor: ${{ inputs.flavor }}
