@@ -182,25 +182,25 @@ jobs:
             android/remote-config/*.json
             android/build/reports/profile/*.html
 
-  # artifact_release:
-  #   name: Artifact Release
-  #   needs: build
-  #   runs-on: ubuntu-latest
+  artifact_release:
+    name: Artifact Release
+    needs: build
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - uses: actions/checkout@v4
+    steps:
+      - uses: actions/checkout@v4
 
-  #     - name: Download Artifacts
-  #       uses: cvch29/platform-actions/.github/actions/shared/artifact-download@main
-  #       with:
-  #         artifact_name: android-release-files
-  #         download_path: ./artifacts
+      - name: Download Artifacts
+        uses: cvch29/platform-actions/.github/actions/shared/artifact-download@main
+        with:
+          artifact_name: android-release-files
+          download_path: ./artifacts
 
-  #     - name: Artifact Release
-  #       uses: cvch29/platform-actions/.github/actions/shared/artifact-release-tag@main
-  #       with:
-  #         github-token: ${{ secrets.GITHUB_TOKEN }}
-  #         app-version: ${{ inputs.app_version }}
+      - name: Artifact Release
+        uses: cvch29/platform-actions/.github/actions/shared/artifact-release-tag@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          app-version: ${{ inputs.app_version }}
 
   # distribute:
   #   name: Distribute
