@@ -66,19 +66,19 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           build-gradle-path: ${{ inputs.gradle-build-path }}
 
-  build-android:
-    if: inputs.platforms == 'android' || inputs.platforms == 'both'
-    needs: setup
-    uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@main
-    with:
-      app-name: ${{ inputs.app-name }}
-      build-type: release
-      sign: true
-    secrets:
-      keystore-base64: ${{ secrets.android-keystore-base64 }}
-      keystore-password: ${{ secrets.android-keystore-password }}
-      key-alias: ${{ secrets.android-key-alias }}
-      key-password: ${{ secrets.android-key-password }}
+  # build-android:
+  #   if: inputs.platforms == 'android' || inputs.platforms == 'both'
+  #   needs: setup
+  #   uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@main
+  #   with:
+  #     app-name: ${{ inputs.app-name }}
+  #     build-type: release
+  #     sign: true
+  #   secrets:
+  #     keystore-base64: ${{ secrets.android-keystore-base64 }}
+  #     keystore-password: ${{ secrets.android-keystore-password }}
+  #     key-alias: ${{ secrets.android-key-alias }}
+  #     key-password: ${{ secrets.android-key-password }}
 
   # quality-gate:
   #   needs: [build-android]
