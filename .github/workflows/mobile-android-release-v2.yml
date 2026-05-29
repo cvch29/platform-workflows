@@ -100,19 +100,14 @@ jobs:
       volumes:
         # Yarn cache
         - /opt/cache/yarn:/opt/yarn
-
         # Shared gradle dependency cache
         - /opt/cache/gradle/modules-2:/opt/gradle-shared/modules-2
-
         # Shared transforms cache
         - /opt/cache/gradle/transforms-3:/opt/gradle-shared/transforms-3
-
         # Shared build cache
         - /opt/cache/gradle/build-cache-1:/opt/gradle-shared/build-cache-1
-
         # Shared wrapper cache
         - /opt/cache/gradle/wrapper:/opt/gradle-shared/wrapper
-
         # Metro cache
         - /opt/cache/metro:/tmp/metro-cache
         # C++ cache (RN native libs)
