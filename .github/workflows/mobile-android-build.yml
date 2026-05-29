@@ -22,16 +22,6 @@ on:
         type: boolean
         required: false
         default: true
-
-      keystore-base64:
-        type: string
-        required: false
-      keystore-password:
-        type: string
-        required: false
-      keystore-alias:
-        type: string
-        required: false
       command:
         type: string
         required: false
@@ -68,22 +58,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # - name: Restore shared gradle cache
-      #   run: |
-      #     mkdir -p $GRADLE_USER_HOME/caches
-      #     mkdir -p $GRADLE_USER_HOME/wrapper
+      - name: Restore shared gradle cache
+        run: |
+          mkdir -p $GRADLE_USER_HOME/caches
+          mkdir -p $GRADLE_USER_HOME/wrapper
 
-      #     ln -snf /opt/gradle-shared/modules-2 \
-      #       $GRADLE_USER_HOME/caches/modules-2
+          ln -snf /opt/gradle-shared/modules-2 \
+            $GRADLE_USER_HOME/caches/modules-2
 
-      #     ln -snf /opt/gradle-shared/transforms-3 \
-      #       $GRADLE_USER_HOME/caches/transforms-3
+          ln -snf /opt/gradle-shared/transforms-3 \
+            $GRADLE_USER_HOME/caches/transforms-3
 
-      #     ln -snf /opt/gradle-shared/build-cache-1 \
-      #       $GRADLE_USER_HOME/caches/build-cache-1
+          ln -snf /opt/gradle-shared/build-cache-1 \
+            $GRADLE_USER_HOME/caches/build-cache-1
 
-      #     ln -snf /opt/gradle-shared/wrapper \
-      #       $GRADLE_USER_HOME/wrapper/dists
+          ln -snf /opt/gradle-shared/wrapper \
+            $GRADLE_USER_HOME/wrapper/dists
 
       - name: Install Dependencies
         if: ${{ inputs.technology == 'react-native' }}
