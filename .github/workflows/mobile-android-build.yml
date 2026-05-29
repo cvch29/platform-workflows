@@ -3,6 +3,11 @@ name: 'Mobile Android — Build'
 on:
   workflow_call:
     inputs:
+      platform:
+        description: 'react-native | native'
+        type: string
+        required: false
+        default: 'native'
       app-name:
         type: string
         required: true
@@ -70,37 +75,46 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Restore shared gradle cache
-        run: |
-          mkdir -p $GRADLE_USER_HOME/caches
-          mkdir -p $GRADLE_USER_HOME/wrapper
+      # - name: Restore shared gradle cache
+      #   run: |
+      #     mkdir -p $GRADLE_USER_HOME/caches
+      #     mkdir -p $GRADLE_USER_HOME/wrapper
 
-          ln -snf /opt/gradle-shared/modules-2 \
-            $GRADLE_USER_HOME/caches/modules-2
+      #     ln -snf /opt/gradle-shared/modules-2 \
+      #       $GRADLE_USER_HOME/caches/modules-2
 
-          ln -snf /opt/gradle-shared/transforms-3 \
-            $GRADLE_USER_HOME/caches/transforms-3
+      #     ln -snf /opt/gradle-shared/transforms-3 \
+      #       $GRADLE_USER_HOME/caches/transforms-3
 
-          ln -snf /opt/gradle-shared/build-cache-1 \
-            $GRADLE_USER_HOME/caches/build-cache-1
+      #     ln -snf /opt/gradle-shared/build-cache-1 \
+      #       $GRADLE_USER_HOME/caches/build-cache-1
 
-          ln -snf /opt/gradle-shared/wrapper \
-            $GRADLE_USER_HOME/wrapper/dists
+      #     ln -snf /opt/gradle-shared/wrapper \
+      #       $GRADLE_USER_HOME/wrapper/dists
 
       - name: Install Dependencies
+        if: ${{ inputs.platform == 'react-native' }}
         uses: cvch29/platform-actions/.github/actions/tooling/node@main
         with:
           working-directory: .
 
+      - name: Signing Setup
+        uses: cvch29/platform-actions/.github/actions/shared-v2/signing-keystore@main
+        with:
+          keystore-base64: ${{ secrets.keystore_base64 }}
+          keystore-path: ${{ inputs.keystore_path }}
+          store-password: ${{ secrets.keystore_password }}
+          key-alias: ${{ secrets.key_alias }}
+          key-password: ${{ secrets.key_password }}
+
       - name: Android build
         uses: cvch29/platform-actions/.github/actions/domains/mobile/android/build@main
         with:
-          # keystore_path: ${{ inputs.keystore_path }}
           command: ${{ inputs.flavor }}${{ inputs.build-type }}
           store_password: ${{ secrets.keystore_password }}
           key_alias: ${{ inputs.key_alias }}
           key_password: ${{ secrets.key_password }}
-          # keystore_base64: ${{ secrets.android_keystore_base64 }}
+
       # - uses: cvch29/platform-actions/.github/actions/governance/sbom@main
       #   with:
       #     artifact-path: .
