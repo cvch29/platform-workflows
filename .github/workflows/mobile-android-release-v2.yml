@@ -83,6 +83,7 @@ jobs:
 
   build:
     name: Build
+    needs: setup
     runs-on:
       group: dso-linux
 
