@@ -39,18 +39,9 @@ on:
       keystore_path:
         type: string
         default: android-keystore.jks
-      key_alias:
+      flavor:
         type: string
-        default: "keyAlias"
-      app_version:
-        required: true
-        type: string
-      app_name:
-        required: true
-        type: string
-    outputs:
-      version:
-        value: ${{ jobs.tag.outputs.version }}
+        default: ''
     secrets:
       android-keystore-base64:
         required: false
@@ -81,8 +72,8 @@ jobs:
     name: Setup
     runs-on: ubuntu-latest
     outputs:
-      app_version: ${{ steps.setup_android.outputs.app_version }}
-      app_name: ${{ steps.setup_android.outputs.app_name }}
+      app-version: ${{ steps.setup_android.outputs.app-version }}
+      app-name: ${{ steps.setup_android.outputs.app-name }}
     steps:
       - uses: actions/checkout@v4
       - name: Setup Environment
@@ -98,7 +89,8 @@ jobs:
     name: Build
     uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@main
     with:
-      app-name: ${{ inputs.app-name }}
+      app-name: ${{ needs.setup.outputs.app-name }}
+      app-version: ${{ needs.setup.outputs.app-version }}
       build-type: release
       flavor: ${{ inputs.flavor }}
       sign: true

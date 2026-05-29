@@ -30,6 +30,21 @@ on:
         type: boolean
         required: false
         default: true
+      keystore-path:
+        type: string
+        default: android-keystore.jks
+      keystore-base64:
+        type: string
+        required: false
+      keystore-password:
+        type: string
+        required: false
+      key-alias:
+        type: string
+        required: false
+      key-password:
+        type: string
+        required: false
     secrets:
       keystore-base64:
         required: false
@@ -87,18 +102,19 @@ jobs:
           working-directory: .
 
       - name: Signing Keystore
+        if: ${{ inputs.sign }}
         uses: cvch29/platform-actions/.github/actions/shared-v2/signing-keystore@main
         with:
           keystore-base64: ${{ secrets.keystore_base64 }}
-          keystore-path: ${{ inputs.keystore_path }}
+          keystore-path: ${{ inputs.keystore-path }}
 
       - name: Android build
         uses: cvch29/platform-actions/.github/actions/domains/mobile/android/build@main
         with:
           command: ${{ inputs.flavor }}${{ inputs.build-type }}
           store_password: ${{ secrets.keystore_password }}
-          key_alias: ${{ inputs.key_alias }}
-          key_password: ${{ secrets.key_password }}
+          key_alias: ${{ inputs.key-alias }}
+          key_password: ${{ secrets.key-password }}
 
       - name: Generate SBOM
         uses: cvch29/platform-actions/.github/actions/governance/sbom@main
