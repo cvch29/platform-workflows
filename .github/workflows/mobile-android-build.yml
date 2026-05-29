@@ -42,9 +42,6 @@ on:
       keystore-alias:
         type: string
         required: false
-      keystore-password:
-        type: string
-        required: false
       command:
         type: string
         required: false
@@ -54,9 +51,7 @@ on:
         required: false
       keystore-password:
         required: false
-      key-alias:
-        required: false
-      key-password:
+      keystore-alias:
         required: false
 
 jobs:
@@ -117,8 +112,9 @@ jobs:
         with:
           command: ${{ inputs.flavor }}${{ inputs.build-type }}
           store_password: ${{ secrets.keystore_password }}
-          key_alias: ${{ inputs.key-alias }}
-          key_password: ${{ secrets.key-password }}
+        secrets:
+          keystore_alias: ${{ inputs.key-alias }}
+          keystore_password: ${{ secrets.key-password }}
 
       - name: Generate SBOM
         uses: cvch29/platform-actions/.github/actions/governance/sbom@main
