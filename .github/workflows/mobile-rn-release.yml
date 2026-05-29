@@ -80,15 +80,14 @@ jobs:
       app-name: ${{ needs.setup.outputs.app-name }}
       command: ${{ inputs.command }}
       app-version: ${{ needs.setup.outputs.app-version }}
-      build-type: release
-      flavor: ${{ inputs.flavor }}
+      # build-type: release
+      # flavor: ${{ inputs.flavor }}
       technology: ${{ inputs.technology }}
       sign: true
     secrets:
       keystore-base64: ${{ secrets.keystore-base64 }}
       keystore-password: ${{ secrets.keystore-password }}
       keystore-alias: ${{ secrets.keystore-alias }}
-      keystore-password: ${{ secrets.keystore-password }}
 
   build_ios:
     if: ${{ vars.ENABLE_IOS_BUILD == 'true' }}
