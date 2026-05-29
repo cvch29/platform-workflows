@@ -89,11 +89,11 @@ jobs:
   #     environment: staging
   #     require-sbom: true
 
-  tag:
-    name: Tag Release
-    needs: build-android
-    uses: cvch29/platform-workflows/.github/workflows/shared-release-tag.yml@main
-    with:
-      app-name: ${{ inputs.app-name }}
-    secrets:
-      github-token: ${{ secrets.github-token }}
+  # tag:
+  #   name: Tag Release
+  #   needs: build-android
+  #   uses: cvch29/platform-workflows/.github/workflows/shared-release-tag.yml@main
+  #   with:
+  #     app-name: ${{ inputs.app-name }}
+  #   secrets:
+  #     github-token: ${{ secrets.github-token }}
