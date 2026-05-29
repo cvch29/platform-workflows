@@ -68,16 +68,16 @@ jobs:
           fetch-depth: 0
       - id: version
         uses: cvch29/platform-actions/.github/actions/intelligence/versioning@main
-      - uses: cvch29/platform-actions/.github/actions/shared/artifact-download@main
+      - uses: cvch29/platform-actions/.github/actions/shared-v2/artifact-download@main
         with:
           name: ios-ipa-${{ inputs.app-name }}
       - name: Upload to TestFlight
-        if: secrets.app-store-connect-api-key != ''
+        if: inputs.app-store-connect-api-key != ''
         shell: bash
         run: |
           IPA=$(find . -name "*.ipa" | head -1)
           xcrun altool --upload-app --type ios --file "$IPA" \
-            --apiKey "${{ secrets.app-store-connect-api-key }}" \
+            --apiKey "${{ inputs.app-store-connect-api-key }}" \
             --apiIssuer "${{ vars.APP_STORE_ISSUER_ID }}"
       - if: always()
         uses: cvch29/platform-actions/.github/actions/governance/audit-log@main
