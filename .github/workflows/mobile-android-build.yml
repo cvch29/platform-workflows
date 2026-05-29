@@ -30,18 +30,6 @@ on:
         type: boolean
         required: false
         default: true
-      keystore_path:
-        type: string
-        default: android-keystore.jks
-      key_alias:
-        type: string
-        default: "keyAlias"
-      app_version:
-        required: true
-        type: string
-      app_name:
-        required: true
-        type: string
     secrets:
       keystore-base64:
         required: false
