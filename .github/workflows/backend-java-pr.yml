@@ -42,14 +42,14 @@ jobs:
       - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
         with:
           fetch-depth: 0
-      - uses: cvch29/platform-actions/.github/actions/tooling/java/setup-jdk@v1
+      - uses: cvch29/platform-actions/.github/actions/tooling-v2/java/setup-jdk@v1
         with:
           java-version: ${{ inputs.java-version }}
-      - uses: cvch29/platform-actions/.github/actions/tooling/java/gradle-test@v1
+      - uses: cvch29/platform-actions/.github/actions/tooling-v2/java/gradle-test@v1
         with:
           tasks: test jacocoTestReport jacocoTestCoverageVerification
           coverage-threshold: ${{ inputs.coverage-threshold }}
-      - uses: cvch29/platform-actions/.github/actions/tooling/java/gradle-build@v1
+      - uses: cvch29/platform-actions/.github/actions/tooling-v2/java/gradle-build@v1
         with:
           azure-artifacts-feed: ${{ inputs.azure-artifacts-feed }}
           azure-artifacts-token: ${{ secrets.azure-artifacts-token }}

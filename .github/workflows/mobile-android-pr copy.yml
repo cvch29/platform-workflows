@@ -35,7 +35,7 @@ jobs:
       checks: write
     steps:
       - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
-      - uses: cvch29/platform-actions/.github/actions/tooling/java/setup-jdk@v1
+      - uses: cvch29/platform-actions/.github/actions/tooling-v2/java/setup-jdk@v1
         with:
           java-version: ${{ inputs.java-version }}
       - uses: cvch29/platform-actions/.github/actions/shared-v2/cache@v1

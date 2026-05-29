@@ -33,12 +33,12 @@ jobs:
       ios-framework: ${{ steps.build.outputs.ios-framework }}
     steps:
       - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
-      - uses: cvch29/platform-actions/.github/actions/tooling/kmp/setup@v1
+      - uses: cvch29/platform-actions/.github/actions/tooling-v2/kmp/setup@v1
         with:
           java-version: ${{ inputs.java-version }}
           targets: ${{ inputs.targets }}
       - id: build
-        uses: cvch29/platform-actions/.github/actions/tooling/kmp/build@v1
+        uses: cvch29/platform-actions/.github/actions/tooling-v2/kmp/build@v1
         with:
           targets: ${{ inputs.targets }}
           build-type: ${{ inputs.build-type }}

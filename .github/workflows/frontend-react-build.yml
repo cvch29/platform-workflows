@@ -35,14 +35,14 @@ jobs:
       - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
         with:
           fetch-depth: 0
-      - uses: cvch29/platform-actions/.github/actions/tooling/node/install@v1
+      - uses: cvch29/platform-actions/.github/actions/tooling-v2/node/install@v1
         with:
           node-version: ${{ inputs.node-version }}
           package-manager: ${{ inputs.package-manager }}
       - id: version
         uses: cvch29/platform-actions/.github/actions/intelligence/versioning@v1
       - id: build
-        uses: cvch29/platform-actions/.github/actions/tooling/node/build@v1
+        uses: cvch29/platform-actions/.github/actions/tooling-v2/node/build@v1
         with:
           package-manager: ${{ inputs.package-manager }}
           environment: ${{ inputs.environment }}

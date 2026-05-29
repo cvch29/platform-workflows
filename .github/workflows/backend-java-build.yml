@@ -60,10 +60,10 @@ jobs:
       - name: Calculate version
         id: version
         uses: cvch29/platform-actions/.github/actions/intelligence/versioning@v1
-      - uses: cvch29/platform-actions/.github/actions/tooling/java/setup-jdk@v1
+      - uses: cvch29/platform-actions/.github/actions/tooling-v2/java/setup-jdk@v1
         with:
           java-version: ${{ inputs.java-version }}
-      - uses: cvch29/platform-actions/.github/actions/tooling/java/gradle-build@v1
+      - uses: cvch29/platform-actions/.github/actions/tooling-v2/java/gradle-build@v1
         with:
           tasks: build -x test
           azure-artifacts-token: ${{ secrets.azure-artifacts-token }}
