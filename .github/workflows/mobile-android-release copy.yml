@@ -64,46 +64,46 @@ jobs:
       key-alias: ${{ secrets.key-alias }}
       key-password: ${{ secrets.key-password }}
 
-  quality-gate:
-    needs: build
-    uses: cvch29/platform-workflows/.github/workflows/shared-quality-gates.yml@v1
-    with:
-      app-name: ${{ inputs.app-name }}
-      environment: ${{ inputs.channel == 'play-production' && 'prod' || 'staging' }}
-      require-sbom: true
-      require-sast: true
-      require-sca: true
+  # quality-gate:
+  #   needs: build
+  #   uses: cvch29/platform-workflows/.github/workflows/shared-quality-gates.yml@v1
+  #   with:
+  #     app-name: ${{ inputs.app-name }}
+  #     environment: ${{ inputs.channel == 'play-production' && 'prod' || 'staging' }}
+  #     require-sbom: true
+  #     require-sast: true
+  #     require-sca: true
 
-  distribute:
-    name: Tag & Distribute
-    needs: [build, quality-gate]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    outputs:
-      version: ${{ steps.version.outputs.version }}
-    steps:
-      - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@v1
-        with:
-          fetch-depth: 0
-      - uses: cvch29/platform-actions/.github/actions/shared-v2/artifact-download@v1
-        with:
-          name: release-artifact.zip
-      - id: version
-        uses: cvch29/platform-actions/.github/actions/intelligence/versioning@v1
-      - uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/android/distribute@v1
-        with:
-          artifact-path: ${{ needs.build.outputs.artifact-path }}
-          channel: ${{ inputs.channel }}
-          release-notes: "Release ${{ steps.version.outputs.version }}"
-          firebase-app-id: ${{ inputs.firebase-app-id }}
-          google-play-service-account-json: ${{ secrets.google-play-service-account-json }}
-          package-name: ${{ inputs.package-name }}
-      - if: always()
-        uses: cvch29/platform-actions/.github/actions/governance/audit-log@v1
-        with:
-          event-type: release
-          environment: ${{ inputs.channel == 'play-production' && 'prod' || 'staging' }}
-          outcome: ${{ job.status }}
-          app-name: ${{ inputs.app-name }}
-          metadata: '{"channel":"${{ inputs.channel }}","version":"${{ steps.version.outputs.version }}"}'
+  # distribute:
+  #   name: Tag & Distribute
+  #   needs: [build, quality-gate]
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: write
+  #   outputs:
+  #     version: ${{ steps.version.outputs.version }}
+  #   steps:
+  #     - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@v1
+  #       with:
+  #         fetch-depth: 0
+  #     - uses: cvch29/platform-actions/.github/actions/shared-v2/artifact-download@v1
+  #       with:
+  #         name: release-artifact.zip
+  #     - id: version
+  #       uses: cvch29/platform-actions/.github/actions/intelligence/versioning@v1
+  #     - uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/android/distribute@v1
+  #       with:
+  #         artifact-path: ${{ needs.build.outputs.artifact-path }}
+  #         channel: ${{ inputs.channel }}
+  #         release-notes: "Release ${{ steps.version.outputs.version }}"
+  #         firebase-app-id: ${{ inputs.firebase-app-id }}
+  #         google-play-service-account-json: ${{ secrets.google-play-service-account-json }}
+  #         package-name: ${{ inputs.package-name }}
+  #     - if: always()
+  #       uses: cvch29/platform-actions/.github/actions/governance/audit-log@v1
+  #       with:
+  #         event-type: release
+  #         environment: ${{ inputs.channel == 'play-production' && 'prod' || 'staging' }}
+  #         outcome: ${{ job.status }}
+  #         app-name: ${{ inputs.app-name }}
+  #         metadata: '{"channel":"${{ inputs.channel }}","version":"${{ steps.version.outputs.version }}"}'
