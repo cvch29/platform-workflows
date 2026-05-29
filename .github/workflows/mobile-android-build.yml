@@ -91,7 +91,7 @@ jobs:
         with:
           working-directory: .
 
-      - name: Signing Keystore
+      - name: Setup Keystore
         if: ${{ inputs.sign }}
         uses: cvch29/platform-actions/.github/actions/shared-v2/signing-keystore@main
         with:
