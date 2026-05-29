@@ -111,7 +111,7 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@v1
         with:
           fetch-depth: 2
 
@@ -138,7 +138,7 @@ jobs:
       dashboard-url: ${{ steps.sonar.outputs.dashboard-url }}
 
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@v1
         with:
           fetch-depth: 0   # Sonar needs full history for blame/new code detection
 
@@ -180,7 +180,7 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@v1
       - uses: cvch29/platform-actions/.github/actions/security/sast@v1
         with:
           config: p/owasp-top-ten
@@ -195,7 +195,7 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@v1
       - uses: cvch29/platform-actions/.github/actions/security/sca@v1
         with:
           runtime: ${{ inputs.language }}
@@ -209,7 +209,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
+      - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@v1
         with:
           fetch-depth: 50
       - uses: cvch29/platform-actions/.github/actions/security/secrets-scan@v1
