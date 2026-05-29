@@ -52,7 +52,7 @@ jobs:
 
   build:
     # needs: security
-    uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@v1
+    uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@main
     with:
       app-name: ${{ inputs.app-name }}
       build-type: release
