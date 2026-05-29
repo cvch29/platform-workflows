@@ -38,7 +38,7 @@ jobs:
       - uses: cvch29/platform-actions/.github/actions/tooling/java/setup-jdk@v1
         with:
           java-version: ${{ inputs.java-version }}
-      - uses: cvch29/platform-actions/.github/actions/shared/cache@v1
+      - uses: cvch29/platform-actions/.github/actions/shared-v2/cache@v1
         with:
           runtime: gradle
       - name: Android Lint
@@ -53,11 +53,11 @@ jobs:
           retention-days: 7
       - name: Unit tests
         if: inputs.run-unit-tests
-        uses: cvch29/platform-actions/.github/actions/tooling/java/gradle-test@v1
+        uses: cvch29/platform-actions/.github/actions/tooling-v2/java/gradle-test@v1
         with:
           tasks: testDebugUnitTest
       - name: Debug build smoke
-        uses: cvch29/platform-actions/.github/actions/mobile/android/build@v1
+        uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/android/build@v1
         with:
           build-type: debug
           output-type: apk

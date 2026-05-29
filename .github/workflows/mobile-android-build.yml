@@ -54,18 +54,18 @@ jobs:
       - uses: cvch29/platform-actions/.github/actions/tooling/java/setup-jdk@v1
         with:
           java-version: ${{ inputs.java-version }}
-      - uses: cvch29/platform-actions/.github/actions/shared/cache@v1
+      - uses: cvch29/platform-actions/.github/actions/shared-v2/cache@v1
         with:
           runtime: gradle
       - id: build
-        uses: cvch29/platform-actions/.github/actions/mobile/android/build@v1
+        uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/android/build@v1
         with:
           build-type: ${{ inputs.build-type }}
           flavor: ${{ inputs.flavor }}
           output-type: aab
       - id: sign
         if: inputs.sign && inputs.build-type == 'release'
-        uses: cvch29/platform-actions/.github/actions/mobile/android/sign@v1
+        uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/android/sign@v1
         with:
           artifact-path: ${{ steps.build.outputs.artifact-path }}
           keystore-base64: ${{ secrets.keystore-base64 }}
