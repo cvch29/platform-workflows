@@ -86,12 +86,12 @@ jobs:
       - uses: cvch29/platform-actions/.github/actions/shared/checkout@v1
         with:
           fetch-depth: 0
-      - uses: cvch29/platform-actions/.github/actions/shared/artifact-download@v1
+      - uses: cvch29/platform-actions/.github/actions/shared-v2/artifact-download@v1
         with:
-          name: android-build-${{ inputs.app-name }}
+          name: release-artifact.zip
       - id: version
         uses: cvch29/platform-actions/.github/actions/intelligence/versioning@v1
-      - uses: cvch29/platform-actions/.github/actions/mobile/android/distribute@v1
+      - uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/android/distribute@v1
         with:
           artifact-path: ${{ needs.build.outputs.artifact-path }}
           channel: ${{ inputs.channel }}
