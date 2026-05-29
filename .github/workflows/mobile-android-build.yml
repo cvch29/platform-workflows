@@ -98,7 +98,7 @@ jobs:
         with:
           working-directory: .
 
-      - name: Signing Setup
+      - name: Signing Keystore
         uses: cvch29/platform-actions/.github/actions/shared-v2/signing-keystore@main
         with:
           keystore-base64: ${{ secrets.keystore_base64 }}
@@ -112,7 +112,8 @@ jobs:
           key_alias: ${{ inputs.key_alias }}
           key_password: ${{ secrets.key_password }}
 
-      - uses: cvch29/platform-actions/.github/actions/governance/sbom@main
+      - name: Generate SBOM
+        uses: cvch29/platform-actions/.github/actions/governance/sbom@main
         with:
           artifact-path: .
           upload-artifact: true

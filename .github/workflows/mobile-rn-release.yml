@@ -93,93 +93,20 @@ jobs:
           build-gradle-path: ${{ inputs.gradle-build-path }}
 
 
-  build-android:
-    if: ${{ inputs.build-android }}
-    name: Build Android
+  build:
     needs: setup
-    runs-on:
-      group: dso-linux
-    env:
-      GRADLE_USER_HOME: /tmp/gradle-${{ github.run_id }}-${{ github.run_attempt }}
-      METRO_CACHE: /tmp/metro-cache
-      NODE_OPTIONS: --max-old-space-size=8192
-    container:
-      image: localhost:5000/android:35-gradle7.3-jdk17
-      options: --cpus 8 -m 16g
-      volumes:
-        - /opt/cache/yarn:/opt/yarn
-        - /opt/cache/gradle/modules-2:/opt/gradle-shared/modules-2
-        - /opt/cache/gradle/transforms-3:/opt/gradle-shared/transforms-3
-        - /opt/cache/gradle/build-cache-1:/opt/gradle-shared/build-cache-1
-        - /opt/cache/gradle/wrapper:/opt/gradle-shared/wrapper
-        - /opt/cache/metro:/tmp/metro-cache
-        - /opt/cache/cxx:/workspace/android/.cxx
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Restore shared gradle cache
-        run: |
-          mkdir -p $GRADLE_USER_HOME/caches
-          mkdir -p $GRADLE_USER_HOME/wrapper
-
-          ln -snf /opt/gradle-shared/modules-2 \
-            $GRADLE_USER_HOME/caches/modules-2
-
-          ln -snf /opt/gradle-shared/transforms-3 \
-            $GRADLE_USER_HOME/caches/transforms-3
-
-          ln -snf /opt/gradle-shared/build-cache-1 \
-            $GRADLE_USER_HOME/caches/build-cache-1
-
-          ln -snf /opt/gradle-shared/wrapper \
-            $GRADLE_USER_HOME/wrapper/dists
-
-      - name: Install Dependencies
-        uses: cvch29/platform-actions/.github/actions/tooling/node@main
-        with:
-          working-directory: .
-
-      - name: Android build
-        uses: cvch29/platform-actions/.github/actions/domains/mobile/android/build@main
-        with:
-          keystore_path: ${{ inputs.keystore_path }}
-          store_password: ${{ secrets.keystore_password }}
-          key_alias: ${{ inputs.key_alias }}
-          key_password: ${{ secrets.key_password }}
-          keystore_base64: ${{ secrets.android_keystore_base64 }}
-
-      - name: Artifact Management
-        uses: cvch29/platform-actions/.github/actions/shared/artifact-manage@main
-        with:
-          app_name: ${{ inputs.app_name }}
-          app_version: ${{ inputs.app_version }}
-          path: android/app/build
-          pattern: |
-            outputs/apk/release/*.apk
-            outputs/bundle/release/*.aab
-            outputs/remote-config/config.json
-            reports/profile/*.html
-          name: android-release-files
-          retention-days: 1
-          if-no-files-found: warn
-          compression-level: 6
-          upload_path: |
-            android/app/build/outputs/apk/release/*.apk
-            android/app/build/outputs/bundle/release/*.aab
-            android/remote-config/*.json
-            android/build/reports/profile/*.html
-
-  build-ios:
-    if: ${{ inputs.build-ios }}
-    name: Build iOS
-    needs: setup
-    runs-on: macos-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/react-native/build
-        with:
-          platform: ios
+    name: Build
+    uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@main
+    with:
+      app-name: ${{ inputs.app-name }}
+      build-type: release
+      flavor: ${{ inputs.flavor }}
+      sign: true
+    secrets:
+      keystore-base64: ${{ secrets.keystore-base64 }}
+      keystore-password: ${{ secrets.keystore-password }}
+      key-alias: ${{ secrets.key-alias }}
+      key-password: ${{ secrets.key-password }}
 
   # quality-gate:
   #   needs: [build-android]
