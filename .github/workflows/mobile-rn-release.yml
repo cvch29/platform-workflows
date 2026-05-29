@@ -28,13 +28,13 @@ on:
         type: string
         default: ''
     secrets:
-      android-keystore-base64:
+      keystore-base64:
         required: false
-      android-keystore-password:
+      keystore-password:
         required: false
-      android-key-alias:
+      key-alias:
         required: false
-      android-key-password:
+      key-password:
         required: false
       github-token:
         required: true
