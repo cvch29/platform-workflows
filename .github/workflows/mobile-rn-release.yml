@@ -30,6 +30,12 @@ on:
       command:
         type: string
         default: assembleRelease
+      enable-android:
+        type: boolean
+        default: false
+      enable-ios:
+        type: boolean
+        default: false
     secrets:
       keystore-base64:
         required: false
@@ -72,7 +78,7 @@ jobs:
           build-gradle-path: ${{ inputs.gradle-build-path }}
 
   build_android:
-    if: ${{ vars.ENABLE_ANDROID_BUILD == 'true' }}
+    if: ${{ inputs.enable-android == 'true' }}
     needs: setup
     name: Build
     uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@main
@@ -90,7 +96,7 @@ jobs:
       keystore-alias: ${{ secrets.keystore-alias }}
 
   build_ios:
-    if: ${{ vars.ENABLE_IOS_BUILD == 'true' }}
+    if: ${{ inputs.enable-ios == 'true' }}
     needs: setup
     name: Build
     uses: cvch29/platform-workflows/.github/workflows/mobile-ios-build.yml@main
