@@ -32,7 +32,7 @@ on:
         default: assembleRelease
       enable-android:
         type: boolean
-        default: false
+        default: true
       enable-ios:
         type: boolean
         default: false
