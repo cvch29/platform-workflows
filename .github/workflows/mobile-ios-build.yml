@@ -34,7 +34,7 @@ on:
 
 jobs:
   build:
-    name: Build & Sign IPA
+    # name: Build & Sign IPA
     runs-on: macos-latest
     permissions:
       contents: read
