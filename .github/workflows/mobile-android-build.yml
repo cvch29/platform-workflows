@@ -51,18 +51,18 @@ jobs:
       version-code: ${{ steps.build.outputs.version-code }}
     steps:
       - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@main
-      - uses: cvch29/platform-actions/.github/actions/tooling-v2/java/setup-jdk@main
-        with:
-          java-version: ${{ inputs.java-version }}
-      - uses: cvch29/platform-actions/.github/actions/shared-v2/cache@main
-        with:
-          runtime: gradle
-      - id: build
-        uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/android/build@main
-        with:
-          build-type: ${{ inputs.build-type }}
-          flavor: ${{ inputs.flavor }}
-          output-type: aab
+      # - uses: cvch29/platform-actions/.github/actions/tooling-v2/java/setup-jdk@main
+      #   with:
+      #     java-version: ${{ inputs.java-version }}
+      # - uses: cvch29/platform-actions/.github/actions/shared-v2/cache@main
+      #   with:
+      #     runtime: gradle
+      # - id: build
+      #   uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/android/build@main
+      #   with:
+      #     build-type: ${{ inputs.build-type }}
+      #     flavor: ${{ inputs.flavor }}
+      #     output-type: aab
       # - id: sign
       #   if: inputs.sign && inputs.build-type == 'release'
       #   uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/android/sign@main
