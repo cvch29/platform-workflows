@@ -87,8 +87,8 @@ jobs:
     secrets:
       keystore-base64: ${{ secrets.keystore-base64 }}
       keystore-password: ${{ secrets.keystore-password }}
-      key-alias: ${{ secrets.key-alias }}
-      key-password: ${{ secrets.key-password }}
+      keystore-alias: ${{ secrets.keystore-alias }}
+      keystore-password: ${{ secrets.keystore-password }}
 
   build_ios:
     if: ${{ vars.ENABLE_IOS_BUILD == 'true' }}

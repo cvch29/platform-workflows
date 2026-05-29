@@ -39,10 +39,10 @@ on:
       keystore-password:
         type: string
         required: false
-      key-alias:
+      keystore-alias:
         type: string
         required: false
-      key-password:
+      keystore-password:
         type: string
         required: false
       command:
