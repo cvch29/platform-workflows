@@ -47,7 +47,7 @@ on:
         required: false
 jobs:
   build:
-    # name: Build
+    name: Build Android
     runs-on:
       group: dso-linux
     env:
