@@ -89,6 +89,27 @@ jobs:
       keystore-password: ${{ secrets.keystore-password }}
       keystore-alias: ${{ secrets.keystore-alias }}
       keystore-path: ${{ secrets.keystore-path }}
+
+  artifact_release:
+    name: Artifact Release
+    needs: [setup, build_android]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Artifacts
+        uses: cvch29/platform-actions/.github/actions/shared/artifact-download@main
+        with:
+          artifact_name: android-release-files
+          download_path: ./artifacts
+
+      - name: Artifact Release
+        uses: cvch29/platform-actions/.github/actions/shared/artifact-release-tag@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          app-version: ${{ needs.setup.outputs.app-version }}
+
   # quality-gate:
   #   needs: build
   #   uses: cvch29/platform-workflows/.github/workflows/shared-quality-gates.yml@main
