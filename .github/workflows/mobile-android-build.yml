@@ -96,11 +96,11 @@ jobs:
           keystore-password: ${{ secrets.keystore-password }}
           keystore-path: ${{ secrets.keystore-path }}
 
-      - name: Generate SBOM
-        uses: cvch29/platform-actions/.github/actions/governance/sbom@main
-        with:
-          artifact-path: .
-          upload-artifact: true
+      # - name: Generate SBOM
+      #   uses: cvch29/platform-actions/.github/actions/governance/sbom@main
+      #   with:
+      #     artifact-path: .
+      #     upload-artifact: true
 
       - name: Artifact Management
         uses: cvch29/platform-actions/.github/actions/shared/artifact-manage@main
