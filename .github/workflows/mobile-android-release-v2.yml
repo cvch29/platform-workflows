@@ -3,43 +3,47 @@ name: 'Mobile Android — Release'
 on:
   workflow_call:
     inputs:
-      app-name:
+      technology:
+        description: 'react-native | native'
         type: string
         required: true
-      channel:
-        description: 'firebase | play-internal | play-alpha | play-beta | play-production'
-        type: string
-        required: true
-      flavor:
+      android-channel:
         type: string
         required: false
-        default: ''
-      package-name:
+        default: 'play-internal'
+      package-manager:
         type: string
         required: false
-        default: ''
-      firebase-app-id:
-        type: string
-        required: false
-        default: ''
+        default: 'yarn'
       gradle-build-path:
         type: string
         default: app/build.gradle.kts
-    outputs:
-      version:
-        value: ${{ jobs.distribute.outputs.version }}
+      environment:
+        type: string
+        default: dev
+      keystore_path:
+        type: string
+        default: android-keystore.jks
+      flavor:
+        type: string
+        default: ''
+      command:
+        type: string
+        default: assembleRelease
+      enable-android:
+        type: boolean
+        default: true
+      enable-ios:
+        type: boolean
+        default: false
     secrets:
       keystore-base64:
-        required: true
-      keystore-password:
-        required: true
-      key-alias:
-        required: true
-      key-password:
-        required: true
-      firebase-service-account:
         required: false
-      google-play-service-account-json:
+      keystore-password:
+        required: false
+      keystore-alias:
+        required: false
+      keystore-path:
         required: false
       github-token:
         required: true
@@ -56,31 +60,35 @@ jobs:
     name: Setup
     runs-on: ubuntu-latest
     outputs:
-      app_version: ${{ steps.setup_android.outputs.app_version }}
-      app_name: ${{ steps.setup_android.outputs.app_name }}
+      app-version: ${{ steps.setup-android.outputs.app-version }}
+      app-name: ${{ steps.setup-android.outputs.app-name }}
     steps:
       - uses: actions/checkout@v4
       - name: Setup Environment
-        id: setup_android
+        id: setup-android
         uses: cvch29/platform-actions/.github/actions/domains/mobile/android/setup@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           build-gradle-path: ${{ inputs.gradle-build-path }}
-  build:
+          
+  build_android:
+    if: success() && (inputs.enable-android == true)
     needs: setup
-    name: Build
+    name: Build Android
     uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@main
     with:
-      app-name: ${{ inputs.app-name }}
-      build-type: release
-      flavor: ${{ inputs.flavor }}
+      app-name: ${{ needs.setup.outputs.app-name }}
+      command: ${{ inputs.command }}
+      app-version: ${{ needs.setup.outputs.app-version }}
+      # build-type: release
+      # flavor: ${{ inputs.flavor }}
+      technology: ${{ inputs.technology }}
       sign: true
     secrets:
       keystore-base64: ${{ secrets.keystore-base64 }}
       keystore-password: ${{ secrets.keystore-password }}
-      key-alias: ${{ secrets.key-alias }}
-      key-password: ${{ secrets.key-password }}
-
+      keystore-alias: ${{ secrets.keystore-alias }}
+      keystore-path: ${{ secrets.keystore-path }}
   # quality-gate:
   #   needs: build
   #   uses: cvch29/platform-workflows/.github/workflows/shared-quality-gates.yml@main
