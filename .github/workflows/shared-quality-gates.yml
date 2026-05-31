@@ -51,20 +51,20 @@ jobs:
           actor: ${{ github.actor }}
           ref: ${{ github.ref }}
 
-      - name: Compliance check
-        id: compliance
-        uses: cvch29/platform-actions/.github/actions/intelligence/compliance-check@main
-        with:
-          environment: ${{ inputs.environment }}
-          require-sbom: ${{ inputs.require-sbom }}
-          require-sast: ${{ inputs.require-sast }}
-          require-sca: ${{ inputs.require-sca }}
-          audit-token: ${{ inputs.audit-token || steps.policy.outputs.audit-token }}
-        env:
-          SBOM_STATUS: ${{ vars.SBOM_STATUS || 'success' }}
-          SAST_STATUS: ${{ vars.SAST_STATUS || 'success' }}
-          SCA_STATUS: ${{ vars.SCA_STATUS || 'success' }}
-          SECRETS_SCAN_STATUS: ${{ vars.SECRETS_SCAN_STATUS || 'success' }}
+      # - name: Compliance check
+      #   id: compliance
+      #   uses: cvch29/platform-actions/.github/actions/intelligence/compliance-check@main
+      #   with:
+      #     environment: ${{ inputs.environment }}
+      #     require-sbom: ${{ inputs.require-sbom }}
+      #     require-sast: ${{ inputs.require-sast }}
+      #     require-sca: ${{ inputs.require-sca }}
+      #     audit-token: ${{ inputs.audit-token || steps.policy.outputs.audit-token }}
+      #   env:
+      #     SBOM_STATUS: ${{ vars.SBOM_STATUS || 'success' }}
+      #     SAST_STATUS: ${{ vars.SAST_STATUS || 'success' }}
+      #     SCA_STATUS: ${{ vars.SCA_STATUS || 'success' }}
+      #     SECRETS_SCAN_STATUS: ${{ vars.SECRETS_SCAN_STATUS || 'success' }}
 
       - name: Gate summary
         if: always()

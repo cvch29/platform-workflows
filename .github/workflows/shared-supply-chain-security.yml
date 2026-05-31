@@ -22,11 +22,11 @@ on:
         type: string
         required: false
         default: ''
-    outputs:
-      sbom-path:
-        value: ${{ jobs.generate.outputs.sbom-path }}
-      component-count:
-        value: ${{ jobs.generate.outputs.component-count }}
+    # outputs:
+    #   sbom-path:
+    #     value: ${{ jobs.generate.outputs.sbom-path }}
+    #   component-count:
+    #     value: ${{ jobs.generate.outputs.component-count }}
 
 jobs:
   scs:
