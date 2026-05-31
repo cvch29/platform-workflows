@@ -86,8 +86,11 @@ jobs:
   artifact_release:
     name: Artifact Release
     needs: [setup, build_android]
-    runs-on: ubuntu-latest
-
+    runs-on:
+      group: dso-linux
+    container:
+      image: localhost:5000/android:35-gradle7.3-jdk17
+      options: --cpus 2 -m 4g
     steps:
       - uses: actions/checkout@v4
 
