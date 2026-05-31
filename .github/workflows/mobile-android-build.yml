@@ -89,7 +89,7 @@ jobs:
           keystore-path: ${{ secrets.keystore-path }}
 
       - name: Android build
-        uses: cvch29/platform-actions/.github/actions/domains/mobile/build@main
+        uses: cvch29/platform-actions/.github/actions/domains/mobile/android/build@main
         with:
           command: ${{ inputs.command }}
           keystore-alias: "challenge"
