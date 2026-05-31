@@ -92,7 +92,7 @@ jobs:
         uses: cvch29/platform-actions/.github/actions/domains/mobile/android/build@main
         with:
           command: ${{ inputs.command }}
-          keystore-alias: ${{ inputs.keystore-alias }}
+          keystore-alias: "challenge"
           keystore-password: ${{ secrets.keystore-password }}
           keystore-path: ${{ secrets.keystore-path }}
 
