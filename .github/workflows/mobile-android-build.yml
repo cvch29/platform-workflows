@@ -54,7 +54,7 @@ jobs:
         - /opt/cache/gradle/build-cache-1:/opt/gradle-shared/build-cache-1
         - /opt/cache/gradle/wrapper:/opt/gradle-shared/wrapper
         - /opt/cache/metro:/tmp/metro-cache
-        - /opt/cache/cxx:/workspace/android/.cxx
+        - /opt/cache/cxx:/workspace/.cxx
     steps:
       - uses: actions/checkout@v4
 
@@ -89,7 +89,7 @@ jobs:
           keystore-path: ${{ secrets.keystore-path }}
 
       - name: Android build
-        uses: cvch29/platform-actions/.github/actions/domains/mobile/android/build@main
+        uses: cvch29/platform-actions/.github/actions/domains/mobile/build@main
         with:
           command: ${{ inputs.command }}
           keystore-alias: "challenge"
@@ -107,7 +107,7 @@ jobs:
         with:
           app_name: ${{ inputs.app-name }}
           app_version: ${{ inputs.app-version }}
-          path: android/app/build
+          path: app/build
           pattern: |
             outputs/apk/release/*.apk
             outputs/bundle/release/*.aab
@@ -118,7 +118,7 @@ jobs:
           if-no-files-found: warn
           compression-level: 6
           upload_path: |
-            android/app/build/outputs/apk/release/*.apk
-            android/app/build/outputs/bundle/release/*.aab
-            android/remote-config/*.json
-            android/build/reports/profile/*.html
+            app/build/outputs/apk/release/*.apk
+            app/build/outputs/bundle/release/*.aab
+            remote-config/*.json
+            build/reports/profile/*.html
