@@ -1,0 +1,48 @@
+name: 'Shared — Release Tag'
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      version-strategy:
+        description: 'semver | calver'
+        type: string
+        required: false
+        default: 'semver'
+      create-github-release:
+        type: boolean
+        required: false
+        default: true
+    outputs:
+      version:
+        value: ${{ jobs.tag.outputs.version }}
+      version-bare:
+        value: ${{ jobs.tag.outputs.version-bare }}
+    secrets:
+      github-token:
+        required: true
+
+jobs:
+  artifact_release:
+    name: Artifact Release
+    runs-on:
+      group: dso-linux
+    container:
+      image: localhost:5000/android:35-gradle7.3-jdk17
+      options: --cpus 2 -m 4g
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Artifacts
+        uses: cvch29/platform-actions/.github/actions/shared/artifact-download@main
+        with:
+          artifact_name: android-release-files
+          download_path: ./artifacts
+
+      - name: Artifact Release
+        uses: cvch29/platform-actions/.github/actions/shared/artifact-release-tag@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          app-version: ${{ needs.setup.outputs.app-version }}

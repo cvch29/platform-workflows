@@ -84,8 +84,7 @@ jobs:
       keystore-path: ${{ secrets.keystore-path }}
 
   scs:
-    if: success() && (inputs.enable-android == true)
-    needs: setup
+    needs: [setup,build_android]
     name: Supply Chain Security
     uses: cvch29/platform-workflows/.github/workflows/shared-supply-chain-security.yml@main
     with:
@@ -94,35 +93,16 @@ jobs:
       image: localhost:5000/android:35-gradle7.3-jdk17
 
   artifact_release:
+    if: success() && (inputs.enable-android == true)
+    needs: [setup, build_android,scs]
     name: Artifact Release
-    needs: [setup, build_android]
-    runs-on:
-      group: dso-linux
-    container:
-      image: localhost:5000/android:35-gradle7.3-jdk17
-      options: --cpus 2 -m 4g
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download Artifacts
-        uses: cvch29/platform-actions/.github/actions/shared/artifact-download@main
-        with:
-          artifact_name: android-release-files
-          download_path: ./artifacts
-
-      - name: Generate SBOM
-        uses: cvch29/platform-actions/.github/actions/governance/sbom@main
-        with:
-          artifact-path: .
-          upload-artifact: true
-
-      - name: Artifact Release
-        uses: cvch29/platform-actions/.github/actions/shared/artifact-release-tag@main
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          app-version: ${{ needs.setup.outputs.app-version }}
-
-  
+    uses: cvch29/platform-workflows/.github/workflows/shared-release-tag-v2.yml@main
+    with:
+      app-name: ${{ needs.setup.outputs.app-name }}
+      version-strategy: semver
+      create-github-release: true
+    secrets:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
 
 
   # quality-gate:
