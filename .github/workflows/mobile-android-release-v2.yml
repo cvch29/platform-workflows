@@ -83,7 +83,7 @@ jobs:
       # build-type: release
       # flavor: ${{ inputs.flavor }}
       technology: ${{ inputs.technology }}
-      sign: true
+      sign: false
     secrets:
       keystore-base64: ${{ secrets.keystore-base64 }}
       keystore-password: ${{ secrets.keystore-password }}
