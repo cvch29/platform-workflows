@@ -1,4 +1,4 @@
-name: 'Governance — SBOM & Provenance'
+name: 'Shared — Supply Chain Security'
 
 on:
   workflow_call:
@@ -30,7 +30,7 @@ on:
 
 jobs:
   scs:
-    name: Suply Chain Security
+    name: Supply Chain Security
     runs-on:
       group: dso-linux
     container:
