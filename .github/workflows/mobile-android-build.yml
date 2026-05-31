@@ -107,12 +107,13 @@ jobs:
         with:
           app_name: ${{ inputs.app-name }}
           app_version: ${{ inputs.app-version }}
-          path: app/build
+          path: app
           pattern: |
-            outputs/apk/release/*.apk
-            outputs/bundle/release/*.aab
-            outputs/remote-config/config.json
-            reports/profile/*.html
+            build/outputs/apk/release/*.apk
+            build/outputs/bundle/release/*.aab
+            build/outputs/remote-config/config.json
+            build/reports/profile/*.html
+            gradle.lockfile
           name: android-release-files
           retention-days: 1
           if-no-files-found: warn
@@ -122,3 +123,4 @@ jobs:
             app/build/outputs/bundle/release/*.aab
             remote-config/*.json
             build/reports/profile/*.html
+            gradle.lockfile
