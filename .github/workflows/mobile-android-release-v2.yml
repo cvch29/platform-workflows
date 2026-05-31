@@ -49,13 +49,6 @@ on:
         required: true
 
 jobs:
-  # security:
-  #   uses: cvch29/platform-workflows/.github/workflows/mobile-android-security.yml@main
-  #   with:
-  #     app-name: ${{ inputs.app-name }}
-  #   permissions:
-  #     contents: read
-  #     security-events: write
   setup:
     name: Setup
     runs-on: ubuntu-latest
@@ -103,6 +96,12 @@ jobs:
         with:
           artifact_name: android-release-files
           download_path: ./artifacts
+
+      - name: Generate SBOM
+        uses: cvch29/platform-actions/.github/actions/governance/sbom@main
+        with:
+          artifact-path: .
+          upload-artifact: true
 
       - name: Artifact Release
         uses: cvch29/platform-actions/.github/actions/shared/artifact-release-tag@main
