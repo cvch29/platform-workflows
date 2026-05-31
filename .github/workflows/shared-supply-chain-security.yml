@@ -29,8 +29,8 @@ on:
         value: ${{ jobs.generate.outputs.component-count }}
 
 jobs:
-  generate:
-    name: SBOM + Provenance
+  scs:
+    name: Suply Chain Security
     runs-on: ubuntu-latest
     permissions:
       contents: write

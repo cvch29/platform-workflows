@@ -83,6 +83,16 @@ jobs:
       keystore-alias: ${{ secrets.keystore-alias }}
       keystore-path: ${{ secrets.keystore-path }}
 
+  scs:
+    if: success() && (inputs.enable-android == true)
+    needs: setup
+    name: Supply Chain Security
+    uses: cvch29/platform-workflows/.github/workflows/shared-supply-chain-security.yml@main
+    with:
+      app-name: ${{ needs.setup.outputs.app-name }}
+      artifact-path: /__w/challenge-mbco/challenge-mbco/artifacts
+      image: localhost:5000/android:35-gradle7.3-jdk17
+
   artifact_release:
     name: Artifact Release
     needs: [setup, build_android]
@@ -111,6 +121,9 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           app-version: ${{ needs.setup.outputs.app-version }}
+
+  
+
 
   # quality-gate:
   #   needs: build
@@ -155,3 +168,31 @@ jobs:
   #         outcome: ${{ job.status }}
   #         app-name: ${{ inputs.app-name }}
   #         metadata: '{"channel":"${{ inputs.channel }}","version":"${{ steps.version.outputs.version }}"}'
+  # distribute:
+  #   name: Distribute
+  #   needs: [build, artifact_release]
+  #   runs-on: ubuntu-latest
+  #   environment:
+  #     name: ${{ inputs.environment }}
+
+  #   steps:
+  #     - uses: actions/checkout@v4
+
+  #     - name: Download Artifacts
+  #       uses: cvch29/platform-actions/.github/actions/shared/artifact-download@main
+  #       with:
+  #         artifact_name: android-release-files
+  #         download_path: ./artifacts
+
+  #     - name: Distribute to Firebase App Distribution
+  #       uses: cvch29/platform-actions/.github/actions/domains/mobile/android/distribute/firebase-app@main
+  #       with:
+  #         app_id: 1:432490436563:android:fee35c44f2f2ccf59b4126
+  #         apk_path: "artifacts/android/app/build/outputs/apk/release/${{ inputs.app_name }}-${{ inputs.app_version }}.apk"
+  #         release_notes: 'Automated distribution from GitHub Actions'
+
+  #     - name: Artifact Release
+  #       uses: cvch29/platform-actions/.github/actions/shared/artifact-release-tag@main
+  #       with:
+  #         github-token: ${{ secrets.GITHUB_TOKEN }}
+  #         app-version: ${{ inputs.app_version }}
