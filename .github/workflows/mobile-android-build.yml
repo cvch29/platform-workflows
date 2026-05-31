@@ -113,7 +113,6 @@ jobs:
             build/outputs/bundle/release/*.aab
             build/outputs/remote-config/config.json
             build/reports/profile/*.html
-            gradle.lockfile
           name: android-release-files
           retention-days: 1
           if-no-files-found: warn
@@ -121,6 +120,6 @@ jobs:
           upload_path: |
             app/build/outputs/apk/release/*.apk
             app/build/outputs/bundle/release/*.aab
-            remote-config/*.json
-            build/reports/profile/*.html
-            gradle.lockfile
+            app/remote-config/*.json
+            app/build/reports/profile/*.html
+            app/gradle.lockfile
