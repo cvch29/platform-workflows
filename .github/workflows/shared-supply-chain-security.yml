@@ -40,7 +40,7 @@ jobs:
       sbom-path: ${{ steps.sbom.outputs.sbom-path }}
       component-count: ${{ steps.sbom.outputs.component-count }}
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
+      - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@main
       - id: sbom
         uses: cvch29/platform-actions/.github/actions/governance/sbom@main
         with:
