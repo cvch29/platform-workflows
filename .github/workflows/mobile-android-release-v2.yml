@@ -93,27 +93,14 @@ jobs:
       image: localhost:5000/android:35-gradle7.3-jdk17
 
   artifact_release:
-    if: success() && (inputs.enable-android == true)
     needs: [setup, build_android,scs]
     name: Artifact Release
     uses: cvch29/platform-workflows/.github/workflows/shared-release-tag-v2.yml@main
     with:
       app-name: ${{ needs.setup.outputs.app-name }}
       version-strategy: semver
-      create-github-release: true
     secrets:
       github-token: ${{ secrets.GITHUB_TOKEN }}
-
-
-  # quality-gate:
-  #   needs: build
-  #   uses: cvch29/platform-workflows/.github/workflows/shared-quality-gates.yml@main
-  #   with:
-  #     app-name: ${{ inputs.app-name }}
-  #     environment: ${{ inputs.channel == 'play-production' && 'prod' || 'staging' }}
-  #     require-sbom: true
-  #     require-sast: true
-  #     require-sca: true
 
   # distribute:
   #   name: Tag & Distribute

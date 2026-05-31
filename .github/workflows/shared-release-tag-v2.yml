@@ -6,6 +6,9 @@ on:
       app-name:
         type: string
         required: true
+      app-version:
+        type: string
+        required: true
       version-strategy:
         description: 'semver | calver'
         type: string
@@ -15,11 +18,6 @@ on:
         type: boolean
         required: false
         default: true
-    outputs:
-      version:
-        value: ${{ jobs.tag.outputs.version }}
-      version-bare:
-        value: ${{ jobs.tag.outputs.version-bare }}
     secrets:
       github-token:
         required: true
@@ -45,4 +43,4 @@ jobs:
         uses: cvch29/platform-actions/.github/actions/shared/artifact-release-tag@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          app-version: ${{ needs.setup.outputs.app-version }}
+          app-version: ${{ inputs.app-version }}
