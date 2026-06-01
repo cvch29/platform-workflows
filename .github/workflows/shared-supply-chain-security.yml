@@ -70,11 +70,12 @@ jobs:
       #   uses: actions/attest-build-provenance@main
       #   with:
       #     subject-path: ${{ inputs.artifact-path }}
-      - if: inputs.generate-provenance
-        uses: cvch29/platform-actions/.github/actions/governance/provenance@main
-        with:
-          artifact-path: ${{ inputs.artifact-path }}
-          artifact-name: ${{ inputs.app-name }}
+      # - name: Generate provenance attestation
+      #   if: inputs.generate-provenance
+      #   uses: cvch29/platform-actions/.github/actions/governance/provenance@main
+      #   with:
+      #     artifact-path: ${{ inputs.artifact-path }}
+      #     artifact-name: ${{ inputs.app-name }}
       - uses: cvch29/platform-actions/.github/actions/governance/audit-log@main
         with:
           event-type: build
