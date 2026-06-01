@@ -6,6 +6,9 @@ on:
       app-name:
         type: string
         required: true
+      app-version:
+        type: string
+        required: true
       version-strategy:
         description: 'semver | calver'
         type: string
@@ -15,11 +18,11 @@ on:
         type: boolean
         required: false
         default: true
-    outputs:
-      version:
-        value: ${{ jobs.tag.outputs.version }}
-      version-bare:
-        value: ${{ jobs.tag.outputs.version-bare }}
+    # outputs:
+    #   version:
+    #     value: ${{ jobs.tag.outputs.version }}
+    #   version-bare:
+    #     value: ${{ jobs.tag.outputs.version-bare }}
     secrets:
       github-token:
         required: true
@@ -30,20 +33,20 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    outputs:
-      version: ${{ steps.version.outputs.version }}
-      version-bare: ${{ steps.version.outputs.version-bare }}
+    # outputs:
+    #   version: ${{ steps.version.outputs.version }}
+    #   version-bare: ${{ steps.version.outputs.version-bare }}
 
     steps:
       - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
         with:
           fetch-depth: 0
 
-      - name: Calculate version
-        id: version
-        uses: cvch29/platform-actions/.github/actions/intelligence/versioning@main
-        with:
-          strategy: ${{ inputs.version-strategy }}
+      # - name: Calculate version
+      #   id: version
+      #   uses: cvch29/platform-actions/.github/actions/intelligence/versioning@main
+      #   with:
+      #     strategy: ${{ inputs.version-strategy }}
 
       - name: Create Git tag
         env:
@@ -52,19 +55,19 @@ jobs:
         run: |
           git config user.name "platform-bot"
           git config user.email "platform-bot@mybank.com"
-          git tag -a "${{ steps.version.outputs.version }}" \
-            -m "Release ${{ steps.version.outputs.version }} — ${{ inputs.app-name }}"
-          git push origin "${{ steps.version.outputs.version }}"
+          git tag -a "${{ inputs.app-version }}" \
+            -m "Release ${{ inputs.app-version }} — ${{ inputs.app-name }}"
+          git push origin "${{ inputs.app-version }}"
 
-      - name: Create GitHub Release
-        if: inputs.create-github-release && steps.version.outputs.is-release == 'true'
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.version.outputs.version }}
-          name: "${{ inputs.app-name }} ${{ steps.version.outputs.version }}"
-          body: |
-            ## Changes
-            ${{ steps.version.outputs.changelog }}
+      # - name: Create GitHub Release
+      #   if: inputs.create-github-release && steps.version.outputs.is-release == 'true'
+      #   uses: softprops/action-gh-release@v2
+      #   with:
+      #     tag_name: ${{ inputs.app-version }}
+      #     name: "${{ inputs.app-name }} ${{ inputs.app-version }}"
+      #     body: |
+      #       ## Changes
+      #       ${{ steps.version.outputs.changelog }}
 
-            **CI Run:** [#${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-          prerelease: ${{ steps.version.outputs.is-release != 'true' }}
+      #       **CI Run:** [#${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+      #     prerelease: ${{ steps.version.outputs.is-release != 'true' }}

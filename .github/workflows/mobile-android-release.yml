@@ -95,7 +95,7 @@ jobs:
   artifact_release:
     needs: [setup, build_android,scs]
     name: Artifact Release
-    uses: cvch29/platform-workflows/.github/workflows/shared-release-tag-v2.yml@main
+    uses: cvch29/platform-workflows/.github/workflows/shared-release-tag.yml@main
     with:
       app-name: ${{ needs.setup.outputs.app-name }}
       app-version: ${{ needs.setup.outputs.app-version }}
