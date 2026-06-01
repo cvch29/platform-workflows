@@ -77,3 +77,10 @@ jobs:
     permissions:
       contents: read
       security-events: write
+
+  quality:
+    name: Code Quality Scan
+    needs: pr-validate
+    uses: cvch29/platform-workflows/.github/workflows/shared-quality-scan.yml@main
+    with:
+      app-name: ${{ inputs.app-name }}
