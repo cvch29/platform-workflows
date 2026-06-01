@@ -57,11 +57,11 @@ jobs:
           image: ${{ inputs.image }}
           format: 'cyclonedx-json,spdx-json'
           upload-artifact: true
-      - name: Attest build provenance
-        if: inputs.generate-provenance
-        uses: actions/attest-build-provenance@main
-        with:
-          subject-path: ${{ inputs.artifact-path }}
+      # - name: Attest build provenance
+      #   if: inputs.generate-provenance
+      #   uses: actions/attest-build-provenance@main
+      #   with:
+      #     subject-path: ${{ inputs.artifact-path }}
       - if: inputs.generate-provenance
         uses: cvch29/platform-actions/.github/actions/governance/provenance@main
         with:
