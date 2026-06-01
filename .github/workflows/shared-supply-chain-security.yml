@@ -45,6 +45,11 @@ jobs:
       component-count: ${{ steps.sbom.outputs.component-count }}
     steps:
       - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@main
+      - name: Download Artifacts
+        uses: cvch29/platform-actions/.github/actions/shared/artifact-download@main
+        with:
+          artifact_name: android-release-files
+          download_path: ./artifacts
       - id: sbom
         uses: cvch29/platform-actions/.github/actions/governance/sbom@main
         with:
