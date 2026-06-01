@@ -6,6 +6,9 @@ on:
       app-name:
         type: string
         required: true
+      app-version:
+        type: string
+        required: true
       language:
         description: 'javascript | java | kotlin | android | python | swift'
         type: string
@@ -51,6 +54,11 @@ on:
         default: ''
       sonar-android-flavor:
         description: 'Android flavor for Sonar report paths'
+        type: string
+        required: false
+        default: ''
+      properties:
+        description: 'Additional properties to pass to SonarQube (e.g. -Dsonar.exclusions=**/*.test.js)'
         type: string
         required: false
         default: ''
@@ -138,15 +146,15 @@ jobs:
           env | grep SONAR
 
       - name: SonarQube Scan PR
-        if: github.event_name == 'pull_request'
+        # if: github.event_name == 'pull_request'
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
           args: >
-            -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
-            -Dsonar.projectVersion=${{ vars.APP_VERSION }}
+            -Dsonar.projectKey=${{ github.repository }}
+            -Dsonar.projectVersion=${{ inputs.app-version }}
             -Dsonar.sources=.
             -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
             -Dsonar.pullrequest.branch=${{ github.head_ref }}
@@ -159,3 +167,8 @@ jobs:
 
       - name: Setup SonarQube Analysis
         uses: cvch29/platform-actions/.github/actions/security/sonar-break-build@main
+        with:
+          sonar-url: ${{ inputs.sonar-host-url }}
+          sonar-token: ${{ secrets.sonar-token }}
+          project: ${{ inputs.sonar-project-key }}
+          branch: ${{ github.head_ref }}
