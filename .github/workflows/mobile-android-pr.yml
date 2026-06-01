@@ -37,12 +37,12 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           build-gradle-path: ${{ inputs.gradle-build-path }}
 
-  # pr-validate:
-  #   name: PR Validation
-  #   uses: cvch29/platform-workflows/.github/workflows/shared-pr-validation.yml@main
-  #   with:
-  #     app-name: ${{ inputs.app-name }}
-  #     runtime: android
+  pr-validate:
+    name: PR Validation
+    uses: cvch29/platform-workflows/.github/workflows/shared-pr-validation.yml@main
+    with:
+      app-name: ${{ inputs.app-name }}
+      runtime: android
 
   # build-test:
   #   name: Unit Test and Lint
