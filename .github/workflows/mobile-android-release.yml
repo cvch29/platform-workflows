@@ -67,7 +67,7 @@ jobs:
   build_android:
     if: success() && (inputs.enable-android == true)
     needs: setup
-    name: Build Android
+    # name: Build Android
     uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@main
     with:
       app-name: ${{ needs.setup.outputs.app-name }}
@@ -87,7 +87,7 @@ jobs:
 
   scs:
     needs: [setup,build_android]
-    name: Supply Chain Security
+    # name: Supply Chain Security
     uses: cvch29/platform-workflows/.github/workflows/shared-supply-chain-security.yml@main
     with:
       app-name: ${{ needs.setup.outputs.app-name }}

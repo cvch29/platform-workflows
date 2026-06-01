@@ -38,7 +38,7 @@ on:
 
 jobs:
   scs:
-    # name: Supply Chain Security
+    name: Supply Chain Security
     runs-on:
       group: dso-linux
     container:
