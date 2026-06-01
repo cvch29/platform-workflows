@@ -22,6 +22,14 @@ on:
         type: string
         required: false
         default: ''
+      container-image-name-runner:
+        type: string
+        required: false
+        default: ''
+      container-image-resource-runner:
+        type: string
+        required: false
+        default: '--cpus 2 -m 4g' 
     # outputs:
     #   sbom-path:
     #     value: ${{ jobs.generate.outputs.sbom-path }}
@@ -34,8 +42,8 @@ jobs:
     runs-on:
       group: dso-linux
     container:
-      image: localhost:5000/android:35-gradle7.3-jdk17
-      options: --cpus 2 -m 4g
+      image: ${{ inputs.container-image-name-runner }}
+      options: ${{ inputs.container-image-resource-runner }}
     permissions:
       contents: write
       id-token: write
