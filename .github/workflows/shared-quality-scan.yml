@@ -64,11 +64,11 @@ on:
         default: ''
       container-image-name-runner:
         type: string
-        required: false
+        required: true
         default: ''
       container-image-resource-runner:
         type: string
-        required: false
+        required: true
         default: '--cpus 2 -m 4g' 
     secrets:
       sonar-token:
