@@ -184,4 +184,4 @@ jobs:
           sonar-token: "sqa_c6ecaaf40feea721c5435d15364fb3994f974eb3"
           # sonar-token: ${{ secrets.sonar-token }}
           project: ${{ inputs.sonar-project-key }}
-          branch: ${{ github.head_ref }}
+          branch: ${{ github.event.pull_request.number }}
