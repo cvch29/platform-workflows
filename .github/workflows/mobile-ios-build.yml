@@ -51,22 +51,18 @@ jobs:
     steps:
       - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@main
 
-
       - name: Setup Keychain
-        uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/ios/sign@main
+        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/validate-private-key-p12@main
         with:
           p12-base64: ${{ secrets.p12-base64 }}
           p12-password: ${{ secrets.p12-password }}
-          provisioning-profile-base64: ${{ secrets.provisioning-profile-base64 }}
-          bundle-id: ${{ inputs.bundle-id }}
 
       - name: Mostrar configuración de compilación
-        uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/ios/build@main
+        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/xcode-build-settings@main
         with:
           scheme: ${{ inputs.scheme }}
-          workspace: ${{ inputs.workspace }}
-          export-method: ${{ inputs.export-method }}
-          show-build-settings: true
+          configuration: ${{ inputs.configuration }}
+          working-directory: "ios"
 
       - name: Definir perfil de aprovisionamiento
         if: ${{ inputs.provisioning-profile-base64 != '' }}
@@ -81,33 +77,36 @@ jobs:
           echo "EXPORT_TYPE=$PROFILE_TYPE" >> $GITHUB_ENV
 
       - name: Descargar perfil de aprovisionamiento
-        if: ${{ inputs.provisioning-profile-base64 != '' }}
-        uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/ios/provisioning-profile-download@main
+        # if: ${{ inputs.provisioning-profile-base64 != '' }}
+        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/apple-download-provisioning-profile@main
         with:
+          apple-api-key-id: ${{ secrets.apple-api-key-id }}
+          apple-api-issuer-id: ${{ secrets.apple-api-key-issuer-id }}
+          apple-api-key-content: ${{ secrets.apple-api-key-content }}
           profile-name: ${{ env.PROFILE_NAME }}
-          profile-type: ${{ env.PROFILE_TYPE }}
           app-identifier: ${{ inputs.bundle-id }}
+          team-id: ${{ secrets.apple-team-id }}
 
       - name: Validar perfil de aprovisionamiento
-        if: ${{ inputs.provisioning-profile-base64 != '' }}
-        uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/ios/provisioning-profile-validate@main
+        # if: ${{ inputs.provisioning-profile-base64 != '' }}
+        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/validate-provisioning-profile@main
         with:
           prov-profile-path: provisioning-profile.mobileprovision
           validate-cer: true
           fingerprint: ${{ secrets.p12-fingerprint }}
 
       - name: Instalar llave privada de apple
-        uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/ios/sign@main
+        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/install-apple-private-key-p12@main
         with:
           p12-base64: ${{ secrets.p12-base64 }}
           p12-password: ${{ secrets.p12-password }}
 
-      - name: Instalar perfil de aprovisionamiento
-        if: ${{ inputs.provisioning-profile-base64 != '' }}
-        uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/ios/sign@main
-        with:
-          provisioning-profile-base64: ${{ secrets.provisioning-profile-base64 }}
-          bundle-id: ${{ inputs.bundle-id }}
+      # - name: Instalar perfil de aprovisionamiento
+      #   # if: ${{ inputs.provisioning-profile-base64 != '' }}
+      #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/install-apple-provisioning-profile@main
+      #   with:
+      #     provisioning-profile-base64: ${{ secrets.provisioning-profile-base64 }}
+      #     bundle-id: ${{ inputs.bundle-id }}
 
       - name: Install Dependencies
         if: ${{ inputs.technology == 'react-native' }}
@@ -116,69 +115,71 @@ jobs:
           working-directory: .
         
       - name: Configurar proyecto
-        uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/ios/build@main
+        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/xcode-configure-settings@main
         with:
-          scheme: ${{ inputs.scheme }}
-          workspace: ${{ inputs.workspace }}
-          export-method: ${{ inputs.export-method }}
+          project: ${{ inputs.project }}
+          target: ${{ inputs.target }}
           options: |
             PROVISIONING_PROFILE_SPECIFIER=${{ env.PROFILE_NAME }}
-            CODE_SIGN_STYLE=Manual
-            OTHER_CODE_SIGN_FLAGS=--keychain=$HOME/Library/Keychains/login.keychain
+            DEVELOPMENT_TEAM=${{ secrets.apple-team-id }}
+            CODE_SIGN_IDENTITY="Apple Distribution"
+            CODE_SIGN_STYLE="Manual"
+            CODE_SIGNING_REQUIRED=YES
+            OTHER_CODE_SIGN_FLAGS=--keychain=${{ env.KEYCHAIN_PATH }}
+          configuration: ${{ inputs.configuration }}
 
-      - name: Actualizar versión
-        uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/ios/build@main
-        with:
-          scheme: ${{ inputs.scheme }}
-          workspace: ${{ inputs.workspace }}
-          export-method: ${{ inputs.export-method }}
-          options: |
-            MARKETING_VERSION=${{ inputs.app-version }}
-            CURRENT_PROJECT_VERSION=${{ inputs.app-version }}
+      # - name: Actualizar versión
+      #   uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/ios/build@main
+      #   with:
+      #     scheme: ${{ inputs.scheme }}
+      #     workspace: ${{ inputs.workspace }}
+      #     export-method: ${{ inputs.export-method }}
+      #     options: |
+      #       MARKETING_VERSION=${{ inputs.app-version }}
+      #       CURRENT_PROJECT_VERSION=${{ inputs.app-version }}
 
 
-      - name: Configurar Proyecto para IxGuard
-        if: ${{ env.IXGUARD_ENABLED == 'true' }}
-        uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/ios/build@main
-        with:
-          scheme: ${{ inputs.scheme }}
-          workspace: ${{ inputs.workspace }}
-          export-method: ${{ inputs.export-method }}
-          options: |
-            ENABLE_BITCODE=YES
-            ENABLE_TESTABILITY=NO
-            ENABLE_TESTING_SEARCH_PATHS=NO
+      # - name: Configurar Proyecto para IxGuard
+      #   if: ${{ env.IXGUARD_ENABLED == 'true' }}
+      #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/xcode-configure-ixguard-toolchain@main
+      #   with:
+      #     workspace: ${{ inputs.workspace }}
+      #     scheme: ${{ inputs.scheme }}
+      #     target: ${{ inputs.target }}
 
       - name: Configurar IxGuard Toolchain
         if: ${{ env.IXGUARD_ENABLED == 'true' }}
-        uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/ios/build@main
+        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/xcode-configure-ixguard-toolchain@main
         with:
-          scheme: ${{ inputs.scheme }}
           workspace: ${{ inputs.workspace }}
-          export-method: ${{ inputs.export-method }}
-          configure-ixguard-toolchain: true
-
-
-
+          scheme: ${{ inputs.scheme }}
+          target: ${{ inputs.target }}
 
       - name: Build iOS
         id: build
-        uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/ios/build@main
+        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/fastlane-generate-archive@main
         with:
           scheme: ${{ inputs.scheme }}
           workspace: ${{ inputs.workspace }}
-          export-method: ${{ inputs.export-method }}
+          configuration: ${{ inputs.configuration }}
 
       - name: Ofuscar .archive con IxGuard
         if: ${{ env.IXGUARD_ENABLED == 'true' }}
-        uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/ios/build@main
+        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/ixguard-obfuscate@main
+        with:
+          archive: ${{ steps.build.outputs.archive-path }}
+          configuration: ${{ inputs.configuration }}
+          license-base64: ${{ secrets.ixguard-license-key }}
+
+      - name: Exportar .ipa
+        if: ${{ env.IXGUARD_ENABLED == 'true' }}
+        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/fastlane-export-archive@main
         with:
           scheme: ${{ inputs.scheme }}
           workspace: ${{ inputs.workspace }}
-          export-method: ${{ inputs.export-method }}
-          ixguard-obfuscate: true
-          ixguard-license: ${{ secrets.IXGUARD_LICENSE }}
-          ixguard-configuration: release
+          archive: ${{ steps.build.outputs.archive-path }}
+          app-identifier: ${{ inputs.bundle-id }}
+          prov-profile: ${{ env.PROFILE_NAME }}
 
       - name: Artifact Management
         uses: cvch29/platform-actions/.github/actions/shared/artifact-manage@main
