@@ -177,7 +177,7 @@ jobs:
       # - name: Setup SonarQube Analysis
       #   uses: cvch29/platform-actions/.github/actions/security/sonar-wontfix@main
 
-      - name: Setup SonarQube Analysis
+      - name: Enforce SonarQube Quality Gate
         uses: cvch29/platform-actions/.github/actions/security/sonar-break-build@main
         with:
           sonar-url: "http://192.168.1.199:9000/"
