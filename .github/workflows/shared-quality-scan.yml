@@ -155,7 +155,7 @@ jobs:
 
       - name: Show Sonar Metadata
         run: |
-          env | grep SONAR
+          env
 
       - name: SonarQube Scan PR
         # if: github.event_name == 'pull_request'
