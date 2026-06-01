@@ -161,8 +161,8 @@ jobs:
         # if: github.event_name == 'pull_request'
         uses: SonarSource/sonarqube-scan-action@v6
         env:
-          SONAR_TOKEN: ${{ secrets.sonar-token }}
-          SONAR_HOST_URL: ${{ secrets.sonar-host-url }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
           args: >
             -Dsonar.projectKey=${{ inputs.sonar-project-key }}
@@ -180,7 +180,8 @@ jobs:
       - name: Setup SonarQube Analysis
         uses: cvch29/platform-actions/.github/actions/security/sonar-break-build@main
         with:
-          sonar-url: ${{ inputs.sonar-host-url }}
-          sonar-token: ${{ secrets.sonar-token }}
+          sonar-url: ${{ secrets.SONAR_HOST_URL }}
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          # sonar-token: ${{ secrets.sonar-token }}
           project: ${{ inputs.sonar-project-key }}
           branch: ${{ github.head_ref }}
