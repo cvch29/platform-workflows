@@ -35,7 +35,7 @@ on:
       sonar-host-url:
         description: 'SonarQube server URL (e.g. https://sonar.mybank.com)'
         type: string
-        required: false
+        required: true
         default: ''
       sonar-project-key:
         description: 'SonarQube project key. Default: repo slug.'
@@ -161,11 +161,11 @@ jobs:
         # if: github.event_name == 'pull_request'
         uses: SonarSource/sonarqube-scan-action@v6
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.sonar-token }}
+          SONAR_HOST_URL: ${{ secrets.sonar-host-url }}
         with:
           args: >
-            -Dsonar.projectKey=${{ github.repository }}
+            -Dsonar.projectKey=${{ inputs.sonar-project-key }}
             -Dsonar.projectVersion=${{ inputs.app-version }}
             -Dsonar.sources=.
             -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
