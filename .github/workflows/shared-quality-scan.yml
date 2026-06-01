@@ -35,7 +35,7 @@ on:
       sonar-host-url:
         description: 'SonarQube server URL (e.g. https://sonar.mybank.com)'
         type: string
-        required: true
+        required: false
         default: ''
       sonar-project-key:
         description: 'SonarQube project key. Default: repo slug.'
