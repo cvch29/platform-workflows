@@ -90,7 +90,7 @@ jobs:
     with:
       app-name: ${{ needs.setup.outputs.app-name }}
       artifact-path: "/__w/challenge-mbco/challenge-mbco/artifacts"
-      container-image-name-runner: "localhost:5000/android:35-gradle7.3-jdk17"
+      container-image-name-runner: "${{ vars.REGISTRY }}/android:35-gradle7.3-jdk17"
       container-image-resource-runner: "--cpus 2 -m 4g"
 
   artifact_release:
