@@ -77,7 +77,7 @@ jobs:
       # flavor: ${{ inputs.flavor }}
       technology: ${{ inputs.technology }}
       sign: true
-      container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG }}"
+      container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_BUILD }}"
       container-image-resource-runner: "--cpus 6 -m 12g"
     secrets:
       keystore-base64: ${{ secrets.keystore-base64 }}
@@ -92,7 +92,7 @@ jobs:
     with:
       app-name: ${{ needs.setup.outputs.app-name }}
       artifact-path: "/__w/challenge-mbco/challenge-mbco/artifacts"
-      container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG }}"
+      container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_SCS }}"
       container-image-resource-runner: "--cpus 2 -m 4g"
 
   artifact_release:
