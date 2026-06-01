@@ -39,6 +39,7 @@ jobs:
 
   pr-validate:
     name: PR Validation
+    needs: setup
     uses: cvch29/platform-workflows/.github/workflows/shared-pr-validation.yml@main
     with:
       app-name: ${{ inputs.app-name }}
