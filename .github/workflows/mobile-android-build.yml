@@ -26,6 +26,14 @@ on:
         type: string
         required: false
         default: assembleRelease
+      container-image-name-runner:
+        type: string
+        required: false
+        default: ''
+      container-image-resource-runner:
+        type: string
+        required: false
+        default: '--cpus 2 -m 4g' 
     secrets:
       keystore-base64:
         required: false
@@ -45,8 +53,8 @@ jobs:
       METRO_CACHE: /tmp/metro-cache
       NODE_OPTIONS: --max-old-space-size=8192
     container:
-      image: localhost:5000/android:35-gradle7.3-jdk17
-      options: --cpus 8 -m 16g
+      image: ${{ inputs.container-image-name-runner }}
+      options: ${{ inputs.container-image-resource-runner }}
       volumes:
         - /opt/cache/yarn:/opt/yarn
         - /opt/cache/gradle/modules-2:/opt/gradle-shared/modules-2

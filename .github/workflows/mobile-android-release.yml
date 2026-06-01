@@ -77,6 +77,8 @@ jobs:
       # flavor: ${{ inputs.flavor }}
       technology: ${{ inputs.technology }}
       sign: true
+      container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG }}"
+      container-image-resource-runner: "--cpus 2 -m 4g"
     secrets:
       keystore-base64: ${{ secrets.keystore-base64 }}
       keystore-password: ${{ secrets.keystore-password }}
