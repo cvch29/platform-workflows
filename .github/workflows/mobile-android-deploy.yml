@@ -1,0 +1,118 @@
+name: 'Mobile Android — Release'
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      app-version:
+        type: string
+        required: true
+      technology:
+        description: 'react-native | native'
+        type: string
+        required: true
+      android-channel:
+        type: string
+        required: false
+        default: 'play-internal'
+      package-manager:
+        type: string
+        required: false
+        default: 'yarn'
+      gradle-build-path:
+        type: string
+        default: app/build.gradle.kts
+      environment:
+        type: string
+        default: dev
+      keystore_path:
+        type: string
+        default: android-keystore.jks
+      flavor:
+        type: string
+        default: ''
+      command:
+        type: string
+        default: assembleRelease
+      enable-android:
+        type: boolean
+        default: true
+      enable-ios:
+        type: boolean
+        default: false
+    secrets:
+      keystore-base64:
+        required: false
+      keystore-password:
+        required: false
+      keystore-alias:
+        required: false
+      keystore-path:
+        required: false
+      github-token:
+        required: true
+
+jobs: 
+  distribute:
+    name: Distribute
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Artifacts
+        uses: cvch29/platform-actions/.github/actions/shared/artifact-download@main
+        with:
+          artifact_name: android-release-files
+          download_path: ./artifacts
+
+      - name: Distribute to Firebase App Distribution
+        uses: cvch29/platform-actions/.github/actions/domains/mobile/android/distribute/firebase-app@main
+        with:
+          app_id: 1:432490436563:android:fee35c44f2f2ccf59b4126
+          apk_path: "artifacts/android/app/build/outputs/apk/release/${{ inputs.app-name }}-${{ inputs.app-version }}.apk"
+          release_notes: 'Automated distribution from GitHub Actions'
+
+      - name: Artifact Release
+        uses: cvch29/platform-actions/.github/actions/shared/artifact-release-tag@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          app-version: ${{ inputs.app-version }}
+
+  # distribute:
+  #   name: Tag & Distribute
+  #   needs: [build, quality-gate]
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: write
+  #   outputs:
+  #     version: ${{ steps.version.outputs.version }}
+  #   steps:
+  #     - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@main
+  #       with:
+  #         fetch-depth: 0
+  #     - uses: cvch29/platform-actions/.github/actions/shared-v2/artifact-download@main
+  #       with:
+  #         name: release-artifact.zip
+  #     - id: version
+  #       uses: cvch29/platform-actions/.github/actions/intelligence/versioning@main
+  #     - uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/android/distribute@main
+  #       with:
+  #         artifact-path: ${{ needs.build.outputs.artifact-path }}
+  #         channel: ${{ inputs.channel }}
+  #         release-notes: "Release ${{ steps.version.outputs.version }}"
+  #         firebase-app-id: ${{ inputs.firebase-app-id }}
+  #         google-play-service-account-json: ${{ secrets.google-play-service-account-json }}
+  #         package-name: ${{ inputs.package-name }}
+  #     - if: always()
+  #       uses: cvch29/platform-actions/.github/actions/governance/audit-log@main
+  #       with:
+  #         event-type: release
+  #         environment: ${{ inputs.channel == 'play-production' && 'prod' || 'staging' }}
+  #         outcome: ${{ job.status }}
+  #         app-name: ${{ inputs.app-name }}
+  #         metadata: '{"channel":"${{ inputs.channel }}","version":"${{ steps.version.outputs.version }}"}'
