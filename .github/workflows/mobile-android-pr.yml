@@ -18,8 +18,25 @@ on:
         type: boolean
         required: false
         default: true
-
+      gradle-build-path:
+        type: string
+        default: app/build.gradle.kts
 jobs:
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+    outputs:
+      app-version: ${{ steps.setup-android.outputs.app-version }}
+      app-name: ${{ steps.setup-android.outputs.app-name }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Environment
+        id: setup-android
+        uses: cvch29/platform-actions/.github/actions/domains/mobile/android/setup@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          build-gradle-path: ${{ inputs.gradle-build-path }}
+
   # pr-validate:
   #   name: PR Validation
   #   uses: cvch29/platform-workflows/.github/workflows/shared-pr-validation.yml@main
@@ -80,8 +97,9 @@ jobs:
 
   quality:
     # name: Code Quality Scan
-    # needs: pr-validate
+    needs: setup
     uses: cvch29/platform-workflows/.github/workflows/shared-quality-scan.yml@main
     with:
-      app-name: ${{ inputs.app-name }}
+      app-name: ${{ needs.setup.outputs.app-name }}
       language: kotlin
+      app-version: ${{ needs.setup.outputs.app-version }}
