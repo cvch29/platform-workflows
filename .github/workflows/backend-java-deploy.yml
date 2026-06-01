@@ -79,7 +79,7 @@ jobs:
           azure-subscription-id: ${{ secrets.azure-subscription-id }}
       - name: Deploy to AKS
         id: deploy
-        uses: cvch29/platform-actions/.github/actions/backend/java/deploy@main
+        uses: cvch29/platform-actions/.github/actions/domains-v2/backend/java/deploy@main
         with:
           app-name: ${{ inputs.app-name }}
           environment: ${{ inputs.environment }}

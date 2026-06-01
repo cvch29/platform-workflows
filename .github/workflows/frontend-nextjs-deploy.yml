@@ -67,7 +67,7 @@ jobs:
       - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
       - name: Deploy to Azure SWA
         if: inputs.deployment-target == 'static-web-apps'
-        uses: Azure/static-web-apps-deploy@main
+        uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.azure-static-web-apps-token }}
           repo_token: ${{ github.token }}
@@ -77,7 +77,7 @@ jobs:
           app_build_command: 'npm run build'
       - name: Deploy to AKS
         if: inputs.deployment-target == 'aks'
-        uses: cvch29/platform-actions/.github/actions/backend/node/deploy@main
+        uses: cvch29/platform-actions/.github/actions/domains-v2/backend/node/deploy@main
         with:
           app-name: ${{ inputs.app-name }}
           environment: ${{ inputs.environment }}

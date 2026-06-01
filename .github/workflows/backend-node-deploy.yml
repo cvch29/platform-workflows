@@ -71,7 +71,7 @@ jobs:
           azure-tenant-id: ${{ secrets.azure-tenant-id }}
           azure-subscription-id: ${{ secrets.azure-subscription-id }}
       - id: deploy
-        uses: cvch29/platform-actions/.github/actions/backend/node/deploy@main
+        uses: cvch29/platform-actions/.github/actions/domains-v2/backend/node/deploy@main
         with:
           app-name: ${{ inputs.app-name }}
           environment: ${{ inputs.environment }}

@@ -6,6 +6,9 @@ on:
       app-name:
         type: string
         required: true
+      app-version:
+        type: string
+        required: true
       acr-registry:
         type: string
         required: false
@@ -72,5 +75,6 @@ jobs:
     uses: cvch29/platform-workflows/.github/workflows/shared-release-tag.yml@main
     with:
       app-name: ${{ inputs.app-name }}
+      app-version: ${{ inputs.app-version }}
     secrets:
       github-token: ${{ secrets.github-token }}
