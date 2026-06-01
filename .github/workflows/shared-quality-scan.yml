@@ -77,7 +77,7 @@ jobs:
   # That is the "break the build" behavior.
   sonar:
     name: SonarQube Analysis
-    if: inputs.run-sonar && inputs.sonar-host-url != ''
+    # if: inputs.run-sonar && inputs.sonar-host-url != ''
     runs-on: ubuntu-latest
     permissions:
       contents: read
