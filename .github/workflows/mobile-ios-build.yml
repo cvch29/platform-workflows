@@ -16,11 +16,11 @@ on:
         required: true
       scheme:
         type: string
-        required: true
+        required: false
         default: 'App'
       configuration:
         type: string
-        required: true
+        required: false
         default: 'Release'
       workspace:
         type: string
