@@ -54,7 +54,7 @@ on:
         required: true
       apple-api-key-id:
         required: true
-      apple-api-key-issuer-id:
+      apple-api-issuer-id:
         required: true
       apple-api-key-content:
         required: true
@@ -113,7 +113,7 @@ jobs:
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/apple-download-provisioning-profile@main
         with:
           apple-api-key-id: ${{ secrets.apple-api-key-id }}
-          apple-api-issuer-id: ${{ secrets.apple-api-key-issuer-id }}
+          apple-api-issuer-id: ${{ secrets.apple-api-issuer-id }}
           apple-api-key-content: ${{ secrets.apple-api-key-content }}
           profile-name: ${{ inputs.profile-name }}
           app-identifier: ${{ inputs.bundle-id }}
