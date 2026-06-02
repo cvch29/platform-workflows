@@ -157,7 +157,7 @@ jobs:
       #     bundle-id: ${{ inputs.bundle-id }}
 
       - name: Install Dependencies
-        if: ${{ inputs.technology == 'react-native' }}
+        # if: ${{ inputs.technology == 'react-native' }}
         uses: cvch29/platform-actions/.github/actions/tooling/node@main
         with:
           working-directory: .
@@ -165,16 +165,16 @@ jobs:
       - name: Configurar proyecto
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/xcode-configure-settings@main
         with:
-          project: ${{ inputs.project }}
-          target: ${{ inputs.target }}
-          options: |
-            PROVISIONING_PROFILE_SPECIFIER=${{ env.PROFILE_NAME }}
-            DEVELOPMENT_TEAM=${{ secrets.apple-team-id }}
-            CODE_SIGN_IDENTITY="Apple Distribution"
-            CODE_SIGN_STYLE="Manual"
-            CODE_SIGNING_REQUIRED=YES
-            OTHER_CODE_SIGN_FLAGS=--keychain=${{ env.KEYCHAIN_PATH }}
+          project: ios/SaveIO.xcodeproj
+          target: SaveIO
           configuration: ${{ inputs.configuration }}
+          options: |
+            PROVISIONING_PROFILE_SPECIFIER=profile-saveio
+            DEVELOPMENT_TEAM=N9GR2VZ7H7
+            CODE_SIGN_IDENTITY=Apple Distribution
+            CODE_SIGN_STYLE=Manual
+            CODE_SIGNING_REQUIRED=YES
+            OTHER_CODE_SIGN_FLAGS=--keychain=/Users/runner/work/_temp/26801070489.keychain-db
 
       # - name: Actualizar versión
       #   uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/ios/build@main
