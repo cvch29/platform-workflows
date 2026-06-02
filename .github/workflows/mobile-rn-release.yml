@@ -114,6 +114,7 @@ jobs:
     secrets:
       p12-base64: ${{ secrets.p12-base64 }}
       p12-password: ${{ secrets.p12-password }}
+      provisioning-profile-base64: ${{ secrets.PROVISIONING_PROFILE_BASE64 }}
 
   # quality-gate:
   #   needs: [build-android]
