@@ -74,15 +74,15 @@ jobs:
     steps:
       - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@main
 
-      - name: Setup Ruby con OpenSSL
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.3'
-          bundler-cache: false
+      # - name: Setup Ruby con OpenSSL
+      #   uses: ruby/setup-ruby@v1
+      #   with:
+      #     ruby-version: '3.3'
+      #     bundler-cache: false
 
-      - name: Install Fastlane
-        run: gem install fastlane
-        
+      # - name: Install Fastlane
+      #   run: gem install fastlane
+
       - name: Setup Keychain
         id: setup-keychain
         uses: cvch29/platform-actions/.github/actions/shared-v2/setup-keychain@main
