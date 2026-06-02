@@ -34,6 +34,10 @@ on:
         type: string
         required: false
         default: '--cpus 2 -m 4g' 
+      enable-android:
+        type: boolean
+        required: false
+        default: false
     secrets:
       keystore-base64:
         required: false
@@ -44,7 +48,9 @@ on:
       keystore-path:
         required: false
 jobs:
+  
   build:
+    if: success() && (inputs.enable-android == true)
     name: Build Android
     runs-on:
       group: dso-linux

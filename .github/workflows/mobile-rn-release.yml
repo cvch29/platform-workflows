@@ -89,7 +89,7 @@ jobs:
           node-build-path: ${{ inputs.node-build-path }}
 
   build_android:
-    if: success() && (inputs.enable-android == true)
+    
     needs: setup
     name: Build Android
     uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@main
