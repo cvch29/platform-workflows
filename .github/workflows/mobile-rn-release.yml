@@ -75,7 +75,7 @@ jobs:
         uses: cvch29/platform-actions/.github/actions/shared-v2/setup-node@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          build-node-path: ${{ inputs.node-build-path }}
+          node-build-path: ${{ inputs.node-build-path }}
 
   build_android:
     if: success() && (inputs.enable-android == true)
