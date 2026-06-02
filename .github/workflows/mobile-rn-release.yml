@@ -57,6 +57,8 @@ on:
         required: false
       apple-api-key-content:
         required: false
+      apple-team-id:
+        required: false
 jobs:
   # security:
   #   uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@main
@@ -123,6 +125,7 @@ jobs:
       apple-api-key-id: ${{ secrets.apple-api-key-id }}
       apple-api-issuer-id: ${{ secrets.apple-api-issuer-id }}
       apple-api-key-content: ${{ secrets.apple-api-key-content }}
+      apple-team-id: ${{ secrets.apple-team-id }}
 
   # quality-gate:
   #   needs: [build-android]
