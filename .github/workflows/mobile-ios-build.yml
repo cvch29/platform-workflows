@@ -29,6 +29,10 @@ on:
         type: string
         required: false
         default: 'app-store'
+      p12-file:
+        type: string
+        required: false
+        default: ios-certificate.p12
     # outputs:
     #   ipa-path:
     #     value: ${{ jobs.build.outputs.ipa-path }}
@@ -56,7 +60,7 @@ jobs:
         uses: cvch29/platform-actions/.github/actions/shared-v2/setup-keychain@main
         with:
           certificate-base64: ${{ secrets.p12-base64 }}
-          certificate-file: ${{ secrets.keystore-file }}
+          certificate-file: ${{ secrets.p12-file }}
           # keystore-base64: ${{ secrets.keystore-base64 }}
           # keystore-path: ${{ secrets.keystore-file }}
 
