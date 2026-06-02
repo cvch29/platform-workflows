@@ -52,6 +52,16 @@ on:
         required: true
       provisioning-profile-base64:
         required: true
+      apple-api-key-id:
+        required: true
+      apple-api-key-issuer-id:
+        required: true
+      apple-api-key-content:
+        required: true
+      apple-team-id:
+        required: true
+      ixguard-license-key:
+        required: false
 
 jobs:
   build:
