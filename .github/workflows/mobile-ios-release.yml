@@ -64,29 +64,28 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           build-gradle-path: ${{ inputs.gradle-build-path }}
           
-  build_android:
-    if: success() && (inputs.enable-android == true)
+  build_ios:
+    if: success() && (inputs.enable-ios == true)
     needs: setup
-    # name: Build Android
-    uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@main
+    # name: Build iOS
+    uses: cvch29/platform-workflows/.github/workflows/mobile-ios-build.yml@main
     with:
+      scheme: ${{ inputs.scheme }}
+      bundle-id: ${{ inputs.bundle-id }}
       app-name: ${{ needs.setup.outputs.app-name }}
-      command: ${{ inputs.command }}
+      # command: ${{ inputs.command }}
       app-version: ${{ needs.setup.outputs.app-version }}
       # build-type: release
       # flavor: ${{ inputs.flavor }}
       technology: ${{ inputs.technology }}
-      sign: true
-      container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_BUILD }}"
-      container-image-resource-runner: "--cpus 6 -m 12g"
+      # sign: true
     secrets:
-      keystore-base64: ${{ secrets.keystore-base64 }}
-      keystore-password: ${{ secrets.keystore-password }}
-      keystore-alias: ${{ secrets.keystore-alias }}
-      keystore-path: ${{ secrets.keystore-path }}
+      p12-base64: ${{ secrets.p12-base64 }}
+      p12-password: ${{ secrets.p12-password }}
+      provisioning-profile-base64: ${{ secrets.provisioning-profile-base64 }}
 
   scs:
-    needs: [setup,build_android]
+    needs: [setup,build_ios]
     # name: Supply Chain Security
     uses: cvch29/platform-workflows/.github/workflows/shared-supply-chain-security.yml@main
     with:
@@ -96,7 +95,7 @@ jobs:
       container-image-resource-runner: "--cpus 2 -m 4g"
 
   artifact_release:
-    needs: [setup, build_android,scs]
+    needs: [setup, build_ios,scs]
     name: Artifact Release
     uses: cvch29/platform-workflows/.github/workflows/shared-release-tag.yml@main
     with:

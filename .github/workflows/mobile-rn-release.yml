@@ -32,10 +32,10 @@ on:
         default: assembleRelease
       enable-android:
         type: boolean
-        default: true
+        default: false
       enable-ios:
         type: boolean
-        default: false
+        default: true
     secrets:
       keystore-base64:
         required: false
@@ -102,6 +102,8 @@ jobs:
     name: Build iOS
     uses: cvch29/platform-workflows/.github/workflows/mobile-ios-build.yml@main
     with:
+      technology: ${{ inputs.technology }}
+      app-version: ${{ needs.setup.outputs.app-version }}
       app-name: ${{ needs.setup.outputs.app-name }}
       scheme: ${{ needs.setup.outputs.app-name }}
       bundle-id: com.yourcompany.${{ needs.setup.outputs.app-name }}
