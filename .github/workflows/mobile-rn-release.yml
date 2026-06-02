@@ -17,7 +17,7 @@ on:
         default: 'yarn'
       node-build-path:
         type: string
-        default: package.json
+        default: .
       environment:
         type: string
         default: dev
