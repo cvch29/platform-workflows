@@ -48,7 +48,6 @@ on:
       keystore-path:
         required: false
 jobs:
-  
   build:
     if: success() && (inputs.enable-android == true)
     name: Build Android
