@@ -17,6 +17,11 @@ on:
       scheme:
         type: string
         required: true
+        default: 'App'
+      configuration:
+        type: string
+        required: true
+        default: 'Release'
       workspace:
         type: string
         required: false
