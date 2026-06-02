@@ -60,7 +60,7 @@ jobs:
         uses: cvch29/platform-actions/.github/actions/shared-v2/setup-keychain@main
         with:
           certificate-base64: ${{ secrets.p12-base64 }}
-          certificate-file: ${{ secrets.p12-file }}
+          certificate-file: ${{ inputs.p12-file }}
           # keystore-base64: ${{ secrets.keystore-base64 }}
           # keystore-path: ${{ secrets.keystore-file }}
 
