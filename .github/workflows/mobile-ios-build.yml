@@ -203,6 +203,16 @@ jobs:
       #     scheme: ${{ inputs.scheme }}
       #     target: ${{ inputs.target }}
 
+      - name: Install CocoaPods
+        run: cd ios && pod install
+
+      - name: Instalar perfil en sistema
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp ${{ steps.download-pp.outputs.provisioning-profile-path }} \
+            ~/Library/MobileDevice/Provisioning\ Profiles/${{ env.PROV_PROFILE_UUID }}.mobileprovision
+
+
       - name: Build iOS
         id: build
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/fastlane-generate-archive@main
