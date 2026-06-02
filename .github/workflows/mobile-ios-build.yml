@@ -207,8 +207,8 @@ jobs:
         id: build
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/fastlane-generate-archive@main
         with:
-          scheme: "SaveIO"
-          workspace: ${{ inputs.workspace }}
+          scheme: SaveIO
+          workspace: ${{ env.WORKSPACE_PATH }}
           configuration: ${{ inputs.configuration }}
           
 
