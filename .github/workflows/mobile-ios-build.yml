@@ -52,6 +52,12 @@ jobs:
       - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@main
 
       - name: Setup Keychain
+        uses: cvch29/platform-actions/.github/actions/shared-v2/setup-keychain@main
+        with:
+          certificate-base64: ${{ secrets.p12-base64 }}
+          certificate-path: ios-build.p12
+
+      - name: Validate P12 Private Key
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/validate-private-key-p12@main
         with:
           p12-base64: ${{ secrets.p12-base64 }}
