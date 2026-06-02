@@ -123,6 +123,7 @@ jobs:
         shell: bash
 
       - name: Descargar perfil de aprovisionamiento
+        id: download-pp
         # if: ${{ inputs.provisioning-profile-base64 != '' }}
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/apple-download-provisioning-profile@main
         with:
@@ -138,7 +139,7 @@ jobs:
         # if: ${{ inputs.provisioning-profile-base64 != '' }}
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/validate-provisioning-profile@main
         with:
-          prov-profile-path: provisioning-profile.mobileprovision
+          prov-profile-path: ${{ steps.download-pp.outputs.provisioning-profile-path }} 
           validate-cer: true
           fingerprint: ${{ secrets.p12-fingerprint }}
 
