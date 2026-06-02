@@ -207,9 +207,10 @@ jobs:
         id: build
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/fastlane-generate-archive@main
         with:
-          scheme: ${{ inputs.scheme }}
+          scheme: "SaveIO"
           workspace: ${{ inputs.workspace }}
           configuration: ${{ inputs.configuration }}
+          
 
       - name: Ofuscar .archive con IxGuard
         if: ${{ env.IXGUARD_ENABLED == 'true' }}
@@ -222,7 +223,7 @@ jobs:
       - name: Exportar .ipa
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/fastlane-export-archive@main
         with:
-          scheme: ${{ inputs.scheme }}
+          scheme: "SaveIO"
           workspace: ${{ inputs.workspace }}
           archive: ${{ steps.build.outputs.archive-path }}
           app-identifier: ${{ inputs.bundle-id }}
