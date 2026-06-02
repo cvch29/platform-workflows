@@ -74,6 +74,10 @@ jobs:
     steps:
       - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@main
 
+      - name: Fix Ruby OpenSSL (LibreSSL → Homebrew OpenSSL)
+        run: |
+          gem install openssl -- --with-openssl-dir=$(brew --prefix openssl@3)
+
       - name: Setup Keychain
         id: setup-keychain
         uses: cvch29/platform-actions/.github/actions/shared-v2/setup-keychain@main
@@ -180,13 +184,13 @@ jobs:
       #     scheme: ${{ inputs.scheme }}
       #     target: ${{ inputs.target }}
 
-      - name: Configurar IxGuard Toolchain
-        if: ${{ env.IXGUARD_ENABLED == 'true' }}
-        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/xcode-configure-ixguard-toolchain@main
-        with:
-          workspace: ${{ inputs.workspace }}
-          scheme: ${{ inputs.scheme }}
-          target: ${{ inputs.target }}
+      # - name: Configurar IxGuard Toolchain
+      #   if: ${{ env.IXGUARD_ENABLED == 'true' }}
+      #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/xcode-configure-ixguard-toolchain@main
+      #   with:
+      #     workspace: ${{ inputs.workspace }}
+      #     scheme: ${{ inputs.scheme }}
+      #     target: ${{ inputs.target }}
 
       - name: Build iOS
         id: build
@@ -205,7 +209,6 @@ jobs:
           license-base64: ${{ secrets.ixguard-license-key }}
 
       - name: Exportar .ipa
-        if: ${{ env.IXGUARD_ENABLED == 'true' }}
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/fastlane-export-archive@main
         with:
           scheme: ${{ inputs.scheme }}
