@@ -112,6 +112,11 @@ jobs:
           echo "PROFILE_TYPE=$PROFILE_TYPE" >> $GITHUB_ENV
           echo "EXPORT_TYPE=$PROFILE_TYPE" >> $GITHUB_ENV
 
+      - name: Validar clave privada P8
+        run: |
+          echo "${{ secrets.apple-api-key-content }}" | base64 -d | openssl pkey -noout -text
+        shell: bash
+
       - name: Descargar perfil de aprovisionamiento
         # if: ${{ inputs.provisioning-profile-base64 != '' }}
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/apple-download-provisioning-profile@main
