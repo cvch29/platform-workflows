@@ -67,7 +67,7 @@ jobs:
       - name: Validate P12 Private Key
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/validate-private-key-p12@main
         with:
-          p12-base64: ${{ steps.setup-keychain.outputs.certificate-path }}
+          p12-base64: ${{ inputs.p12-file }}
           p12-password: ${{ secrets.p12-password }}
           
       - name: Mostrar configuración de compilación
