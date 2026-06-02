@@ -121,7 +121,7 @@ jobs:
     secrets:
       p12-base64: ${{ secrets.p12-base64 }}
       p12-password: ${{ secrets.p12-password }}
-      provisioning-profile-base64: ${{ secrets.PROVISIONING_PROFILE_BASE64 }}
+      provisioning-profile-base64: ${{ secrets.provisioning-profile-base64 }}
       apple-api-key-id: ${{ secrets.apple-api-key-id }}
       apple-api-issuer-id: ${{ secrets.apple-api-issuer-id }}
       apple-api-key-content: ${{ secrets.apple-api-key-content }}

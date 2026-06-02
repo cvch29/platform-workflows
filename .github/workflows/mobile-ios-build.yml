@@ -115,9 +115,10 @@ jobs:
           apple-api-key-id: ${{ secrets.apple-api-key-id }}
           apple-api-issuer-id: ${{ secrets.apple-api-issuer-id }}
           apple-api-key-content: ${{ secrets.apple-api-key-content }}
-          profile-name: ${{ inputs.profile-name }}
-          app-identifier: ${{ inputs.bundle-id }}
-          team-id: ${{ secrets.apple-team-id }}
+          profile-name: "profile-saveio"
+          app-identifier: "com.savefinancial.saveio"
+          profile-type: "dev"
+          team-id: "N9GR2VZ7H7"
 
       - name: Validar perfil de aprovisionamiento
         # if: ${{ inputs.provisioning-profile-base64 != '' }}
