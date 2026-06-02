@@ -51,7 +51,12 @@ on:
         required: false
       p12-password:
         required: false
-
+      apple-api-key-id:
+        required: false
+      apple-api-issuer-id:
+        required: false
+      apple-api-key-content:
+        required: false
 jobs:
   # security:
   #   uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@main
@@ -115,6 +120,9 @@ jobs:
       p12-base64: ${{ secrets.p12-base64 }}
       p12-password: ${{ secrets.p12-password }}
       provisioning-profile-base64: ${{ secrets.PROVISIONING_PROFILE_BASE64 }}
+      apple-api-key-id: ${{ secrets.apple-api-key-id }}
+      apple-api-issuer-id: ${{ secrets.apple-api-issuer-id }}
+      apple-api-key-content: ${{ secrets.apple-api-key-content }}
 
   # quality-gate:
   #   needs: [build-android]
