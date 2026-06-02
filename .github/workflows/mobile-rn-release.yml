@@ -15,9 +15,9 @@ on:
         type: string
         required: false
         default: 'yarn'
-      gradle-build-path:
+      node-build-path:
         type: string
-        default: app/build.gradle.kts
+        default: package.json
       environment:
         type: string
         default: dev
