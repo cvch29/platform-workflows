@@ -78,7 +78,7 @@ jobs:
       - name: Mostrar configuración de compilación
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/xcode-build-settings@main
         with:
-          scheme: "App"
+          scheme: "SaveIO"
           configuration: ${{ inputs.configuration }}
           working-directory: "ios"
 
