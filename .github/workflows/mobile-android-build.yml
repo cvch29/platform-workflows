@@ -37,7 +37,7 @@ on:
       enable-android:
         type: boolean
         required: false
-        default: false
+        default: true
     secrets:
       keystore-base64:
         required: false

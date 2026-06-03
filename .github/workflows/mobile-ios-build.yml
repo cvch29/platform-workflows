@@ -45,7 +45,7 @@ on:
       enable-ios:
         type: boolean
         required: false
-        default: true
+        default: false
     # outputs:
     #   ipa-path:
     #     value: ${{ jobs.build.outputs.ipa-path }}
