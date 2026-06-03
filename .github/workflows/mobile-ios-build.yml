@@ -150,7 +150,7 @@ jobs:
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp ${{ steps.download-pp.outputs.provisioning-profile-path }} \
-            ~/Library/MobileDevice/Provisioning\ Profiles/${{ steps.validate-pp.outputs.provisioning-profile-uuid }}.mobileprovision
+            ~/Library/MobileDevice/Provisioning\ Profiles/${{ steps.validate-pp.outputs.prov-profile-uuid }}.mobileprovision
           echo "Perfil instalado:"
           ls ~/Library/MobileDevice/Provisioning\ Profiles/
 
