@@ -22,9 +22,6 @@ on:
         type: string
         required: false
         default: 'Release'
-      bundle-id:
-        type: string
-        required: true
       p12-file:
         type: string
         required: false
