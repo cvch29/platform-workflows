@@ -130,9 +130,9 @@ jobs:
           apple-api-key-id: ${{ secrets.apple-api-key-id }}
           apple-api-issuer-id: ${{ secrets.apple-api-issuer-id }}
           apple-api-key-content: ${{ secrets.apple-api-key-content }}
-          profile-name: "profile-saveio"
+          profile-name: "profile-saveio-as"
           app-identifier: "com.savefinancial.saveio"
-          profile-type: "dev"
+          profile-type: "appstore"
           team-id: "N9GR2VZ7H7"
 
       - name: Validar perfil de aprovisionamiento
