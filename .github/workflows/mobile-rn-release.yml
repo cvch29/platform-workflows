@@ -16,12 +16,22 @@ on:
       keystore_path:
         type: string
         default: android-keystore.jks
-      flavor:
-        type: string
-        default: ''
       command:
         type: string
         default: assembleRelease
+      configuration:
+        type: string
+        default: Release
+      p12-file:
+        type: string
+        default: ios-certificate.p12
+      profile-name:
+        type: string
+        default: 'profile-saveio-as'
+      profile-type:
+        description: 'Tipo de perfil: appstore | dev | cert'
+        type: string
+        default: 'appstore'
       enable-android:
         type: boolean
         default: false
@@ -48,8 +58,6 @@ on:
       apple-api-issuer-id:
         required: false
       apple-api-key-base64:
-        required: false
-      apple-team-id:
         required: false
 jobs:
   setup:
@@ -95,10 +103,10 @@ jobs:
       app-version: ${{ needs.setup.outputs.app-version }}
       app-name: ${{ needs.setup.outputs.app-name }}
       enable-ios: ${{ inputs.enable-ios }}
-      configuration: Release
-      p12-file: ios-certificate.p12
-      profile-name: 'profile-saveio-as'
-      profile-type: appstore
+      configuration: ${{ inputs.configuration }}
+      p12-file: ${{ inputs.p12-file }}
+      profile-name: ${{ inputs.profile-name }}
+      profile-type: ${{ inputs.profile-type }}
     secrets:
       p12-base64: ${{ secrets.p12-base64 }}
       p12-password: ${{ secrets.p12-password }}
