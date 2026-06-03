@@ -22,18 +22,9 @@ on:
         type: string
         required: false
         default: 'Release'
-      workspace:
-        type: string
-        required: false
-        default: ''
       bundle-id:
         type: string
         required: true
-      export-method:
-        description: 'app-store | ad-hoc | enterprise'
-        type: string
-        required: false
-        default: 'app-store'
       p12-file:
         type: string
         required: false
@@ -42,6 +33,11 @@ on:
         type: string
         required: false
         default: 'profile-saveio-as'
+      profile-type:
+        description: 'Tipo de perfil: appstore | dev | cert'
+        type: string
+        required: false
+        default: 'appstore'
       enable-ios:
         type: boolean
         required: false
@@ -51,15 +47,11 @@ on:
         required: true
       p12-password:
         required: true
-      provisioning-profile-base64:
-        required: true
       apple-api-key-id:
         required: true
       apple-api-issuer-id:
         required: true
       apple-api-key-base64:
-        required: true
-      apple-team-id:
         required: true
       ixguard-license-key:
         required: false
@@ -108,9 +100,9 @@ jobs:
           apple-api-key-id: ${{ secrets.apple-api-key-id }}
           apple-api-issuer-id: ${{ secrets.apple-api-issuer-id }}
           apple-api-key-base64: ${{ secrets.apple-api-key-base64 }}
-          profile-name: "profile-saveio-as"
+          profile-name: ${{ inputs.profile-name }}
           app-identifier: ${{ steps.xcode-build-settings.outputs.product-bundle-identifier }}
-          profile-type: "appstore"
+          profile-type: ${{ inputs.profile-type }}
           team-id: ${{ steps.validate-p12.outputs.development-team }}
 
       - name: Validar perfil de aprovisionamiento
@@ -205,13 +197,12 @@ jobs:
           target: SaveIO
           configuration: ${{ inputs.configuration }}
           options: |
-            PROVISIONING_PROFILE_SPECIFIER=profile-saveio-as
+            PROVISIONING_PROFILE_SPECIFIER=${{ inputs.profile-name }}
             DEVELOPMENT_TEAM=${{ steps.validate-p12.outputs.development-team }}
             CODE_SIGN_IDENTITY=${{ steps.validate-p12.outputs.code-sign-identity}}
             CODE_SIGN_STYLE=Manual
             CODE_SIGNING_REQUIRED=YES
             OTHER_CODE_SIGN_FLAGS=--keychain=${{ steps.setup-keychain.outputs.keychain-path }}
-            # OTHER_CODE_SIGN_FLAGS=--keychain=/Users/runner/work/_temp/26801070489.keychain-db
 
       - name: Generar .archive
         id: build
@@ -238,26 +229,26 @@ jobs:
           archive: ${{ steps.build.outputs.archive-path }}
           export-type: prod
           app-identifier: ${{ steps.xcode-build-settings.outputs.product-bundle-identifier }}
-          prov-profile: "profile-saveio-as"
+          prov-profile: ${{ inputs.profile-name }}
 
-      # - name: Artifact Management
-      #   uses: cvch29/platform-actions/.github/actions/shared/artifact-manage@main
-      #   with:
-      #     app_name: ${{ inputs.app-name }}
-      #     app_version: ${{ inputs.app-version }}
-      #     path: app
-      #     pattern: |
-      #       ${{ steps.export-ipa.outputs.ipa-path }}
-      #     name: ios-release-files
-      #     retention-days: 1
-      #     if-no-files-found: warn
-      #     compression-level: 6
-      #     upload_path: |
-      #       ipa/${{ inputs.app-name }}-${{ inputs.app-version }}.ipa
-
-      - name: Upload Artifact
-        uses: cvch29/platform-actions/.github/actions/shared-v2/artifact-upload@main
+      - name: Artifact Management
+        uses: cvch29/platform-actions/.github/actions/shared/artifact-manage@main
         with:
-          name: ios-ipa-${{ inputs.app-name }}
-          path: ${{ steps.export-ipa.outputs.ipa-path }}
+          app_name: ${{ inputs.app-name }}
+          app_version: ${{ inputs.app-version }}
+          path: ios
+          pattern: |
+            ${{ steps.export-ipa.outputs.ipa-path }}
+          name: ios-release-files
           retention-days: 1
+          if-no-files-found: warn
+          compression-level: 6
+          upload_path: |
+            ipa/${{ inputs.app-name }}-${{ inputs.app-version }}.ipa
+
+      # - name: Upload Artifact
+      #   uses: cvch29/platform-actions/.github/actions/shared-v2/artifact-upload@main
+      #   with:
+      #     name: ios-ipa-${{ inputs.app-name }}
+      #     path: ${{ steps.export-ipa.outputs.ipa-path }}
+      #     retention-days: 1

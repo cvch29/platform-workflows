@@ -104,7 +104,7 @@ jobs:
       provisioning-profile-base64: ${{ secrets.provisioning-profile-base64 }}
       apple-api-key-id: ${{ secrets.apple-api-key-id }}
       apple-api-issuer-id: ${{ secrets.apple-api-issuer-id }}
-      apple-api-key-content: ${{ secrets.apple-api-key-content }}
+      apple-api-key-base64: ${{ secrets.apple-api-key-base64 }}
       apple-team-id: ${{ secrets.apple-team-id }}
 
   # scs:
