@@ -105,18 +105,6 @@ jobs:
           configuration: ${{ inputs.configuration }}
           working-directory: "ios"
 
-      # - name: Definir perfil de aprovisionamiento
-      #   if: ${{ inputs.provisioning-profile-base64 != '' }}
-      #   run: |
-      #     echo "PROFILE_NAME=$(security cms -D -i provisioning-profile.mobileprovision | plutil -extract 'UUID' xml1 -o - - | xmllint --xpath 'string(//plist/string)' -)" >> $GITHUB_ENV
-        
-      # - name: Definir tipo de perfil de aprovisionamiento
-      #   if: ${{ inputs.provisioning-profile-base64 != '' }}
-      #   run: |
-      #     PROFILE_TYPE=$(security cms -D -i provisioning-profile.mobileprovision | plutil -extract 'Entitlements' xml1 -o - - | xmllint --xpath 'string(//plist/dict/key[.="com.apple.developer.team-identifier"]/following-sibling::string[1])' -)
-      #     echo "PROFILE_TYPE=$PROFILE_TYPE" >> $GITHUB_ENV
-      #     echo "EXPORT_TYPE=$PROFILE_TYPE" >> $GITHUB_ENV
-
       - name: Validar clave privada P8
         run: |
           echo "${{ secrets.apple-api-key-content }}" | base64 -d | openssl pkey -noout -text
@@ -124,7 +112,6 @@ jobs:
 
       - name: Descargar perfil de aprovisionamiento
         id: download-pp
-        # if: ${{ inputs.provisioning-profile-base64 != '' }}
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/apple-download-provisioning-profile@main
         with:
           apple-api-key-id: ${{ secrets.apple-api-key-id }}
@@ -136,7 +123,6 @@ jobs:
           team-id: "N9GR2VZ7H7"
 
       - name: Validar perfil de aprovisionamiento
-        # if: ${{ inputs.provisioning-profile-base64 != '' }}
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/validate-provisioning-profile@main
         with:
           prov-profile-path: ${{ steps.download-pp.outputs.provisioning-profile-path }} 
@@ -148,14 +134,14 @@ jobs:
         with:
           p12-base64: ${{ secrets.p12-base64 }}
           p12-password: ${{ secrets.p12-password }}
-
+      
+      # TOTALMENTE CORRECTO HASTA AQUI
       # - name: Instalar perfil de aprovisionamiento
       #   # if: ${{ inputs.provisioning-profile-base64 != '' }}
       #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/install-apple-provisioning-profile@main
       #   with:
       #     provisioning-profile-base64: ${{ secrets.provisioning-profile-base64 }}
       #     bundle-id: ${{ inputs.bundle-id }}
-
 
       # - name: Instalar Apple Provisioning Profile
       #   env:
@@ -170,7 +156,7 @@ jobs:
       #   run: rm -f ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision
       #   if: always()
 
-      - name: Instalar perfil en sistema
+      - name: Instalar perfil de aprovisionamiento
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp ${{ steps.download-pp.outputs.provisioning-profile-path }} \
@@ -178,13 +164,13 @@ jobs:
           echo "Perfil instalado:"
           ls ~/Library/MobileDevice/Provisioning\ Profiles/
 
-      - name: Configurar keychain en sistema
-        run: |
-          security list-keychains -d user -s ${{ env.KEYCHAIN_PATH }} ~/Library/Keychains/login.keychain-db
-          security default-keychain -s ${{ env.KEYCHAIN_PATH }}
-          security unlock-keychain -p ${{ env.KEYCHAIN_PASSWORD }} ${{ env.KEYCHAIN_PATH }}
-          echo "Keychains configurados:"
-          security list-keychains -d user
+      # - name: Configurar keychain en sistema
+      #   run: |
+      #     security list-keychains -d user -s ${{ env.KEYCHAIN_PATH }} ~/Library/Keychains/login.keychain-db
+      #     security default-keychain -s ${{ env.KEYCHAIN_PATH }}
+      #     security unlock-keychain -p ${{ env.KEYCHAIN_PASSWORD }} ${{ env.KEYCHAIN_PATH }}
+      #     echo "Keychains configurados:"
+      #     security list-keychains -d user
 
       - name: Instalar Dependencies
         # if: ${{ inputs.technology == 'react-native' }}
@@ -192,19 +178,6 @@ jobs:
         with:
           working-directory: .
         
-      - name: Configurar proyecto
-        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/xcode-configure-settings@main
-        with:
-          project: ios/SaveIO.xcodeproj
-          target: SaveIO
-          configuration: ${{ inputs.configuration }}
-          options: |
-            PROVISIONING_PROFILE_SPECIFIER=profile-saveio-as
-            DEVELOPMENT_TEAM=N9GR2VZ7H7
-            CODE_SIGN_IDENTITY=Apple Distribution
-            CODE_SIGN_STYLE=Manual
-            CODE_SIGNING_REQUIRED=YES
-            OTHER_CODE_SIGN_FLAGS=--keychain=/Users/runner/work/_temp/26801070489.keychain-db
 
       # - name: Actualizar versión
       #   uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/ios/build@main
@@ -236,11 +209,19 @@ jobs:
       - name: Install CocoaPods
         run: cd ios && pod install
 
-      # - name: Instalar perfil en sistema
-      #   run: |
-      #     mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-      #     cp ${{ steps.download-pp.outputs.provisioning-profile-path }} \
-      #       ~/Library/MobileDevice/Provisioning\ Profiles/${{ env.PROV_PROFILE_UUID }}.mobileprovision
+      - name: Configurar proyecto
+        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/xcode-configure-settings@main
+        with:
+          project: ios/SaveIO.xcodeproj
+          target: SaveIO
+          configuration: ${{ inputs.configuration }}
+          options: |
+            PROVISIONING_PROFILE_SPECIFIER=profile-saveio-as
+            DEVELOPMENT_TEAM=N9GR2VZ7H7
+            CODE_SIGN_IDENTITY=Apple Distribution
+            CODE_SIGN_STYLE=Manual
+            CODE_SIGNING_REQUIRED=YES
+            OTHER_CODE_SIGN_FLAGS=--keychain=/Users/runner/work/_temp/26801070489.keychain-db
 
       - name: Build iOS
         id: build
@@ -260,6 +241,7 @@ jobs:
           license-base64: ${{ secrets.ixguard-license-key }}
 
       - name: Exportar .ipa
+        id: export-ipa
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/fastlane-export-archive@main
         with:
           scheme: "SaveIO"
