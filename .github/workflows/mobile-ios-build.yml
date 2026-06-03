@@ -239,7 +239,7 @@ jobs:
           workspace: ${{ steps.xcode-build-settings.outputs.workspace-path }}
           archive: ${{ steps.build.outputs.archive-path }}
           export-type: prod
-          app-identifier: "com.savefinancial.saveio"
+          app-identifier: ${{ steps.xcode-build-settings.outputs.product-bundle-identifier }}
           prov-profile: "profile-saveio-as"
 
       # - name: Artifact Management
@@ -264,9 +264,9 @@ jobs:
       #       app/build/reports/profile/*.html
       #       app/gradle.lockfile
 
-      # - name: Upload Artifact
-      #   uses: cvch29/platform-actions/.github/actions/shared-v2/artifact-upload@main
-      #   with:
-      #     name: ios-ipa-${{ inputs.app-name }}
-      #     path: ${{ steps.build.outputs.ipa-path }}
-      #     retention-days: 30
+      - name: Upload Artifact
+        uses: cvch29/platform-actions/.github/actions/shared-v2/artifact-upload@main
+        with:
+          name: ios-ipa-${{ inputs.app-name }}
+          path: ${{ steps.export-ipa.outputs.ipa-path }}
+          retention-days: 1
