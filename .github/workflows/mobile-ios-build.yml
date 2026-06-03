@@ -105,17 +105,17 @@ jobs:
           configuration: ${{ inputs.configuration }}
           working-directory: "ios"
 
-      - name: Definir perfil de aprovisionamiento
-        if: ${{ inputs.provisioning-profile-base64 != '' }}
-        run: |
-          echo "PROFILE_NAME=$(security cms -D -i provisioning-profile.mobileprovision | plutil -extract 'UUID' xml1 -o - - | xmllint --xpath 'string(//plist/string)' -)" >> $GITHUB_ENV
+      # - name: Definir perfil de aprovisionamiento
+      #   if: ${{ inputs.provisioning-profile-base64 != '' }}
+      #   run: |
+      #     echo "PROFILE_NAME=$(security cms -D -i provisioning-profile.mobileprovision | plutil -extract 'UUID' xml1 -o - - | xmllint --xpath 'string(//plist/string)' -)" >> $GITHUB_ENV
         
-      - name: Definir tipo de perfil de aprovisionamiento
-        if: ${{ inputs.provisioning-profile-base64 != '' }}
-        run: |
-          PROFILE_TYPE=$(security cms -D -i provisioning-profile.mobileprovision | plutil -extract 'Entitlements' xml1 -o - - | xmllint --xpath 'string(//plist/dict/key[.="com.apple.developer.team-identifier"]/following-sibling::string[1])' -)
-          echo "PROFILE_TYPE=$PROFILE_TYPE" >> $GITHUB_ENV
-          echo "EXPORT_TYPE=$PROFILE_TYPE" >> $GITHUB_ENV
+      # - name: Definir tipo de perfil de aprovisionamiento
+      #   if: ${{ inputs.provisioning-profile-base64 != '' }}
+      #   run: |
+      #     PROFILE_TYPE=$(security cms -D -i provisioning-profile.mobileprovision | plutil -extract 'Entitlements' xml1 -o - - | xmllint --xpath 'string(//plist/dict/key[.="com.apple.developer.team-identifier"]/following-sibling::string[1])' -)
+      #     echo "PROFILE_TYPE=$PROFILE_TYPE" >> $GITHUB_ENV
+      #     echo "EXPORT_TYPE=$PROFILE_TYPE" >> $GITHUB_ENV
 
       - name: Validar clave privada P8
         run: |
@@ -264,7 +264,7 @@ jobs:
         with:
           scheme: "SaveIO"
           workspace: ${{ env.WORKSPACE_PATH }}
-          archive: ${{ steps.build.outputs.ipa-path }}
+          archive: ${{ env.IPA_PATH }}
           app-identifier: "com.savefinancial.saveio"
           prov-profile: "profile-saveio-as"
 
