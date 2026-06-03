@@ -86,6 +86,8 @@ jobs:
       # build-type: release
       # flavor: ${{ inputs.flavor }}
       technology: ${{ inputs.technology }}
+      container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_BUILD }}"
+      container-image-resource-runner: "--cpus 6 -m 12g"
       sign: true
     secrets:
       keystore-base64: ${{ secrets.keystore-base64 }}
