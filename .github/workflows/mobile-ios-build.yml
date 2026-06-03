@@ -263,32 +263,32 @@ jobs:
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/fastlane-export-archive@main
         with:
           scheme: "SaveIO"
-          workspace: ${{ inputs.workspace }}
-          archive: ${{ steps.build.outputs.archive-path }}
-          app-identifier: ${{ inputs.bundle-id }}
-          prov-profile: ${{ env.PROFILE_NAME }}
+          workspace: ${{ env.WORKSPACE_PATH }}
+          archive: ${{ steps.build.outputs.ipa-path }}
+          app-identifier: "com.savefinancial.saveio"
+          prov-profile: "profile-saveio-as"
 
-      - name: Artifact Management
-        uses: cvch29/platform-actions/.github/actions/shared/artifact-manage@main
-        with:
-          app_name: ${{ inputs.app-name }}
-          app_version: ${{ inputs.app-version }}
-          path: app
-          pattern: |
-            build/outputs/apk/release/*.apk
-            build/outputs/bundle/release/*.aab
-            build/outputs/remote-config/config.json
-            build/reports/profile/*.html
-          name: android-release-files
-          retention-days: 1
-          if-no-files-found: warn
-          compression-level: 6
-          upload_path: |
-            app/build/outputs/apk/release/*.apk
-            app/build/outputs/bundle/release/*.aab
-            app/remote-config/*.json
-            app/build/reports/profile/*.html
-            app/gradle.lockfile
+      # - name: Artifact Management
+      #   uses: cvch29/platform-actions/.github/actions/shared/artifact-manage@main
+      #   with:
+      #     app_name: ${{ inputs.app-name }}
+      #     app_version: ${{ inputs.app-version }}
+      #     path: app
+      #     pattern: |
+      #       build/outputs/apk/release/*.apk
+      #       build/outputs/bundle/release/*.aab
+      #       build/outputs/remote-config/config.json
+      #       build/reports/profile/*.html
+      #     name: android-release-files
+      #     retention-days: 1
+      #     if-no-files-found: warn
+      #     compression-level: 6
+      #     upload_path: |
+      #       app/build/outputs/apk/release/*.apk
+      #       app/build/outputs/bundle/release/*.aab
+      #       app/remote-config/*.json
+      #       app/build/reports/profile/*.html
+      #       app/gradle.lockfile
 
       # - name: Upload Artifact
       #   uses: cvch29/platform-actions/.github/actions/shared-v2/artifact-upload@main
