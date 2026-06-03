@@ -223,13 +223,13 @@ jobs:
           configuration: ${{ inputs.configuration }}
           
 
-      - name: Ofuscar .archive con IxGuard
-        if: ${{ env.IXGUARD_ENABLED == 'true' }}
-        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/ixguard-obfuscate@main
-        with:
-          archive: ${{ steps.build.outputs.archive-path }}
-          configuration: ${{ inputs.configuration }}
-          license-base64: ${{ secrets.ixguard-license-key }}
+      # - name: Ofuscar .archive con IxGuard
+      #   if: ${{ env.IXGUARD_ENABLED == 'true' }}
+      #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/ixguard-obfuscate@main
+      #   with:
+      #     archive: ${{ steps.build.outputs.archive-path }}
+      #     configuration: ${{ inputs.configuration }}
+      #     license-base64: ${{ secrets.ixguard-license-key }}
 
       - name: Exportar .ipa
         id: export-ipa
