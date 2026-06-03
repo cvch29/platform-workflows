@@ -199,7 +199,7 @@ jobs:
           target: SaveIO
           configuration: ${{ inputs.configuration }}
           options: |
-            PROVISIONING_PROFILE_SPECIFIER=profile-saveio
+            PROVISIONING_PROFILE_SPECIFIER=profile-saveio-as
             DEVELOPMENT_TEAM=N9GR2VZ7H7
             CODE_SIGN_IDENTITY=Apple Distribution
             CODE_SIGN_STYLE=Manual
