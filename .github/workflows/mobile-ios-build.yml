@@ -219,7 +219,7 @@ jobs:
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/fastlane-generate-archive@main
         with:
           scheme: SaveIO
-          workspace: ${{ steps.xcode-build-settings.outputs.workspace-path }}
+          workspace: ${{ env.WORKSPACE_PATH }}
           configuration: ${{ inputs.configuration }}
           
 
@@ -236,7 +236,7 @@ jobs:
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/fastlane-export-archive@main
         with:
           scheme: "SaveIO"
-          workspace: ${{ steps.xcode-build-settings.outputs.workspace-path }}
+          workspace: ${{ env.WORKSPACE_PATH }}
           archive: ${{ steps.build.outputs.archive-path }}
           export-type: prod
           app-identifier: "com.savefinancial.saveio"
