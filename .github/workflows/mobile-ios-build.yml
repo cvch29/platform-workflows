@@ -202,7 +202,7 @@ jobs:
       - name: Configurar proyecto
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/xcode-configure-settings@main
         with:
-          project: ios/SaveIO.xcodeproj
+          project: ${{ steps.xcode-build-settings.outputs.project-file-path }}
           target: SaveIO
           configuration: ${{ inputs.configuration }}
           options: |
