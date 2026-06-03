@@ -41,7 +41,7 @@ on:
       profile-name:
         type: string
         required: false
-        default: 'profile-saveio'
+        default: 'profile-saveio-as'
       enable-ios:
         type: boolean
         required: false

@@ -47,7 +47,7 @@ on:
         required: false
       apple-api-issuer-id:
         required: false
-      apple-api-key-content:
+      apple-api-key-base64:
         required: false
       apple-team-id:
         required: false
