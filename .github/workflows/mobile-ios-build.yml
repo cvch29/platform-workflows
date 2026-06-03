@@ -168,7 +168,7 @@ jobs:
       #     security list-keychains -d user
 
       - name: Instalar Dependencies
-        # if: ${{ inputs.technology == 'react-native' }}
+        if: ${{ inputs.technology == 'react-native' }}
         uses: cvch29/platform-actions/.github/actions/tooling/node@main
         with:
           working-directory: .
@@ -219,7 +219,7 @@ jobs:
             OTHER_CODE_SIGN_FLAGS=--keychain=${{ steps.setup-keychain.outputs.keychain-path }}
             # OTHER_CODE_SIGN_FLAGS=--keychain=/Users/runner/work/_temp/26801070489.keychain-db
 
-      - name: Build iOS
+      - name: Generar .archive
         id: build
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/fastlane-generate-archive@main
         with:
