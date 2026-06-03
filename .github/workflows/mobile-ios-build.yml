@@ -57,7 +57,7 @@ on:
         required: true
       apple-api-issuer-id:
         required: true
-      apple-api-key-content:
+      apple-api-key-base64:
         required: true
       apple-team-id:
         required: true
@@ -98,7 +98,7 @@ jobs:
 
       - name: Validar clave privada P8
         run: |
-          echo "${{ secrets.apple-api-key-content }}" | base64 -d | openssl pkey -noout -text
+          echo "${{ secrets.apple-api-key-base64 }}" | base64 -d | openssl pkey -noout -text
         shell: bash
 
       - name: Descargar perfil de aprovisionamiento
@@ -107,7 +107,7 @@ jobs:
         with:
           apple-api-key-id: ${{ secrets.apple-api-key-id }}
           apple-api-issuer-id: ${{ secrets.apple-api-issuer-id }}
-          apple-api-key-content: ${{ secrets.apple-api-key-content }}
+          apple-api-key-base64: ${{ secrets.apple-api-key-base64 }}
           profile-name: "profile-saveio-as"
           app-identifier: ${{ steps.xcode-build-settings.outputs.product-bundle-identifier }}
           profile-type: "appstore"

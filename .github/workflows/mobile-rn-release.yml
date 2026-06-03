@@ -7,14 +7,6 @@ on:
         description: 'react-native | native'
         type: string
         required: true
-      android-channel:
-        type: string
-        required: false
-        default: 'play-internal'
-      package-manager:
-        type: string
-        required: false
-        default: 'yarn'
       node-build-path:
         type: string
         default: .
@@ -81,8 +73,8 @@ jobs:
     uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@main
     with:
       app-name: ${{ needs.setup.outputs.app-name }}
-      command: ${{ inputs.command }}
       app-version: ${{ needs.setup.outputs.app-version }}
+      command: ${{ inputs.command }}
       enable-android: ${{ inputs.enable-android }}
       technology: ${{ inputs.technology }}
       container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_BUILD }}"
@@ -105,6 +97,7 @@ jobs:
       enable-ios: ${{ inputs.enable-ios }}
       scheme: ${{ needs.setup.outputs.app-name }}
       bundle-id: com.yourcompany.${{ needs.setup.outputs.app-name }}
+      configuration: Release
     secrets:
       p12-base64: ${{ secrets.p12-base64 }}
       p12-password: ${{ secrets.p12-password }}
