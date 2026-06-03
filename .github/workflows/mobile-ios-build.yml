@@ -265,7 +265,7 @@ jobs:
           scheme: "SaveIO"
           workspace: ${{ env.WORKSPACE_PATH }}
           archive: ${{ env.ARCHIVE_PATH }}
-          export-type: dev
+          export-type: prod
           app-identifier: "com.savefinancial.saveio"
           prov-profile: "profile-saveio-as"
 
