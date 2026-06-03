@@ -96,7 +96,7 @@ jobs:
 
       - name: Setup Keystore
         if: ${{ inputs.sign }}
-        uses: cvch29/platform-actions/.github/actions/shared-v2/setup-cert@main
+        uses: cvch29/platform-actions/.github/actions/shared-v2/setup-certificate@main
         with:
           certificate-base64: ${{ secrets.keystore-base64 }}
           certificate-file: ${{ secrets.keystore-path }}
