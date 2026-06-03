@@ -95,17 +95,17 @@ jobs:
       app-version: ${{ needs.setup.outputs.app-version }}
       app-name: ${{ needs.setup.outputs.app-name }}
       enable-ios: ${{ inputs.enable-ios }}
-      scheme: ${{ needs.setup.outputs.app-name }}
-      bundle-id: com.yourcompany.${{ needs.setup.outputs.app-name }}
       configuration: Release
+      p12-file: ios-certificate.p12
+      profile-name: 'profile-saveio-as'
+      profile-type: appstore
     secrets:
       p12-base64: ${{ secrets.p12-base64 }}
       p12-password: ${{ secrets.p12-password }}
-      provisioning-profile-base64: ${{ secrets.provisioning-profile-base64 }}
       apple-api-key-id: ${{ secrets.apple-api-key-id }}
       apple-api-issuer-id: ${{ secrets.apple-api-issuer-id }}
       apple-api-key-base64: ${{ secrets.apple-api-key-base64 }}
-      apple-team-id: ${{ secrets.apple-team-id }}
+      ixguard-license-key: ${{ secrets.ixguard-license-key }}
 
   # scs:
   #   needs: [setup,build_android,build_ios]
