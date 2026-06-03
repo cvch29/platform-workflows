@@ -120,7 +120,7 @@ jobs:
         with:
           app_name: ${{ inputs.app-name }}
           app_version: ${{ inputs.app-version }}
-          path: app
+          path: android/app
           pattern: |
             build/outputs/apk/release/*.apk
             build/outputs/bundle/release/*.aab
@@ -131,8 +131,8 @@ jobs:
           if-no-files-found: warn
           compression-level: 6
           upload_path: |
-            app/build/outputs/apk/release/*.apk
-            app/build/outputs/bundle/release/*.aab
-            app/remote-config/*.json
-            app/build/reports/profile/*.html
-            app/gradle.lockfile
+            android/app/build/outputs/apk/release/*.apk
+            android/app/build/outputs/bundle/release/*.aab
+            android/app/remote-config/*.json
+            android/app/build/reports/profile/*.html
+            android/app/gradle.lockfile
