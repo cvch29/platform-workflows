@@ -85,6 +85,7 @@ jobs:
       app-version: ${{ needs.setup.outputs.app-version }}
       # build-type: release
       # flavor: ${{ inputs.flavor }}
+      enable-android: ${{ inputs.enable-android }}
       technology: ${{ inputs.technology }}
       container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_BUILD }}"
       container-image-resource-runner: "--cpus 6 -m 12g"
@@ -103,6 +104,7 @@ jobs:
       technology: ${{ inputs.technology }}
       app-version: ${{ needs.setup.outputs.app-version }}
       app-name: ${{ needs.setup.outputs.app-name }}
+      enable-ios: ${{ inputs.enable-ios }}
       scheme: ${{ needs.setup.outputs.app-name }}
       bundle-id: com.yourcompany.${{ needs.setup.outputs.app-name }}
     secrets:
