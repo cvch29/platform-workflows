@@ -97,7 +97,7 @@ jobs:
           certificate-base64: ${{ secrets.keystore-base64 }}
           certificate-file: ${{ secrets.keystore-path }}
 
-      - name: Android build
+      - name: Build Android
         uses: cvch29/platform-actions/.github/actions/domains/mobile/android/build@main
         with:
           command: ${{ inputs.command }}
@@ -105,24 +105,18 @@ jobs:
           keystore-password: ${{ secrets.keystore-password }}
           keystore-path: ${{ secrets.keystore-path }}
 
-      - name: Artifact Management
+      - name: Upload Artifacts
         uses: cvch29/platform-actions/.github/actions/shared/artifact-manage@main
         with:
-          app_name: ${{ inputs.app-name }}
-          app_version: ${{ inputs.app-version }}
+          app-name: ${{ inputs.app-name }}
+          app-version: ${{ inputs.app-version }}
           path: android/app
           pattern: |
             build/outputs/apk/release/*.apk
             build/outputs/bundle/release/*.aab
             build/outputs/remote-config/config.json
             build/reports/profile/*.html
-          name: android-release-files
+          name: android-${{ github.run_id }}-${{ github.run_attempt }}
           retention-days: 1
           if-no-files-found: warn
           compression-level: 6
-          upload_path: |
-            apk/release/${{ inputs.app-name }}-${{ inputs.app-version }}.apk
-            bundle/release/${{ inputs.app-name }}-${{ inputs.app-version }}.aab
-            remote-config/${{ inputs.app-name }}-${{ inputs.app-version }}.json
-            build/reports/profile/${{ inputs.app-name }}-${{ inputs.app-version }}.html
-            lockfile/gradle.lockfile
