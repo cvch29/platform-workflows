@@ -119,7 +119,6 @@ jobs:
           fingerprint: ${{ steps.validate-p12.outputs.p12-fingerprint }}
 
       - name: Instalar llave privada de apple
-        id: install-apple-key
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/install-apple-private-key-p12@main
         with:
           p12-base64: ${{ secrets.p12-base64 }}
@@ -150,7 +149,7 @@ jobs:
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp ${{ steps.download-pp.outputs.provisioning-profile-path }} \
-            ~/Library/MobileDevice/Provisioning\ Profiles/${{ steps.download-pp.outputs.provisioning-profile-uuid }}.mobileprovision
+            ~/Library/MobileDevice/Provisioning\ Profiles/${{ env.PROV_PROFILE_UUID }}.mobileprovision
           echo "Perfil instalado:"
           ls ~/Library/MobileDevice/Provisioning\ Profiles/
 
@@ -211,8 +210,7 @@ jobs:
             CODE_SIGN_IDENTITY=${{ steps.validate-p12.outputs.code-sign-identity}}
             CODE_SIGN_STYLE=Manual
             CODE_SIGNING_REQUIRED=YES
-            OTHER_CODE_SIGN_FLAGS=--keychain=${{ steps.install-apple-key.outputs.keychain-path }}
-            # OTHER_CODE_SIGN_FLAGS=--keychain=/Users/runner/work/_temp/26801070489.keychain-db
+            OTHER_CODE_SIGN_FLAGS=--keychain=/Users/runner/work/_temp/26801070489.keychain-db
 
       - name: Build iOS
         id: build
@@ -223,13 +221,13 @@ jobs:
           configuration: ${{ inputs.configuration }}
           
 
-      # - name: Ofuscar .archive con IxGuard
-      #   if: ${{ env.IXGUARD_ENABLED == 'true' }}
-      #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/ixguard-obfuscate@main
-      #   with:
-      #     archive: ${{ steps.build.outputs.archive-path }}
-      #     configuration: ${{ inputs.configuration }}
-      #     license-base64: ${{ secrets.ixguard-license-key }}
+      - name: Ofuscar .archive con IxGuard
+        if: ${{ env.IXGUARD_ENABLED == 'true' }}
+        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/ixguard-obfuscate@main
+        with:
+          archive: ${{ steps.build.outputs.archive-path }}
+          configuration: ${{ inputs.configuration }}
+          license-base64: ${{ secrets.ixguard-license-key }}
 
       - name: Exportar .ipa
         id: export-ipa
