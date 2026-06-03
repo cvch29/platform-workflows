@@ -80,12 +80,14 @@ jobs:
           certificate-file: ${{ inputs.p12-file }}
 
       - name: Validate P12 Private Key
+        id: validate-p12
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/validate-private-key-p12@main
         with:
           p12-base64: ${{ secrets.p12-base64 }}
           p12-password: ${{ secrets.p12-password }}
           
       - name: Mostrar configuración de compilación
+        id: xcode-build-settings
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/xcode-build-settings@main
         with:
           scheme: "SaveIO"
@@ -105,18 +107,19 @@ jobs:
           apple-api-issuer-id: ${{ secrets.apple-api-issuer-id }}
           apple-api-key-content: ${{ secrets.apple-api-key-content }}
           profile-name: "profile-saveio-as"
-          app-identifier: "com.savefinancial.saveio"
+          app-identifier: ${{ steps.xcode-build-settings.outputs.product-bundle-identifier }}
           profile-type: "appstore"
-          team-id: "N9GR2VZ7H7"
+          team-id: ${{ steps.validate-p12.outputs.development-team }}
 
       - name: Validar perfil de aprovisionamiento
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/validate-provisioning-profile@main
         with:
           prov-profile-path: ${{ steps.download-pp.outputs.provisioning-profile-path }} 
           validate-cer: true
-          fingerprint: ${{ secrets.p12-fingerprint }}
+          fingerprint: ${{ steps.validate-p12.outputs.p12-fingerprint }}
 
       - name: Instalar llave privada de apple
+        id: install-apple-key
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/install-apple-private-key-p12@main
         with:
           p12-base64: ${{ secrets.p12-base64 }}
@@ -147,7 +150,7 @@ jobs:
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp ${{ steps.download-pp.outputs.provisioning-profile-path }} \
-            ~/Library/MobileDevice/Provisioning\ Profiles/${{ env.PROV_PROFILE_UUID }}.mobileprovision
+            ~/Library/MobileDevice/Provisioning\ Profiles/${{ steps.download-pp.outputs.provisioning-profile-uuid }}.mobileprovision
           echo "Perfil instalado:"
           ls ~/Library/MobileDevice/Provisioning\ Profiles/
 
@@ -204,36 +207,37 @@ jobs:
           configuration: ${{ inputs.configuration }}
           options: |
             PROVISIONING_PROFILE_SPECIFIER=profile-saveio-as
-            DEVELOPMENT_TEAM=N9GR2VZ7H7
-            CODE_SIGN_IDENTITY=Apple Distribution
+            DEVELOPMENT_TEAM=${{ steps.validate-p12.outputs.development-team }}
+            CODE_SIGN_IDENTITY=${{ steps.validate-p12.outputs.code-sign-identity}}
             CODE_SIGN_STYLE=Manual
             CODE_SIGNING_REQUIRED=YES
-            OTHER_CODE_SIGN_FLAGS=--keychain=/Users/runner/work/_temp/26801070489.keychain-db
+            OTHER_CODE_SIGN_FLAGS=--keychain=${{ steps.install-apple-key.outputs.keychain-path }}
+            # OTHER_CODE_SIGN_FLAGS=--keychain=/Users/runner/work/_temp/26801070489.keychain-db
 
       - name: Build iOS
         id: build
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/fastlane-generate-archive@main
         with:
           scheme: SaveIO
-          workspace: ${{ env.WORKSPACE_PATH }}
+          workspace: ${{ steps.xcode-build-settings.outputs.workspace-path }}
           configuration: ${{ inputs.configuration }}
           
 
-      - name: Ofuscar .archive con IxGuard
-        if: ${{ env.IXGUARD_ENABLED == 'true' }}
-        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/ixguard-obfuscate@main
-        with:
-          archive: ${{ steps.build.outputs.archive-path }}
-          configuration: ${{ inputs.configuration }}
-          license-base64: ${{ secrets.ixguard-license-key }}
+      # - name: Ofuscar .archive con IxGuard
+      #   if: ${{ env.IXGUARD_ENABLED == 'true' }}
+      #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/ixguard-obfuscate@main
+      #   with:
+      #     archive: ${{ steps.build.outputs.archive-path }}
+      #     configuration: ${{ inputs.configuration }}
+      #     license-base64: ${{ secrets.ixguard-license-key }}
 
       - name: Exportar .ipa
         id: export-ipa
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/fastlane-export-archive@main
         with:
           scheme: "SaveIO"
-          workspace: ${{ env.WORKSPACE_PATH }}
-          archive: ${{ env.ARCHIVE_PATH }}
+          workspace: ${{ steps.xcode-build-settings.outputs.workspace-path }}
+          archive: ${{ steps.build.outputs.archive-path }}
           export-type: prod
           app-identifier: "com.savefinancial.saveio"
           prov-profile: "profile-saveio-as"
