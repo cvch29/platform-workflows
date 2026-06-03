@@ -178,6 +178,14 @@ jobs:
           echo "Perfil instalado:"
           ls ~/Library/MobileDevice/Provisioning\ Profiles/
 
+      - name: Configurar keychain en sistema
+        run: |
+          security list-keychains -d user -s ${{ env.KEYCHAIN_PATH }} ~/Library/Keychains/login.keychain-db
+          security default-keychain -s ${{ env.KEYCHAIN_PATH }}
+          security unlock-keychain -p ${{ env.KEYCHAIN_PASSWORD }} ${{ env.KEYCHAIN_PATH }}
+          echo "Keychains configurados:"
+          security list-keychains -d user
+
       - name: Instalar Dependencies
         # if: ${{ inputs.technology == 'react-native' }}
         uses: cvch29/platform-actions/.github/actions/tooling/node@main
