@@ -110,12 +110,12 @@ jobs:
         with:
           app-name: ${{ inputs.app-name }}
           app-version: ${{ inputs.app-version }}
-          path: android/app
+          path: android
           pattern: |
-            build/outputs/apk/release/*.apk
-            build/outputs/bundle/release/*.aab
-            build/outputs/remote-config/config.json
-            build/reports/profile/*.html
+            app/build/outputs/apk/release/*.apk
+            app/build/outputs/bundle/release/*.aab
+            app/build/outputs/remote-config/config.json
+            build/reports/problems/problems-report.html
           name: android-${{ github.run_id }}-${{ github.run_attempt }}
           retention-days: 1
           if-no-files-found: warn
