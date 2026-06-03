@@ -96,10 +96,10 @@ jobs:
 
       - name: Setup Keystore
         if: ${{ inputs.sign }}
-        uses: cvch29/platform-actions/.github/actions/shared-v2/setup-keystore@main
+        uses: cvch29/platform-actions/.github/actions/shared-v2/setup-cert@main
         with:
-          keystore-base64: ${{ secrets.keystore-base64 }}
-          keystore-path: ${{ secrets.keystore-path }}
+          certificate-base64: ${{ secrets.keystore-base64 }}
+          certificate-file: ${{ secrets.keystore-path }}
 
       - name: Android build
         uses: cvch29/platform-actions/.github/actions/domains/mobile/android/build@main
