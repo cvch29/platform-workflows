@@ -112,6 +112,7 @@ jobs:
           team-id: ${{ steps.validate-p12.outputs.development-team }}
 
       - name: Validar perfil de aprovisionamiento
+        id: validate-pp
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/validate-provisioning-profile@main
         with:
           prov-profile-path: ${{ steps.download-pp.outputs.provisioning-profile-path }} 
@@ -149,7 +150,7 @@ jobs:
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp ${{ steps.download-pp.outputs.provisioning-profile-path }} \
-            ~/Library/MobileDevice/Provisioning\ Profiles/${{ env.PROV_PROFILE_UUID }}.mobileprovision
+            ~/Library/MobileDevice/Provisioning\ Profiles/${{ steps.validate-pp.outputs.provisioning-profile-uuid }}.mobileprovision
           echo "Perfil instalado:"
           ls ~/Library/MobileDevice/Provisioning\ Profiles/
 
