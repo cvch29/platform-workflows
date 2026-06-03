@@ -83,8 +83,6 @@ jobs:
       app-name: ${{ needs.setup.outputs.app-name }}
       command: ${{ inputs.command }}
       app-version: ${{ needs.setup.outputs.app-version }}
-      # build-type: release
-      # flavor: ${{ inputs.flavor }}
       enable-android: ${{ inputs.enable-android }}
       technology: ${{ inputs.technology }}
       container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_BUILD }}"
@@ -116,23 +114,23 @@ jobs:
       apple-api-key-content: ${{ secrets.apple-api-key-content }}
       apple-team-id: ${{ secrets.apple-team-id }}
 
-  scs:
-    needs: [setup,build_android,build_ios]
-    # name: Supply Chain Security
-    uses: cvch29/platform-workflows/.github/workflows/shared-supply-chain-security.yml@main
-    with:
-      app-name: ${{ needs.setup.outputs.app-name }}
-      artifact-path: "/__w/challenge-mbco/challenge-mbco/artifacts"
-      container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_SCS }}"
-      container-image-resource-runner: "--cpus 2 -m 4g"
+  # scs:
+  #   needs: [setup,build_android,build_ios]
+  #   # name: Supply Chain Security
+  #   uses: cvch29/platform-workflows/.github/workflows/shared-supply-chain-security.yml@main
+  #   with:
+  #     app-name: ${{ needs.setup.outputs.app-name }}
+  #     artifact-path: "/__w/challenge-mbco/challenge-mbco/artifacts"
+  #     container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_SCS }}"
+  #     container-image-resource-runner: "--cpus 2 -m 4g"
 
-  artifact_release:
-    needs: [setup, build_android, build_ios, scs]
-    name: Artifact Release
-    uses: cvch29/platform-workflows/.github/workflows/shared-release-tag.yml@main
-    with:
-      app-name: ${{ needs.setup.outputs.app-name }}
-      app-version: ${{ needs.setup.outputs.app-version }}
-      version-strategy: semver
-    secrets:
-      github-token: ${{ secrets.GITHUB_TOKEN }}
+  # artifact_release:
+  #   needs: [setup, build_android, build_ios, scs]
+  #   name: Artifact Release
+  #   uses: cvch29/platform-workflows/.github/workflows/shared-release-tag.yml@main
+  #   with:
+  #     app-name: ${{ needs.setup.outputs.app-name }}
+  #     app-version: ${{ needs.setup.outputs.app-version }}
+  #     version-strategy: semver
+  #   secrets:
+  #     github-token: ${{ secrets.GITHUB_TOKEN }}

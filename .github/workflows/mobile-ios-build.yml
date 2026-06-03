@@ -46,9 +46,6 @@ on:
         type: boolean
         required: false
         default: false
-    # outputs:
-    #   ipa-path:
-    #     value: ${{ jobs.build.outputs.ipa-path }}
     secrets:
       p12-base64:
         required: true
@@ -130,7 +127,6 @@ jobs:
           p12-base64: ${{ secrets.p12-base64 }}
           p12-password: ${{ secrets.p12-password }}
       
-      # TOTALMENTE CORRECTO HASTA AQUI
       # - name: Instalar perfil de aprovisionamiento
       #   # if: ${{ inputs.provisioning-profile-base64 != '' }}
       #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/install-apple-provisioning-profile@main
@@ -173,7 +169,6 @@ jobs:
         with:
           working-directory: .
         
-
       # - name: Actualizar versión
       #   uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/ios/build@main
       #   with:
@@ -183,7 +178,6 @@ jobs:
       #     options: |
       #       MARKETING_VERSION=${{ inputs.app-version }}
       #       CURRENT_PROJECT_VERSION=${{ inputs.app-version }}
-
 
       # - name: Configurar Proyecto para IxGuard
       #   if: ${{ env.IXGUARD_ENABLED == 'true' }}
@@ -227,7 +221,6 @@ jobs:
           workspace: ${{ steps.xcode-build-settings.outputs.workspace-path }}
           configuration: ${{ inputs.configuration }}
           
-
       # - name: Ofuscar .archive con IxGuard
       #   if: ${{ env.IXGUARD_ENABLED == 'true' }}
       #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/ixguard-obfuscate@main
@@ -254,20 +247,13 @@ jobs:
       #     app_version: ${{ inputs.app-version }}
       #     path: app
       #     pattern: |
-      #       build/outputs/apk/release/*.apk
-      #       build/outputs/bundle/release/*.aab
-      #       build/outputs/remote-config/config.json
-      #       build/reports/profile/*.html
-      #     name: android-release-files
+      #       ${{ steps.export-ipa.outputs.ipa-path }}
+      #     name: ios-release-files
       #     retention-days: 1
       #     if-no-files-found: warn
       #     compression-level: 6
       #     upload_path: |
-      #       app/build/outputs/apk/release/*.apk
-      #       app/build/outputs/bundle/release/*.aab
-      #       app/remote-config/*.json
-      #       app/build/reports/profile/*.html
-      #       app/gradle.lockfile
+      #       ipa/${{ inputs.app-name }}-${{ inputs.app-version }}.ipa
 
       - name: Upload Artifact
         uses: cvch29/platform-actions/.github/actions/shared-v2/artifact-upload@main
