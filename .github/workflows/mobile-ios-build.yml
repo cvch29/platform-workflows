@@ -79,7 +79,7 @@ jobs:
 
       - name: Setup Keychain
         id: setup-keychain
-        uses: cvch29/platform-actions/.github/actions/shared-v2/setup-keychain@main
+        uses: cvch29/platform-actions/.github/actions/shared-v2/setup-certificate@main
         with:
           certificate-base64: ${{ secrets.p12-base64 }}
           certificate-file: ${{ inputs.p12-file }}
