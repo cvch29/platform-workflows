@@ -69,19 +69,8 @@ jobs:
     runs-on: macos-latest
     permissions:
       contents: read
-    # outputs:
-    #   ipa-path: ${{ steps.build.outputs.ipa-path }}
     steps:
       - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@main
-
-      # - name: Setup Ruby con OpenSSL
-      #   uses: ruby/setup-ruby@v1
-      #   with:
-      #     ruby-version: '3.3'
-      #     bundler-cache: false
-
-      # - name: Install Fastlane
-      #   run: gem install fastlane
 
       - name: Setup Keychain
         id: setup-keychain
@@ -89,8 +78,6 @@ jobs:
         with:
           certificate-base64: ${{ secrets.p12-base64 }}
           certificate-file: ${{ inputs.p12-file }}
-          # keystore-base64: ${{ secrets.keystore-base64 }}
-          # keystore-path: ${{ secrets.keystore-file }}
 
       - name: Validate P12 Private Key
         uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/validate-private-key-p12@main
@@ -110,172 +97,172 @@ jobs:
           echo "${{ secrets.apple-api-key-content }}" | base64 -d | openssl pkey -noout -text
         shell: bash
 
-      - name: Descargar perfil de aprovisionamiento
-        id: download-pp
-        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/apple-download-provisioning-profile@main
-        with:
-          apple-api-key-id: ${{ secrets.apple-api-key-id }}
-          apple-api-issuer-id: ${{ secrets.apple-api-issuer-id }}
-          apple-api-key-content: ${{ secrets.apple-api-key-content }}
-          profile-name: "profile-saveio-as"
-          app-identifier: "com.savefinancial.saveio"
-          profile-type: "appstore"
-          team-id: "N9GR2VZ7H7"
-
-      - name: Validar perfil de aprovisionamiento
-        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/validate-provisioning-profile@main
-        with:
-          prov-profile-path: ${{ steps.download-pp.outputs.provisioning-profile-path }} 
-          validate-cer: true
-          fingerprint: ${{ secrets.p12-fingerprint }}
-
-      - name: Instalar llave privada de apple
-        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/install-apple-private-key-p12@main
-        with:
-          p12-base64: ${{ secrets.p12-base64 }}
-          p12-password: ${{ secrets.p12-password }}
-      
-      # TOTALMENTE CORRECTO HASTA AQUI
-      # - name: Instalar perfil de aprovisionamiento
-      #   # if: ${{ inputs.provisioning-profile-base64 != '' }}
-      #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/install-apple-provisioning-profile@main
+      # - name: Descargar perfil de aprovisionamiento
+      #   id: download-pp
+      #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/apple-download-provisioning-profile@main
       #   with:
-      #     provisioning-profile-base64: ${{ secrets.provisioning-profile-base64 }}
-      #     bundle-id: ${{ inputs.bundle-id }}
+      #     apple-api-key-id: ${{ secrets.apple-api-key-id }}
+      #     apple-api-issuer-id: ${{ secrets.apple-api-issuer-id }}
+      #     apple-api-key-content: ${{ secrets.apple-api-key-content }}
+      #     profile-name: "profile-saveio-as"
+      #     app-identifier: "com.savefinancial.saveio"
+      #     profile-type: "appstore"
+      #     team-id: "N9GR2VZ7H7"
 
-      # - name: Instalar Apple Provisioning Profile
-      #   env:
-      #     BUILD_PROVISION_PROFILE_BASE64: "${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}"
+      # - name: Validar perfil de aprovisionamiento
+      #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/validate-provisioning-profile@main
+      #   with:
+      #     prov-profile-path: ${{ steps.download-pp.outputs.provisioning-profile-path }} 
+      #     validate-cer: true
+      #     fingerprint: ${{ secrets.p12-fingerprint }}
+
+      # - name: Instalar llave privada de apple
+      #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/install-apple-private-key-p12@main
+      #   with:
+      #     p12-base64: ${{ secrets.p12-base64 }}
+      #     p12-password: ${{ secrets.p12-password }}
+      
+      # # TOTALMENTE CORRECTO HASTA AQUI
+      # # - name: Instalar perfil de aprovisionamiento
+      # #   # if: ${{ inputs.provisioning-profile-base64 != '' }}
+      # #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/install-apple-provisioning-profile@main
+      # #   with:
+      # #     provisioning-profile-base64: ${{ secrets.provisioning-profile-base64 }}
+      # #     bundle-id: ${{ inputs.bundle-id }}
+
+      # # - name: Instalar Apple Provisioning Profile
+      # #   env:
+      # #     BUILD_PROVISION_PROFILE_BASE64: "${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}"
+      # #   run: |
+      # #     # PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+      # #     # echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode --output $PP_PATH
+      # #     # mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+      # #     cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+
+      # # - name: Delete Provision Profile
+      # #   run: rm -f ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision
+      # #   if: always()
+
+      # - name: Instalar perfil de aprovisionamiento
       #   run: |
-      #     # PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
-      #     # echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode --output $PP_PATH
-      #     # mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-      #     cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+      #     mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+      #     cp ${{ steps.download-pp.outputs.provisioning-profile-path }} \
+      #       ~/Library/MobileDevice/Provisioning\ Profiles/${{ env.PROV_PROFILE_UUID }}.mobileprovision
+      #     echo "Perfil instalado:"
+      #     ls ~/Library/MobileDevice/Provisioning\ Profiles/
 
-      # - name: Delete Provision Profile
-      #   run: rm -f ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision
-      #   if: always()
+      # # - name: Configurar keychain en sistema
+      # #   run: |
+      # #     security list-keychains -d user -s ${{ env.KEYCHAIN_PATH }} ~/Library/Keychains/login.keychain-db
+      # #     security default-keychain -s ${{ env.KEYCHAIN_PATH }}
+      # #     security unlock-keychain -p ${{ env.KEYCHAIN_PASSWORD }} ${{ env.KEYCHAIN_PATH }}
+      # #     echo "Keychains configurados:"
+      # #     security list-keychains -d user
 
-      - name: Instalar perfil de aprovisionamiento
-        run: |
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp ${{ steps.download-pp.outputs.provisioning-profile-path }} \
-            ~/Library/MobileDevice/Provisioning\ Profiles/${{ env.PROV_PROFILE_UUID }}.mobileprovision
-          echo "Perfil instalado:"
-          ls ~/Library/MobileDevice/Provisioning\ Profiles/
-
-      # - name: Configurar keychain en sistema
-      #   run: |
-      #     security list-keychains -d user -s ${{ env.KEYCHAIN_PATH }} ~/Library/Keychains/login.keychain-db
-      #     security default-keychain -s ${{ env.KEYCHAIN_PATH }}
-      #     security unlock-keychain -p ${{ env.KEYCHAIN_PASSWORD }} ${{ env.KEYCHAIN_PATH }}
-      #     echo "Keychains configurados:"
-      #     security list-keychains -d user
-
-      - name: Instalar Dependencies
-        # if: ${{ inputs.technology == 'react-native' }}
-        uses: cvch29/platform-actions/.github/actions/tooling/node@main
-        with:
-          working-directory: .
+      # - name: Instalar Dependencies
+      #   # if: ${{ inputs.technology == 'react-native' }}
+      #   uses: cvch29/platform-actions/.github/actions/tooling/node@main
+      #   with:
+      #     working-directory: .
         
 
-      # - name: Actualizar versión
-      #   uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/ios/build@main
+      # # - name: Actualizar versión
+      # #   uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/ios/build@main
+      # #   with:
+      # #     scheme: ${{ inputs.scheme }}
+      # #     workspace: ${{ inputs.workspace }}
+      # #     export-method: ${{ inputs.export-method }}
+      # #     options: |
+      # #       MARKETING_VERSION=${{ inputs.app-version }}
+      # #       CURRENT_PROJECT_VERSION=${{ inputs.app-version }}
+
+
+      # # - name: Configurar Proyecto para IxGuard
+      # #   if: ${{ env.IXGUARD_ENABLED == 'true' }}
+      # #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/xcode-configure-ixguard-toolchain@main
+      # #   with:
+      # #     workspace: ${{ inputs.workspace }}
+      # #     scheme: ${{ inputs.scheme }}
+      # #     target: ${{ inputs.target }}
+
+      # # - name: Configurar IxGuard Toolchain
+      # #   if: ${{ env.IXGUARD_ENABLED == 'true' }}
+      # #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/xcode-configure-ixguard-toolchain@main
+      # #   with:
+      # #     workspace: ${{ inputs.workspace }}
+      # #     scheme: ${{ inputs.scheme }}
+      # #     target: ${{ inputs.target }}
+
+      # - name: Install CocoaPods
+      #   run: cd ios && pod install
+
+      # - name: Configurar proyecto
+      #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/xcode-configure-settings@main
       #   with:
-      #     scheme: ${{ inputs.scheme }}
-      #     workspace: ${{ inputs.workspace }}
-      #     export-method: ${{ inputs.export-method }}
+      #     project: ios/SaveIO.xcodeproj
+      #     target: SaveIO
+      #     configuration: ${{ inputs.configuration }}
       #     options: |
-      #       MARKETING_VERSION=${{ inputs.app-version }}
-      #       CURRENT_PROJECT_VERSION=${{ inputs.app-version }}
+      #       PROVISIONING_PROFILE_SPECIFIER=profile-saveio-as
+      #       DEVELOPMENT_TEAM=N9GR2VZ7H7
+      #       CODE_SIGN_IDENTITY=Apple Distribution
+      #       CODE_SIGN_STYLE=Manual
+      #       CODE_SIGNING_REQUIRED=YES
+      #       OTHER_CODE_SIGN_FLAGS=--keychain=/Users/runner/work/_temp/26801070489.keychain-db
 
-
-      # - name: Configurar Proyecto para IxGuard
-      #   if: ${{ env.IXGUARD_ENABLED == 'true' }}
-      #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/xcode-configure-ixguard-toolchain@main
+      # - name: Build iOS
+      #   id: build
+      #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/fastlane-generate-archive@main
       #   with:
-      #     workspace: ${{ inputs.workspace }}
-      #     scheme: ${{ inputs.scheme }}
-      #     target: ${{ inputs.target }}
-
-      # - name: Configurar IxGuard Toolchain
-      #   if: ${{ env.IXGUARD_ENABLED == 'true' }}
-      #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/xcode-configure-ixguard-toolchain@main
-      #   with:
-      #     workspace: ${{ inputs.workspace }}
-      #     scheme: ${{ inputs.scheme }}
-      #     target: ${{ inputs.target }}
-
-      - name: Install CocoaPods
-        run: cd ios && pod install
-
-      - name: Configurar proyecto
-        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/xcode-configure-settings@main
-        with:
-          project: ios/SaveIO.xcodeproj
-          target: SaveIO
-          configuration: ${{ inputs.configuration }}
-          options: |
-            PROVISIONING_PROFILE_SPECIFIER=profile-saveio-as
-            DEVELOPMENT_TEAM=N9GR2VZ7H7
-            CODE_SIGN_IDENTITY=Apple Distribution
-            CODE_SIGN_STYLE=Manual
-            CODE_SIGNING_REQUIRED=YES
-            OTHER_CODE_SIGN_FLAGS=--keychain=/Users/runner/work/_temp/26801070489.keychain-db
-
-      - name: Build iOS
-        id: build
-        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/fastlane-generate-archive@main
-        with:
-          scheme: SaveIO
-          workspace: ${{ env.WORKSPACE_PATH }}
-          configuration: ${{ inputs.configuration }}
+      #     scheme: SaveIO
+      #     workspace: ${{ env.WORKSPACE_PATH }}
+      #     configuration: ${{ inputs.configuration }}
           
 
-      - name: Ofuscar .archive con IxGuard
-        if: ${{ env.IXGUARD_ENABLED == 'true' }}
-        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/ixguard-obfuscate@main
-        with:
-          archive: ${{ steps.build.outputs.archive-path }}
-          configuration: ${{ inputs.configuration }}
-          license-base64: ${{ secrets.ixguard-license-key }}
-
-      - name: Exportar .ipa
-        id: export-ipa
-        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/fastlane-export-archive@main
-        with:
-          scheme: "SaveIO"
-          workspace: ${{ env.WORKSPACE_PATH }}
-          archive: ${{ env.ARCHIVE_PATH }}
-          export-type: prod
-          app-identifier: "com.savefinancial.saveio"
-          prov-profile: "profile-saveio-as"
-
-      # - name: Artifact Management
-      #   uses: cvch29/platform-actions/.github/actions/shared/artifact-manage@main
+      # - name: Ofuscar .archive con IxGuard
+      #   if: ${{ env.IXGUARD_ENABLED == 'true' }}
+      #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/ixguard-obfuscate@main
       #   with:
-      #     app_name: ${{ inputs.app-name }}
-      #     app_version: ${{ inputs.app-version }}
-      #     path: app
-      #     pattern: |
-      #       build/outputs/apk/release/*.apk
-      #       build/outputs/bundle/release/*.aab
-      #       build/outputs/remote-config/config.json
-      #       build/reports/profile/*.html
-      #     name: android-release-files
-      #     retention-days: 1
-      #     if-no-files-found: warn
-      #     compression-level: 6
-      #     upload_path: |
-      #       app/build/outputs/apk/release/*.apk
-      #       app/build/outputs/bundle/release/*.aab
-      #       app/remote-config/*.json
-      #       app/build/reports/profile/*.html
-      #       app/gradle.lockfile
+      #     archive: ${{ steps.build.outputs.archive-path }}
+      #     configuration: ${{ inputs.configuration }}
+      #     license-base64: ${{ secrets.ixguard-license-key }}
 
-      # - name: Upload Artifact
-      #   uses: cvch29/platform-actions/.github/actions/shared-v2/artifact-upload@main
+      # - name: Exportar .ipa
+      #   id: export-ipa
+      #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/fastlane-export-archive@main
       #   with:
-      #     name: ios-ipa-${{ inputs.app-name }}
-      #     path: ${{ steps.build.outputs.ipa-path }}
-      #     retention-days: 30
+      #     scheme: "SaveIO"
+      #     workspace: ${{ env.WORKSPACE_PATH }}
+      #     archive: ${{ env.ARCHIVE_PATH }}
+      #     export-type: prod
+      #     app-identifier: "com.savefinancial.saveio"
+      #     prov-profile: "profile-saveio-as"
+
+      # # - name: Artifact Management
+      # #   uses: cvch29/platform-actions/.github/actions/shared/artifact-manage@main
+      # #   with:
+      # #     app_name: ${{ inputs.app-name }}
+      # #     app_version: ${{ inputs.app-version }}
+      # #     path: app
+      # #     pattern: |
+      # #       build/outputs/apk/release/*.apk
+      # #       build/outputs/bundle/release/*.aab
+      # #       build/outputs/remote-config/config.json
+      # #       build/reports/profile/*.html
+      # #     name: android-release-files
+      # #     retention-days: 1
+      # #     if-no-files-found: warn
+      # #     compression-level: 6
+      # #     upload_path: |
+      # #       app/build/outputs/apk/release/*.apk
+      # #       app/build/outputs/bundle/release/*.aab
+      # #       app/remote-config/*.json
+      # #       app/build/reports/profile/*.html
+      # #       app/gradle.lockfile
+
+      # # - name: Upload Artifact
+      # #   uses: cvch29/platform-actions/.github/actions/shared-v2/artifact-upload@main
+      # #   with:
+      # #     name: ios-ipa-${{ inputs.app-name }}
+      # #     path: ${{ steps.build.outputs.ipa-path }}
+      # #     retention-days: 30
