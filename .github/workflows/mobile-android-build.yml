@@ -89,7 +89,7 @@ jobs:
             $GRADLE_USER_HOME/wrapper/dists
 
       - name: Install Dependencies
-        if: ${{ inputs.technology == 'react-native' }}
+        # if: ${{ inputs.technology == 'react-native' }}
         uses: cvch29/platform-actions/.github/actions/tooling/node@main
         with:
           working-directory: .
