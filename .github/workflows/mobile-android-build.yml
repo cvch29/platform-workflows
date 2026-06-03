@@ -115,7 +115,8 @@ jobs:
             app/build/outputs/apk/release/*.apk
             app/build/outputs/bundle/release/*.aab
             app/build/outputs/remote-config/config.json
-            build/reports/problems/problems-report.html
+            build/reports/problems/problems-*.html
+            build/reports/profile/profile-*.html
           name: android-${{ github.run_id }}-${{ github.run_attempt }}
           retention-days: 1
           if-no-files-found: warn
