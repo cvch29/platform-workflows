@@ -58,7 +58,8 @@ jobs:
         with:
           artifact_name: android-release-files
           download_path: ./artifacts
-      - id: sbom
+      - name: Generate SBOM
+        id: sbom
         uses: cvch29/platform-actions/.github/actions/governance/sbom@main
         with:
           artifact-path: ${{ inputs.artifact-path }}

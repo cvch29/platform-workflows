@@ -60,19 +60,6 @@ on:
       apple-team-id:
         required: false
 jobs:
-  # security:
-  #   uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@main
-  #   with:
-  #     app-name: ${{ inputs.app-name }}
-  #     language: javascript
-  #     run-codeql: true
-  #     run-sca: true
-  #     run-secrets: true
-  #     run-sast: true
-  #   permissions:
-  #     contents: read
-  #     security-events: write
-
   setup:
     name: Setup
     runs-on: ubuntu-latest
@@ -89,7 +76,6 @@ jobs:
           node-build-path: ${{ inputs.node-build-path }}
 
   build_android:
-    
     needs: setup
     name: Build Android
     uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@main
@@ -108,7 +94,6 @@ jobs:
       keystore-path: ${{ secrets.keystore-path }}
 
   build_ios:
-    if: success() && (inputs.enable-ios == true)
     needs: setup
     name: Build iOS
     uses: cvch29/platform-workflows/.github/workflows/mobile-ios-build.yml@main
@@ -127,20 +112,23 @@ jobs:
       apple-api-key-content: ${{ secrets.apple-api-key-content }}
       apple-team-id: ${{ secrets.apple-team-id }}
 
-  # quality-gate:
-  #   needs: [build-android]
-  #   if: always() && needs.build-android.result != 'failure'
-  #   uses: cvch29/platform-workflows/.github/workflows/shared-quality-gates.yml@main
-  #   with:
-  #     app-name: ${{ inputs.app-name }}
-  #     environment: staging
-  #     require-sbom: true
+  scs:
+    needs: [setup,build_android,build_ios]
+    # name: Supply Chain Security
+    uses: cvch29/platform-workflows/.github/workflows/shared-supply-chain-security.yml@main
+    with:
+      app-name: ${{ needs.setup.outputs.app-name }}
+      artifact-path: "/__w/challenge-mbco/challenge-mbco/artifacts"
+      container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_SCS }}"
+      container-image-resource-runner: "--cpus 2 -m 4g"
 
-  # tag:
-  #   name: Tag Release
-  #   needs: build-android
-  #   uses: cvch29/platform-workflows/.github/workflows/shared-release-tag.yml@main
-  #   with:
-  #     app-name: ${{ inputs.app-name }}
-  #   secrets:
-  #     github-token: ${{ secrets.github-token }}
+  artifact_release:
+    needs: [setup, build_android, build_ios, scs]
+    name: Artifact Release
+    uses: cvch29/platform-workflows/.github/workflows/shared-release-tag.yml@main
+    with:
+      app-name: ${{ needs.setup.outputs.app-name }}
+      app-version: ${{ needs.setup.outputs.app-version }}
+      version-strategy: semver
+    secrets:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
