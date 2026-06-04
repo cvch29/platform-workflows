@@ -52,7 +52,7 @@ jobs:
       sbom-path: ${{ steps.sbom.outputs.sbom-path }}
       component-count: ${{ steps.sbom.outputs.component-count }}
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@main
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
       - name: Download Artifacts
         uses: cvch29/platform-actions/.github/actions/shared/artifact-download@main
         with:
