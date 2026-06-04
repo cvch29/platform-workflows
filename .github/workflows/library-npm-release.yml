@@ -1,0 +1,83 @@
+name: 'Library NPM — Release'
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      registry-url:
+        type: string
+        default: 'https://registry.npmjs.org'
+      scope:
+        type: string
+        default: ''
+      dist-tag:
+        type: string
+        default: 'latest'
+      node-version:
+        type: string
+        default: '20'
+      package-manager:
+        type: string
+        default: 'npm'
+    secrets:
+      npm-token:
+        required: true
+      github-token:
+        required: true
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      app-version: ${{ steps.v.outputs.version }}
+      app-name:    ${{ steps.v.outputs.name }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        shell: bash
+        run: |
+          echo "version=$(node -p \"require('./package.json').version\")" >> $GITHUB_OUTPUT
+          echo "name=${{ inputs.app-name }}"                             >> $GITHUB_OUTPUT
+
+  build:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+      - uses: cvch29/platform-actions/.github/actions/tooling/node-v2/build@main
+        with:
+          package-manager: ${{ inputs.package-manager }}
+
+  scs:
+    needs: [setup, build]
+    uses: cvch29/platform-workflows/.github/workflows/shared-supply-chain-security.yml@main
+    with:
+      app-name: ${{ needs.setup.outputs.app-name }}
+
+  publish:
+    name: Publish to NPM
+    needs: [setup, build, scs]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cvch29/platform-actions/.github/actions/domains/backend/npm-library/publish@main
+        with:
+          registry-url: ${{ inputs.registry-url }}
+          scope:        ${{ inputs.scope }}
+          token:        ${{ secrets.npm-token }}
+          dist-tag:     ${{ inputs.dist-tag }}
+
+  artifact-release:
+    needs: [setup, publish]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cvch29/platform-actions/.github/actions/shared/artifact-release-tag@main
+        with:
+          github-token: ${{ secrets.github-token }}
+          app-version:  ${{ needs.setup.outputs.app-version }}

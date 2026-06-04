@@ -98,7 +98,7 @@ jobs:
     #   dashboard-url: ${{ steps.sonar.outputs.dashboard-url }}
 
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@main
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
         with:
           fetch-depth: 0   # Sonar needs full history for blame/new code detection
 

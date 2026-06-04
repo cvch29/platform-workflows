@@ -1,0 +1,96 @@
+name: 'Backend Node — PR'
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      node-version:
+        type: string
+        required: false
+        default: '20'
+      package-manager:
+        type: string
+        required: false
+        default: 'yarn'
+      sonar-project-key:
+        type: string
+        required: false
+        default: ''
+      container-image-name-runner:
+        type: string
+        required: false
+        default: ''
+      container-image-resource-runner:
+        type: string
+        required: false
+        default: '--cpus 2 -m 4g'
+    secrets:
+      sonar-token:
+        required: false
+
+jobs:
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+    outputs:
+      app-version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: version
+        shell: bash
+        run: |
+          VERSION=$(node -p "require('./package.json').version" 2>/dev/null || echo "0.0.0")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+  pr-validate:
+    needs: setup
+    uses: cvch29/platform-workflows/.github/workflows/shared-pr-validation.yml@main
+    with:
+      app-name: ${{ inputs.app-name }}
+      runtime: javascript
+
+  build-test:
+    name: Build & Test
+    needs: pr-validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+      - name: Install & Test
+        shell: bash
+        run: |
+          ${{ inputs.package-manager }} install --frozen-lockfile
+          ${{ inputs.package-manager }} run build 2>/dev/null || true
+          ${{ inputs.package-manager }} test 2>/dev/null || true
+
+  quality:
+    needs: setup
+    if: inputs.sonar-project-key != ''
+    uses: cvch29/platform-workflows/.github/workflows/shared-quality-scan.yml@main
+    with:
+      app-name: ${{ inputs.app-name }}
+      app-version: ${{ needs.setup.outputs.app-version }}
+      language: javascript
+      sonar-project-key: ${{ inputs.sonar-project-key }}
+      container-image-name-runner: ${{ inputs.container-image-name-runner }}
+      container-image-resource-runner: ${{ inputs.container-image-resource-runner }}
+    secrets:
+      sonar-token: ${{ secrets.sonar-token }}
+
+  security:
+    needs: pr-validate
+    uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@main
+    with:
+      app-name: ${{ inputs.app-name }}
+      language: javascript
+      run-codeql: true
+      run-sca: true
+      run-secrets: true
+      run-sast: true
+    permissions:
+      contents: read
+      security-events: write

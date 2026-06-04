@@ -1,0 +1,136 @@
+name: 'Backend Java — PR'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Golden path para PRs de aplicaciones Java/Spring Boot.
+# Mismo patrón que mobile-rn-pr.yml — setup → quality → security.
+#
+# Uso en el app repo:
+#   jobs:
+#     pr:
+#       uses: cvch29/platform-workflows/.github/workflows/backend-java-pr.yml@main
+#       with:
+#         app-name: payments-service
+#         sonar-project-key: payments-service
+#       secrets:
+#         sonar-token: ${{ secrets.SONAR_TOKEN }}
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      java-version:
+        type: string
+        required: false
+        default: '17'
+      gradle-tasks:
+        description: 'Tareas de build para verificación en PR'
+        type: string
+        required: false
+        default: 'build test'
+      sonar-project-key:
+        type: string
+        required: false
+        default: ''
+      container-image-name-runner:
+        description: 'Imagen de runner self-hosted. Vacío = ubuntu-latest'
+        type: string
+        required: false
+        default: ''
+      container-image-resource-runner:
+        type: string
+        required: false
+        default: '--cpus 2 -m 4g'
+    secrets:
+      sonar-token:
+        required: false
+
+jobs:
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+    outputs:
+      app-version: ${{ steps.version.outputs.version }}
+      app-name:    ${{ steps.version.outputs.name }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get version
+        id: version
+        shell: bash
+        run: |
+          # Gradle
+          if [ -f "build.gradle" ] || [ -f "build.gradle.kts" ]; then
+            VERSION=$(./gradlew properties -q 2>/dev/null | grep "^version:" | awk '{print $2}' || echo "0.0.0")
+          # Maven
+          elif [ -f "pom.xml" ]; then
+            VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout 2>/dev/null || echo "0.0.0")
+          else
+            VERSION="0.0.0"
+          fi
+          echo "version=$VERSION"           >> $GITHUB_OUTPUT
+          echo "name=${{ inputs.app-name }}" >> $GITHUB_OUTPUT
+
+  pr-validate:
+    name: PR Validation
+    needs: setup
+    uses: cvch29/platform-workflows/.github/workflows/shared-pr-validation.yml@main
+    with:
+      app-name: ${{ inputs.app-name }}
+      runtime: java
+
+  build-test:
+    name: Build & Test
+    needs: pr-validate
+    runs-on: ${{ inputs.container-image-name-runner != '' && 'self-hosted' || 'ubuntu-latest' }}
+    container:
+      image: ${{ inputs.container-image-name-runner }}
+      options: ${{ inputs.container-image-name-runner != '' && inputs.container-image-resource-runner || '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        if: inputs.container-image-name-runner == ''
+        with:
+          java-version: ${{ inputs.java-version }}
+          distribution: temurin
+          cache: gradle
+      - name: Build & Test
+        shell: bash
+        run: |
+          chmod +x gradlew 2>/dev/null || true
+          if [ -f "gradlew" ]; then
+            ./gradlew ${{ inputs.gradle-tasks }} --no-daemon
+          else
+            mvn clean verify --batch-mode
+          fi
+
+  quality:
+    name: Quality Scan
+    needs: setup
+    if: inputs.sonar-project-key != ''
+    uses: cvch29/platform-workflows/.github/workflows/shared-quality-scan.yml@main
+    with:
+      app-name:    ${{ inputs.app-name }}
+      app-version: ${{ needs.setup.outputs.app-version }}
+      language: java
+      sonar-project-key: ${{ inputs.sonar-project-key }}
+      container-image-name-runner: ${{ inputs.container-image-name-runner }}
+      container-image-resource-runner: ${{ inputs.container-image-resource-runner }}
+    secrets:
+      sonar-token: ${{ secrets.sonar-token }}
+
+  security:
+    name: Security Scan
+    needs: pr-validate
+    uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@main
+    with:
+      app-name: ${{ inputs.app-name }}
+      language: java
+      run-codeql: true
+      run-sca: true
+      run-secrets: true
+      run-sast: false
+    permissions:
+      contents: read
+      security-events: write

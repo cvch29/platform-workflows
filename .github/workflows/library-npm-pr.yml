@@ -1,0 +1,64 @@
+name: 'Library NPM — PR'
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      node-version:
+        type: string
+        default: '20'
+      package-manager:
+        type: string
+        default: 'npm'
+    secrets:
+      sonar-token:
+        required: false
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      app-version: ${{ steps.v.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        run: echo "version=$(node -p \"require('./package.json').version\")" >> $GITHUB_OUTPUT
+        shell: bash
+
+  pr-validate:
+    needs: setup
+    uses: cvch29/platform-workflows/.github/workflows/shared-pr-validation.yml@main
+    with:
+      app-name: ${{ inputs.app-name }}
+      runtime: javascript
+
+  build-test:
+    name: Build & Test
+    needs: pr-validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+      - shell: bash
+        run: |
+          ${{ inputs.package-manager }} install
+          ${{ inputs.package-manager }} run build
+          ${{ inputs.package-manager }} test
+
+  security:
+    needs: pr-validate
+    uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@main
+    with:
+      app-name: ${{ inputs.app-name }}
+      language: javascript
+      run-codeql: true
+      run-sca: true
+      run-secrets: true
+      run-sast: false
+    permissions:
+      contents: read
+      security-events: write

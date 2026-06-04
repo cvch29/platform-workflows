@@ -1,0 +1,251 @@
+name: 'Backend Java — Release'
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Golden path para releases de aplicaciones Java/Spring Boot.
+# Mismo patrón que mobile-rn-release.yml:
+#   setup → build → scs → artifact_release
+#
+# Soporta deploy a: aks | azure-webapp | azure-function
+#
+# Uso en el app repo:
+#   jobs:
+#     release:
+#       uses: cvch29/platform-workflows/.github/workflows/backend-java-release.yml@main
+#       with:
+#         app-name: payments-service
+#         deploy-target: aks
+#         acr-registry: mybank.azurecr.io
+#         aks-cluster-name: mybank-aks
+#         aks-resource-group: mybank-rg
+#         environment: dev
+#       secrets:
+#         github-token: ${{ secrets.GITHUB_TOKEN }}
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        type: string
+        required: true
+      environment:
+        type: string
+        required: false
+        default: 'dev'
+      deploy-target:
+        description: 'aks | azure-webapp | azure-function'
+        type: string
+        required: true
+      java-version:
+        type: string
+        required: false
+        default: '17'
+      gradle-tasks:
+        type: string
+        required: false
+        default: 'bootJar'
+      # AKS
+      acr-registry:
+        type: string
+        required: false
+        default: ''
+      aks-cluster-name:
+        type: string
+        required: false
+        default: ''
+      aks-resource-group:
+        type: string
+        required: false
+        default: ''
+      helm-values-file:
+        description: 'Path al values file del ambiente (ej: helm/values-prod.yaml)'
+        type: string
+        required: false
+        default: ''
+      namespace:
+        type: string
+        required: false
+        default: 'default'
+      # Azure Web App / Function
+      webapp-name:
+        type: string
+        required: false
+        default: ''
+      resource-group:
+        type: string
+        required: false
+        default: ''
+      # Runner
+      container-image-name-runner:
+        type: string
+        required: false
+        default: ''
+      container-image-resource-runner:
+        type: string
+        required: false
+        default: '--cpus 4 -m 8g'
+      enable-build:
+        type: boolean
+        required: false
+        default: true
+    secrets:
+      github-token:
+        required: true
+
+jobs:
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+    outputs:
+      app-version: ${{ steps.version.outputs.version }}
+      app-name:    ${{ steps.version.outputs.name }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get version
+        id: version
+        shell: bash
+        run: |
+          if [ -f "gradlew" ]; then
+            VERSION=$(./gradlew properties -q 2>/dev/null | grep "^version:" | awk '{print $2}' || echo "0.0.0")
+          elif [ -f "pom.xml" ]; then
+            VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout 2>/dev/null || echo "0.0.0")
+          else
+            VERSION="0.0.0"
+          fi
+          echo "version=$VERSION"           >> $GITHUB_OUTPUT
+          echo "name=${{ inputs.app-name }}" >> $GITHUB_OUTPUT
+
+  build:
+    name: Build
+    needs: setup
+    if: inputs.enable-build == true
+    runs-on: ${{ inputs.container-image-name-runner != '' && 'self-hosted' || 'ubuntu-latest' }}
+    container:
+      image: ${{ inputs.container-image-name-runner }}
+      options: ${{ inputs.container-image-name-runner != '' && inputs.container-image-resource-runner || '' }}
+    outputs:
+      image-ref:    ${{ steps.build.outputs.image-ref }}
+      image-digest: ${{ steps.build.outputs.image-digest }}
+      jar-path:     ${{ steps.build.outputs.jar-path }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        if: inputs.container-image-name-runner == ''
+        with:
+          java-version: ${{ inputs.java-version }}
+          distribution: temurin
+          cache: gradle
+      - uses: azure/login@v2
+        if: inputs.deploy-target == 'aks'
+        with:
+          client-id:       ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id:       ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Build
+        id: build
+        uses: cvch29/platform-actions/.github/actions/domains/backend/java/build@main
+        with:
+          java-version: ${{ inputs.java-version }}
+          gradle-tasks: ${{ inputs.gradle-tasks }}
+          docker-build: ${{ inputs.deploy-target == 'aks' && 'true' || 'false' }}
+          acr-registry:  ${{ inputs.acr-registry }}
+          acr-image-name: ${{ needs.setup.outputs.app-name }}
+          image-tag: ${{ needs.setup.outputs.app-version }}
+      - uses: cvch29/platform-actions/.github/actions/shared/artifact-manage@main
+        with:
+          app-name:    ${{ needs.setup.outputs.app-name }}
+          app-version: ${{ needs.setup.outputs.app-version }}
+          path: build/libs
+          pattern: '*.jar'
+          name: java-build-${{ github.run_id }}
+          retention-days: 1
+          if-no-files-found: warn
+
+  scs:
+    name: Supply Chain Security
+    needs: [setup, build]
+    uses: cvch29/platform-workflows/.github/workflows/shared-supply-chain-security.yml@main
+    with:
+      app-name: ${{ needs.setup.outputs.app-name }}
+      container-image-name-runner: ${{ inputs.container-image-name-runner }}
+      container-image-resource-runner: ${{ inputs.container-image-resource-runner }}
+
+  deploy:
+    name: Deploy → ${{ inputs.environment }}
+    needs: [setup, build, scs]
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2
+        with:
+          client-id:       ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id:       ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # ── AKS deploy ──────────────────────────────────────────────────────
+      - name: Deploy to AKS
+        if: inputs.deploy-target == 'aks'
+        uses: cvch29/platform-actions/.github/actions/domains/backend/java/deploy/aks@main
+        with:
+          app-name:          ${{ needs.setup.outputs.app-name }}
+          environment:       ${{ inputs.environment }}
+          image-tag:         ${{ needs.setup.outputs.app-version }}
+          acr-registry:      ${{ inputs.acr-registry }}
+          aks-cluster-name:  ${{ inputs.aks-cluster-name }}
+          aks-resource-group: ${{ inputs.aks-resource-group }}
+          helm-values-file:  ${{ inputs.helm-values-file }}
+          namespace:         ${{ inputs.namespace }}
+
+      # ── Azure Web App deploy ─────────────────────────────────────────────
+      - name: Download artifact (webapp)
+        if: inputs.deploy-target == 'azure-webapp'
+        uses: cvch29/platform-actions/.github/actions/shared/artifact-download@main
+        with:
+          artifact_name: java-build-${{ github.run_id }}
+          download_path: ./artifacts
+      - name: Deploy to Web App
+        if: inputs.deploy-target == 'azure-webapp'
+        uses: cvch29/platform-actions/.github/actions/domains/backend/azure-webapp/deploy@main
+        with:
+          app-name:       ${{ inputs.webapp-name }}
+          resource-group: ${{ inputs.resource-group }}
+          artifact-path:  ./artifacts/*.jar
+          runtime:        java
+
+      # ── Azure Function deploy ────────────────────────────────────────────
+      - name: Download artifact (function)
+        if: inputs.deploy-target == 'azure-function'
+        uses: cvch29/platform-actions/.github/actions/shared/artifact-download@main
+        with:
+          artifact_name: java-build-${{ github.run_id }}
+          download_path: ./artifacts
+      - name: Deploy to Function App
+        if: inputs.deploy-target == 'azure-function'
+        uses: cvch29/platform-actions/.github/actions/domains/backend/azure-function/deploy@main
+        with:
+          function-app-name: ${{ inputs.webapp-name }}
+          resource-group:    ${{ inputs.resource-group }}
+          artifact-path:     ./artifacts/*.jar
+          runtime:           java
+
+      - uses: cvch29/platform-actions/.github/actions/governance/audit-log@main
+        if: always()
+        with:
+          event-type:  deploy
+          environment: ${{ inputs.environment }}
+          outcome:     ${{ job.status }}
+          app-name:    ${{ needs.setup.outputs.app-name }}
+          metadata: '{"version":"${{ needs.setup.outputs.app-version }}","target":"${{ inputs.deploy-target }}"}'
+
+  artifact-release:
+    name: Artifact Release
+    needs: [setup, deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cvch29/platform-actions/.github/actions/shared/artifact-release-tag@main
+        with:
+          github-token: ${{ secrets.github-token }}
+          app-version:  ${{ needs.setup.outputs.app-version }}
