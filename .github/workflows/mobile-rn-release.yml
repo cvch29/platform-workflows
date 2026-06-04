@@ -70,7 +70,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Setup Environment
         id: setup-android
-        uses: cvch29/platform-actions/.github/actions/shared-v2/setup-node@main
+        uses: cvch29/platform-actions/.github/actions/shared/setup-node@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           node-build-path: ${{ inputs.node-build-path }}
