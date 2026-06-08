@@ -130,5 +130,5 @@ jobs:
       container-image-name-runner: "${{ vars.REGISTRY }}/${{ vars.CONTAINER_IMAGE_SONAR }}"
       container-image-resource-runner: "--cpus 2 -m 4g"
       # sonar-host-url: ${{ secrets.sonar-host-url }}
-      sonar-project-key: "saveoio"
+      sonar-project-key: "saveio"
       # sonar-token: ${{ secrets.sonar-token }}
