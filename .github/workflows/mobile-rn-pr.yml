@@ -81,7 +81,7 @@ jobs:
     needs: setup
     uses: cvch29/platform-workflows/.github/workflows/shared-pr-validation.yml@main
     with:
-      app-name: ${{ inputs.app-name }}
+      app-name: ${{ needs.setup.outputs.app-name }}
       runtime: react-native
 
   # js-checks:
