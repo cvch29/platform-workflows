@@ -111,7 +111,7 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@main
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
         with:
           fetch-depth: 2
 
@@ -122,55 +122,6 @@ jobs:
           android-flavor: ${{ inputs.android-flavor }}
           scheme: ${{ inputs.codeql-scheme }}
 
-  # ── SonarQube ───────────────────────────────────────────────────────────────
-  # Runs in parallel with CodeQL.
-  # sonar.qualitygate.wait=true means the Sonar Gradle/scanner task itself fails
-  # when the Quality Gate does not pass → this job fails → workflow fails.
-  # That is the "break the build" behavior.
-  # sonar:
-  #   name: SonarQube + Quality Gate
-  #   if: inputs.run-sonar && inputs.sonar-host-url != ''
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     contents: read
-  #   outputs:
-  #     quality-gate-status: ${{ steps.sonar.outputs.quality-gate-status }}
-  #     dashboard-url: ${{ steps.sonar.outputs.dashboard-url }}
-
-  #   steps:
-  #     - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@main
-  #       with:
-  #         fetch-depth: 0   # Sonar needs full history for blame/new code detection
-
-  #     - name: Run SonarQube
-  #       id: sonar
-  #       uses: cvch29/platform-actions/.github/actions/security/sonar@main
-  #       with:
-  #         language: ${{ inputs.language }}
-  #         sonar-host-url: ${{ inputs.sonar-host-url }}
-  #         sonar-token: ${{ secrets.sonar-token }}
-  #         project-key: ${{ inputs.sonar-project-key }}
-  #         coverage-report-path: ${{ inputs.sonar-coverage-report }}
-  #         android-module: ${{ inputs.android-module }}
-  #         android-flavor: ${{ inputs.sonar-android-flavor }}
-  #         scheme: ${{ inputs.codeql-scheme }}
-  #         quality-gate-wait: ${{ inputs.sonar-quality-gate-wait }}
-  #         # quality-gate-wait: true is the break-the-build switch.
-  #         # The scanner task exits with code 1 when QG status = FAILED.
-  #         # This propagates as a workflow failure with a clear message.
-
-  #     - name: Enforce Quality Gate
-  #       if: always() && steps.sonar.outputs.quality-gate-status != '' && steps.sonar.outputs.quality-gate-status != 'OK'
-  #       shell: bash
-  #       run: |
-  #         echo "::error::SonarQube Quality Gate FAILED for ${{ inputs.app-name }}"
-  #         echo "::error::Status: ${{ steps.sonar.outputs.quality-gate-status }}"
-  #         echo "::error::Dashboard: ${{ steps.sonar.outputs.dashboard-url }}"
-  #         echo ""
-  #         echo "Bank policy requires Quality Gate to pass before merge."
-  #         echo "Fix the issues at: ${{ steps.sonar.outputs.dashboard-url }}"
-  #         exit 1
-
   # ── SAST (Semgrep) ──────────────────────────────────────────────────────────
   sast:
     name: SAST (Semgrep)
@@ -180,7 +131,7 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@main
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
       - uses: cvch29/platform-actions/.github/actions/security/sast@main
         with:
           config: p/owasp-top-ten
@@ -195,7 +146,7 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@main
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
       - uses: cvch29/platform-actions/.github/actions/security/sca@main
         with:
           runtime: ${{ inputs.language }}
@@ -209,7 +160,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@main
+      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
         with:
           fetch-depth: 50
       - uses: cvch29/platform-actions/.github/actions/security/secrets-scan@main
