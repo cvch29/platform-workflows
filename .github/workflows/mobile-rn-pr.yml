@@ -6,6 +6,9 @@ on:
       app-name:
         type: string
         required: true
+      node-build-path:
+        type: string
+        default: .
       platforms:
         description: 'android | ios | both'
         type: string
