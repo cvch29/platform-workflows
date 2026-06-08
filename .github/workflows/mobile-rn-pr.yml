@@ -3,25 +3,62 @@ name: 'Mobile React Native — PR'
 on:
   workflow_call:
     inputs:
-      app-name:
+      technology:
+        description: 'react-native | native'
         type: string
         required: true
       node-build-path:
         type: string
         default: .
-      platforms:
-        description: 'android | ios | both'
+      environment:
         type: string
-        required: false
-        default: 'android'
-      package-manager:
+        default: dev
+      keystore_path:
         type: string
-        required: false
-        default: 'yarn'
-      node-version:
+        default: android-keystore.jks
+      command:
         type: string
+        default: assembleRelease
+      configuration:
+        type: string
+        default: Release
+      p12-file:
+        type: string
+        default: ios-certificate.p12
+      profile-name:
+        type: string
+        default: 'profile-saveio-as'
+      profile-type:
+        description: 'Tipo de perfil: appstore | dev | cert'
+        type: string
+        default: 'appstore'
+      enable-android:
+        type: boolean
+        default: false
+      enable-ios:
+        type: boolean
+        default: true
+    secrets:
+      keystore-base64:
         required: false
-        default: '20'
+      keystore-password:
+        required: false
+      keystore-alias:
+        required: false
+      keystore-path:
+        required: false
+      github-token:
+        required: true
+      p12-base64:
+        required: false
+      p12-password:
+        required: false
+      apple-api-key-id:
+        required: false
+      apple-api-issuer-id:
+        required: false
+      apple-api-key-base64:
+        required: false
 
 jobs:
   setup:
