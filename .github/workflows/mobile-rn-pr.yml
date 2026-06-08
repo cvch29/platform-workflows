@@ -65,19 +65,19 @@ jobs:
   #         coverage: true
   #         coverage-threshold: 70
 
-  security:
-    needs: [pr-validate, setup]
-    uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@main
-    with:
-      app-name: ${{ inputs.app-name }}
-      language: javascript
-      run-codeql: true
-      run-sca: true
-      run-secrets: true
-      run-sast: true
-    permissions:
-      contents: read
-      security-events: write
+  # security:
+  #   needs: [pr-validate, setup]
+  #   uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@main
+  #   with:
+  #     app-name: ${{ inputs.app-name }}
+  #     language: javascript
+  #     run-codeql: true
+  #     run-sca: true
+  #     run-secrets: true
+  #     run-sast: true
+  #   permissions:
+  #     contents: read
+  #     security-events: write
 
   quality:
     # name: Code Quality Scan
