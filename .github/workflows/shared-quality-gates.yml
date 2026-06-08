@@ -26,8 +26,8 @@ on:
         required: false
         default: ''
     outputs:
-      compliant:
-        value: ${{ jobs.gate.outputs.compliant }}
+      # compliant:
+        # value: ${{ jobs.gate.outputs.compliant }}
       audit-token:
         value: ${{ jobs.gate.outputs.audit-token }}
 
@@ -36,7 +36,7 @@ jobs:
     name: Quality Gate
     runs-on: ubuntu-latest
     outputs:
-      compliant: ${{ steps.compliance.outputs.compliant }}
+      # compliant: ${{ steps.compliance.outputs.compliant }}
       audit-token: ${{ steps.policy.outputs.audit-token }}
 
     steps:
@@ -66,14 +66,14 @@ jobs:
       #     SCA_STATUS: ${{ vars.SCA_STATUS || 'success' }}
       #     SECRETS_SCAN_STATUS: ${{ vars.SECRETS_SCAN_STATUS || 'success' }}
 
-      - name: Gate summary
-        if: always()
-        run: |
-          cat >> $GITHUB_STEP_SUMMARY << MD
-          ## Quality Gate — ${{ inputs.app-name }} → ${{ inputs.environment }}
-          | Check | Result |
-          |-------|--------|
-          | Compliant | ${{ steps.compliance.outputs.compliant }} |
-          | Gate level | ${{ steps.policy.outputs.gate-level }} |
-          | Audit token | ${{ steps.policy.outputs.audit-token }} |
-          MD
+      # - name: Gate summary
+      #   if: always()
+      #   run: |
+      #     cat >> $GITHUB_STEP_SUMMARY << MD
+      #     ## Quality Gate — ${{ inputs.app-name }} → ${{ inputs.environment }}
+      #     | Check | Result |
+      #     |-------|--------|
+      #     # | Compliant | ${{ steps.compliance.outputs.compliant }} |
+      #     | Gate level | ${{ steps.policy.outputs.gate-level }} |
+      #     | Audit token | ${{ steps.policy.outputs.audit-token }} |
+      #     MD
