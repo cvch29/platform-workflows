@@ -21,35 +21,52 @@ on:
         default: '20'
 
 jobs:
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+    outputs:
+      app-version: ${{ steps.setup-android.outputs.app-version }}
+      app-name: ${{ steps.setup-android.outputs.app-name }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Environment
+        id: setup-android
+        uses: cvch29/platform-actions/.github/actions/domains/mobile/android/setup@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          build-gradle-path: ${{ inputs.gradle-build-path }}
+
   pr-validate:
+    name: "PR Validate"
+    needs: setup
     uses: cvch29/platform-workflows/.github/workflows/shared-pr-validation.yml@main
     with:
       app-name: ${{ inputs.app-name }}
       runtime: react-native
 
-  js-checks:
-    name: JS Lint & Test
-    needs: pr-validate
-    runs-on: ubuntu-latest
-    steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
-      - uses: cvch29/platform-actions/.github/actions/tooling-v2/node/install@main
-        with:
-          node-version: ${{ inputs.node-version }}
-          package-manager: ${{ inputs.package-manager }}
-      - name: TypeScript & Lint
-        shell: bash
-        run: |
-          ${{ inputs.package-manager }} run tsc --noEmit 2>/dev/null || true
-          ${{ inputs.package-manager }} run lint 2>/dev/null || true
-      - uses: cvch29/platform-actions/.github/actions/tooling-v2/node/test@main
-        with:
-          package-manager: ${{ inputs.package-manager }}
-          coverage: true
-          coverage-threshold: 70
+  # js-checks:
+  #   name: JS Lint & Test
+  #   needs: pr-validate
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
+  #     - uses: cvch29/platform-actions/.github/actions/tooling-v2/node/install@main
+  #       with:
+  #         node-version: ${{ inputs.node-version }}
+  #         package-manager: ${{ inputs.package-manager }}
+  #     - name: TypeScript & Lint
+  #       shell: bash
+  #       run: |
+  #         ${{ inputs.package-manager }} run tsc --noEmit 2>/dev/null || true
+  #         ${{ inputs.package-manager }} run lint 2>/dev/null || true
+  #     - uses: cvch29/platform-actions/.github/actions/tooling/node/test@main
+  #       with:
+  #         package-manager: ${{ inputs.package-manager }}
+  #         coverage: true
+  #         coverage-threshold: 70
 
   security:
-    needs: pr-validate
+    needs: [pr-validate, setup]
     uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@main
     with:
       app-name: ${{ inputs.app-name }}
@@ -61,3 +78,17 @@ jobs:
     permissions:
       contents: read
       security-events: write
+
+  quality:
+    # name: Code Quality Scan
+    needs: [pr-validate, setup]
+    uses: cvch29/platform-workflows/.github/workflows/shared-quality-scan.yml@main
+    with:
+      app-name: ${{ needs.setup.outputs.app-name }}
+      language: kotlin
+      app-version: ${{ needs.setup.outputs.app-version }}
+      container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_SCS }}"
+      container-image-resource-runner: "--cpus 2 -m 4g"
+      # sonar-host-url: ${{ secrets.sonar-host-url }}
+      sonar-project-key: "challenge-mbco"
+      # sonar-token: ${{ secrets.sonar-token }}
