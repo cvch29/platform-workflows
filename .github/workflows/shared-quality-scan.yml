@@ -159,7 +159,7 @@ jobs:
 
       - name: SonarQube Scan PR
         # if: github.event_name == 'pull_request'
-        uses: SonarSource/sonarqube-scan-action@v6
+        uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995 #v8.1.0
         env:
           SONAR_TOKEN: "sqa_c6ecaaf40feea721c5435d15364fb3994f974eb3"
           SONAR_HOST_URL: "http://192.168.1.199:9000/"
