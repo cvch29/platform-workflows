@@ -52,7 +52,7 @@ jobs:
       app-version: ${{ steps.setup-android.outputs.app-version }}
       app-name: ${{ steps.setup-android.outputs.app-name }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - name: Setup Environment
         id: setup-android
         uses: cvch29/platform-actions/actions/domains/mobile/android/setup@main
@@ -144,7 +144,7 @@ jobs:
   #     name: ${{ inputs.environment }}
 
   #   steps:
-  #     - uses: actions/checkout@v4
+  #     - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
   #     - name: Download Artifacts
   #       uses: cvch29/platform-actions/actions/shared/artifact-download@main

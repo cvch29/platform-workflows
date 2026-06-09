@@ -34,7 +34,7 @@ jobs:
       app-version: ${{ steps.v.outputs.version }}
       app-name:    ${{ steps.v.outputs.name }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - id: v
         shell: bash
         run: |
@@ -45,7 +45,7 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.node-version }}
@@ -64,7 +64,7 @@ jobs:
     needs: [setup, build, scs]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - uses: cvch29/platform-actions/actions/domains/backend/npm-library/publish@main
         with:
           registry-url: ${{ inputs.registry-url }}
@@ -76,7 +76,7 @@ jobs:
     needs: [setup, publish]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - uses: cvch29/platform-actions/actions/shared/artifact-release-tag@main
         with:
           github-token: ${{ secrets.github-token }}

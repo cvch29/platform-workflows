@@ -67,7 +67,7 @@ jobs:
       app-version: ${{ steps.setup-android.outputs.app-version }}
       app-name: ${{ steps.setup-android.outputs.app-name }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - name: Setup Environment
         id: setup-android
         uses: cvch29/platform-actions/actions/shared/setup-node@main
@@ -125,7 +125,7 @@ jobs:
   #     container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_SCS }}"
   #     container-image-resource-runner: "--cpus 2 -m 4g"
 
-  # artifact_release:
+  # artifact_integrity:
   #   needs: [setup, build_android, build_ios, scs]
   #   name: Artifact Release
   #   uses: cvch29/platform-workflows/.github/workflows/shared-release-tag.yml@main
