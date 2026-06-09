@@ -115,23 +115,12 @@ jobs:
       apple-api-key-base64: ${{ secrets.apple-api-key-base64 }}
       ixguard-license-key: ${{ secrets.ixguard-license-key }}
 
-  # scs:
-  #   needs: [setup,build_android,build_ios]
-  #   # name: Supply Chain Security
-  #   uses: cvch29/platform-workflows/.github/workflows/shared-supply-chain-security.yml@main
-  #   with:
-  #     app-name: ${{ needs.setup.outputs.app-name }}
-  #     artifact-path: "/__w/challenge-mbco/challenge-mbco/artifacts"
-  #     container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_SCS }}"
-  #     container-image-resource-runner: "--cpus 2 -m 4g"
-
-  # artifact_integrity:
-  #   needs: [setup, build_android, build_ios, scs]
-  #   name: Artifact Release
-  #   uses: cvch29/platform-workflows/.github/workflows/shared-release-tag.yml@main
-  #   with:
-  #     app-name: ${{ needs.setup.outputs.app-name }}
-  #     app-version: ${{ needs.setup.outputs.app-version }}
-  #     version-strategy: semver
-  #   secrets:
-  #     github-token: ${{ secrets.GITHUB_TOKEN }}
+  artifact_integrity:
+    needs: [setup,build_android,build_ios]
+    name: Release Integrity
+    uses: cvch29/platform-workflows/.github/workflows/shared-release-integrity.yml@main
+    with:
+      app-name: ${{ needs.setup.outputs.app-name }}
+      artifact-path: "/__w/challenge-mbco/challenge-mbco/artifacts"
+      container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_SCS }}"
+      container-image-resource-runner: "--cpus 2 -m 4g"

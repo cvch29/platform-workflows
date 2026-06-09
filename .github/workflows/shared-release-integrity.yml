@@ -37,8 +37,8 @@ on:
     #     value: ${{ jobs.generate.outputs.component-count }}
 
 jobs:
-  scs:
-    name: Supply Chain Security
+  artifact_integrity:
+    # name: Release Integrity
     runs-on:
       group: dso-linux
     container:
@@ -56,8 +56,7 @@ jobs:
       - name: Download Artifacts
         uses: cvch29/platform-actions/actions/shared/artifact-download@main
         with:
-          artifact_name: android-release-files
-          download_path: ./artifacts
+          name: "name"
       - name: Generate SBOM
         id: sbom
         uses: cvch29/platform-actions/actions/governance/sbom@main
@@ -66,17 +65,17 @@ jobs:
           image: ${{ inputs.image }}
           format: 'cyclonedx-json,spdx-json'
           upload-artifact: true
-      # - name: Attest build provenance
-      #   if: inputs.generate-provenance
-      #   uses: actions/attest-build-provenance@main
-      #   with:
-      #     subject-path: ${{ inputs.artifact-path }}
-      # - name: Generate provenance attestation
-      #   if: inputs.generate-provenance
-      #   uses: cvch29/platform-actions/actions/governance/provenance@main
-      #   with:
-      #     artifact-path: ${{ inputs.artifact-path }}
-      #     artifact-name: ${{ inputs.app-name }}
+      - name: Attest build provenance
+        if: inputs.generate-provenance
+        uses: actions/attest-build-provenance@main
+        with:
+          subject-path: ${{ inputs.artifact-path }}
+      - name: Generate provenance attestation
+        if: inputs.generate-provenance
+        uses: cvch29/platform-actions/actions/governance/provenance@main
+        with:
+          artifact-path: ${{ inputs.artifact-path }}
+          artifact-name: ${{ inputs.app-name }}
       - uses: cvch29/platform-actions/actions/governance/audit-log@main
         with:
           event-type: build
@@ -85,3 +84,8 @@ jobs:
           app-name: ${{ inputs.app-name }}
           storage-account: ${{ inputs.storage-account }}
           metadata: '{"sbomComponents":"${{ steps.sbom.outputs.component-count }}"}'
+      - name: Artifact Release
+        uses: cvch29/platform-actions/actions/shared/artifact-release-tag@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          app-version: ${{ inputs.app-version }}
