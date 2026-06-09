@@ -141,10 +141,10 @@ jobs:
           echo "event: ${{ github.event_name }}"
           echo "pr_number: ${{ github.event.pull_request.number }}"
 
-      # - name: Git Differences
-      #   run: |
-      #     git merge-base origin/main HEAD
-      #     git diff --name-only origin/main...HEAD | wc -l
+      - name: Git Differences
+        run: |
+          git merge-base origin/main HEAD
+          git diff --name-only origin/main...HEAD | wc -l
 
       - name: Clean Sonar Properties
         run: |
@@ -177,7 +177,7 @@ jobs:
       # - name: Setup SonarQube Analysis
       #   uses: cvch29/platform-actions/actions/security/sonar-wontfix@main
 
-      - name: Enforce SonarQube Quality Gate
+      - name: Quality Gate
         uses: cvch29/platform-actions/actions/security/sonar-break-build@main
         with:
           sonar-url: "http://192.168.1.199:9000/"
