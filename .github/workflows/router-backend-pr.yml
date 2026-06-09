@@ -23,11 +23,11 @@ jobs:
     outputs:
       runtime: ${{ steps.detect.outputs.runtime || inputs.runtime }}
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
+      - uses: cvch29/platform-actions/actions/shared/checkout@main
       - name: Auto-detect
         if: inputs.runtime == ''
         id: detect
-        uses: cvch29/platform-actions/.github/actions/intelligence/detect-runtime@main
+        uses: cvch29/platform-actions/actions/intelligence/detect-runtime@main
 
   java-pr:
     needs: detect

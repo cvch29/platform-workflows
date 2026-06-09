@@ -61,25 +61,25 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared-v2/checkout@main
+      - uses: cvch29/platform-actions/actions/shared-v2/checkout@main
 
       - name: Setup Keychain
         id: setup-keychain
-        uses: cvch29/platform-actions/.github/actions/shared-v2/setup-certificate@main
+        uses: cvch29/platform-actions/actions/shared-v2/setup-certificate@main
         with:
           certificate-base64: ${{ secrets.p12-base64 }}
           certificate-file: ${{ inputs.p12-file }}
 
       - name: Validate P12 Private Key
         id: validate-p12
-        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/validate-private-key-p12@main
+        uses: cvch29/platform-actions/actions/domains/mobile/ios/config/validate-private-key-p12@main
         with:
           p12-base64: ${{ secrets.p12-base64 }}
           p12-password: ${{ secrets.p12-password }}
           
       - name: Show build Configuration
         id: xcode-build-settings
-        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/xcode-build-settings@main
+        uses: cvch29/platform-actions/actions/domains/mobile/ios/config/xcode-build-settings@main
         with:
           scheme: "SaveIO"
           configuration: ${{ inputs.configuration }}
@@ -92,7 +92,7 @@ jobs:
 
       - name: Download provisioning profile
         id: download-pp
-        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/apple-download-provisioning-profile@main
+        uses: cvch29/platform-actions/actions/domains/mobile/ios/config/apple-download-provisioning-profile@main
         with:
           apple-api-key-id: ${{ secrets.apple-api-key-id }}
           apple-api-issuer-id: ${{ secrets.apple-api-issuer-id }}
@@ -104,14 +104,14 @@ jobs:
 
       - name: Validate provisioning profile
         id: validate-pp
-        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/validate-provisioning-profile@main
+        uses: cvch29/platform-actions/actions/domains/mobile/ios/config/validate-provisioning-profile@main
         with:
           prov-profile-path: ${{ steps.download-pp.outputs.provisioning-profile-path }} 
           validate-cer: true
           fingerprint: ${{ steps.validate-p12.outputs.p12-fingerprint }}
 
       - name: Install Apple Private Key
-        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/install-apple-private-key-p12@main
+        uses: cvch29/platform-actions/actions/domains/mobile/ios/config/install-apple-private-key-p12@main
         with:
           p12-base64: ${{ secrets.p12-base64 }}
           p12-password: ${{ secrets.p12-password }}
@@ -138,12 +138,12 @@ jobs:
 
       - name: Install Dependencies
         if: ${{ inputs.technology == 'react-native' }}
-        uses: cvch29/platform-actions/.github/actions/tooling/node@main
+        uses: cvch29/platform-actions/actions/tooling/node@main
         with:
           working-directory: .
         
       # - name: Actualizar versión
-      #   uses: cvch29/platform-actions/.github/actions/domains-v2/mobile/ios/build@main
+      #   uses: cvch29/platform-actions/actions/domains-v2/mobile/ios/build@main
       #   with:
       #     scheme: ${{ inputs.scheme }}
       #     workspace: ${{ inputs.workspace }}
@@ -154,7 +154,7 @@ jobs:
 
       # - name: Configurar Proyecto para IxGuard
       #   if: ${{ env.IXGUARD_ENABLED == 'true' }}
-      #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/xcode-configure-ixguard-toolchain@main
+      #   uses: cvch29/platform-actions/actions/domains/mobile/ios/config/xcode-configure-ixguard-toolchain@main
       #   with:
       #     workspace: ${{ inputs.workspace }}
       #     scheme: ${{ inputs.scheme }}
@@ -162,7 +162,7 @@ jobs:
 
       # - name: Configurar IxGuard Toolchain
       #   if: ${{ env.IXGUARD_ENABLED == 'true' }}
-      #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/xcode-configure-ixguard-toolchain@main
+      #   uses: cvch29/platform-actions/actions/domains/mobile/ios/config/xcode-configure-ixguard-toolchain@main
       #   with:
       #     workspace: ${{ inputs.workspace }}
       #     scheme: ${{ inputs.scheme }}
@@ -172,7 +172,7 @@ jobs:
         run: cd ios && pod install
 
       - name: Configure Xcode Build Settings
-        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/xcode-configure-settings@main
+        uses: cvch29/platform-actions/actions/domains/mobile/ios/config/xcode-configure-settings@main
         with:
           project: ${{ steps.xcode-build-settings.outputs.project-file-path }}
           target: SaveIO
@@ -187,7 +187,7 @@ jobs:
 
       - name: Generate .archive
         id: build
-        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/fastlane-generate-archive@main
+        uses: cvch29/platform-actions/actions/domains/mobile/ios/config/fastlane-generate-archive@main
         with:
           scheme: SaveIO
           workspace: ${{ steps.xcode-build-settings.outputs.workspace-path }}
@@ -195,7 +195,7 @@ jobs:
           
       # - name: Ofuscar .archive con IxGuard
       #   if: ${{ env.IXGUARD_ENABLED == 'true' }}
-      #   uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/ixguard-obfuscate@main
+      #   uses: cvch29/platform-actions/actions/domains/mobile/ios/config/ixguard-obfuscate@main
       #   with:
       #     archive: ${{ steps.build.outputs.archive-path }}
       #     configuration: ${{ inputs.configuration }}
@@ -203,7 +203,7 @@ jobs:
 
       - name: Export .ipa
         id: export-ipa
-        uses: cvch29/platform-actions/.github/actions/domains/mobile/ios/config/fastlane-export-archive@main
+        uses: cvch29/platform-actions/actions/domains/mobile/ios/config/fastlane-export-archive@main
         with:
           scheme: "SaveIO"
           workspace: ${{ steps.xcode-build-settings.outputs.workspace-path }}
@@ -213,7 +213,7 @@ jobs:
           prov-profile: ${{ inputs.profile-name }}
 
       - name: Upload Artifacts
-        uses: cvch29/platform-actions/.github/actions/shared/artifact-manage@main
+        uses: cvch29/platform-actions/actions/shared/artifact-manage@main
         with:
           app-name: ${{ inputs.app-name }}
           app-version: ${{ inputs.app-version }}

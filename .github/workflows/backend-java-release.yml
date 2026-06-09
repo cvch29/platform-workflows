@@ -39,17 +39,17 @@ jobs:
       checks: write
       pull-requests: write
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
+      - uses: cvch29/platform-actions/actions/shared/checkout@main
         with:
           fetch-depth: 0
-      - uses: cvch29/platform-actions/.github/actions/tooling-v2/java/setup-jdk@main
+      - uses: cvch29/platform-actions/actions/tooling-v2/java/setup-jdk@main
         with:
           java-version: ${{ inputs.java-version }}
-      - uses: cvch29/platform-actions/.github/actions/tooling-v2/java/gradle-test@main
+      - uses: cvch29/platform-actions/actions/tooling-v2/java/gradle-test@main
         with:
           tasks: test jacocoTestReport jacocoTestCoverageVerification
           coverage-threshold: ${{ inputs.coverage-threshold }}
-      - uses: cvch29/platform-actions/.github/actions/tooling-v2/java/gradle-build@main
+      - uses: cvch29/platform-actions/actions/tooling-v2/java/gradle-build@main
         with:
           azure-artifacts-feed: ${{ inputs.azure-artifacts-feed }}
           azure-artifacts-token: ${{ secrets.azure-artifacts-token }}

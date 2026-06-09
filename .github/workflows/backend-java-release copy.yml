@@ -143,7 +143,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       - name: Build
         id: build
-        uses: cvch29/platform-actions/.github/actions/domains/backend/java/build@main
+        uses: cvch29/platform-actions/actions/domains/backend/java/build@main
         with:
           java-version: ${{ inputs.java-version }}
           gradle-tasks: ${{ inputs.gradle-tasks }}
@@ -151,7 +151,7 @@ jobs:
           acr-registry:  ${{ inputs.acr-registry }}
           acr-image-name: ${{ needs.setup.outputs.app-name }}
           image-tag: ${{ needs.setup.outputs.app-version }}
-      - uses: cvch29/platform-actions/.github/actions/shared/artifact-manage@main
+      - uses: cvch29/platform-actions/actions/shared/artifact-manage@main
         with:
           app-name:    ${{ needs.setup.outputs.app-name }}
           app-version: ${{ needs.setup.outputs.app-version }}
@@ -187,7 +187,7 @@ jobs:
       # ── AKS deploy ──────────────────────────────────────────────────────
       - name: Deploy to AKS
         if: inputs.deploy-target == 'aks'
-        uses: cvch29/platform-actions/.github/actions/domains/backend/java/deploy/aks@main
+        uses: cvch29/platform-actions/actions/domains/backend/java/deploy/aks@main
         with:
           app-name:          ${{ needs.setup.outputs.app-name }}
           environment:       ${{ inputs.environment }}
@@ -201,13 +201,13 @@ jobs:
       # ── Azure Web App deploy ─────────────────────────────────────────────
       - name: Download artifact (webapp)
         if: inputs.deploy-target == 'azure-webapp'
-        uses: cvch29/platform-actions/.github/actions/shared/artifact-download@main
+        uses: cvch29/platform-actions/actions/shared/artifact-download@main
         with:
           artifact_name: java-build-${{ github.run_id }}
           download_path: ./artifacts
       - name: Deploy to Web App
         if: inputs.deploy-target == 'azure-webapp'
-        uses: cvch29/platform-actions/.github/actions/domains/backend/azure-webapp/deploy@main
+        uses: cvch29/platform-actions/actions/domains/backend/azure-webapp/deploy@main
         with:
           app-name:       ${{ inputs.webapp-name }}
           resource-group: ${{ inputs.resource-group }}
@@ -217,20 +217,20 @@ jobs:
       # ── Azure Function deploy ────────────────────────────────────────────
       - name: Download artifact (function)
         if: inputs.deploy-target == 'azure-function'
-        uses: cvch29/platform-actions/.github/actions/shared/artifact-download@main
+        uses: cvch29/platform-actions/actions/shared/artifact-download@main
         with:
           artifact_name: java-build-${{ github.run_id }}
           download_path: ./artifacts
       - name: Deploy to Function App
         if: inputs.deploy-target == 'azure-function'
-        uses: cvch29/platform-actions/.github/actions/domains/backend/azure-function/deploy@main
+        uses: cvch29/platform-actions/actions/domains/backend/azure-function/deploy@main
         with:
           function-app-name: ${{ inputs.webapp-name }}
           resource-group:    ${{ inputs.resource-group }}
           artifact-path:     ./artifacts/*.jar
           runtime:           java
 
-      - uses: cvch29/platform-actions/.github/actions/governance/audit-log@main
+      - uses: cvch29/platform-actions/actions/governance/audit-log@main
         if: always()
         with:
           event-type:  deploy
@@ -245,7 +245,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: cvch29/platform-actions/.github/actions/shared/artifact-release-tag@main
+      - uses: cvch29/platform-actions/actions/shared/artifact-release-tag@main
         with:
           github-token: ${{ secrets.github-token }}
           app-version:  ${{ needs.setup.outputs.app-version }}

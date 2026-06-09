@@ -32,21 +32,21 @@ jobs:
       android-aar: ${{ steps.build.outputs.android-aar }}
       ios-framework: ${{ steps.build.outputs.ios-framework }}
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
-      - uses: cvch29/platform-actions/.github/actions/tooling-v2/kmp/setup@main
+      - uses: cvch29/platform-actions/actions/shared/checkout@main
+      - uses: cvch29/platform-actions/actions/tooling-v2/kmp/setup@main
         with:
           java-version: ${{ inputs.java-version }}
           targets: ${{ inputs.targets }}
       - id: build
-        uses: cvch29/platform-actions/.github/actions/tooling-v2/kmp/build@main
+        uses: cvch29/platform-actions/actions/tooling-v2/kmp/build@main
         with:
           targets: ${{ inputs.targets }}
           build-type: ${{ inputs.build-type }}
-      - uses: cvch29/platform-actions/.github/actions/governance/sbom@main
+      - uses: cvch29/platform-actions/actions/governance/sbom@main
         with:
           artifact-path: .
           upload-artifact: true
-      - uses: cvch29/platform-actions/.github/actions/shared/artifact-upload@main
+      - uses: cvch29/platform-actions/actions/shared/artifact-upload@main
         with:
           name: kmp-build-${{ inputs.app-name }}
           path: |

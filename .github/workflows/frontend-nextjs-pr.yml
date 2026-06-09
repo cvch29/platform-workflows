@@ -27,8 +27,8 @@ jobs:
     needs: pr-validate
     runs-on: ubuntu-latest
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
-      - uses: cvch29/platform-actions/.github/actions/tooling-v2/node/install@main
+      - uses: cvch29/platform-actions/actions/shared/checkout@main
+      - uses: cvch29/platform-actions/actions/tooling-v2/node/install@main
         with:
           node-version: ${{ inputs.node-version }}
           package-manager: ${{ inputs.package-manager }}
@@ -36,10 +36,10 @@ jobs:
         run: |
           ${{ inputs.package-manager }} run tsc --noEmit 2>/dev/null || ${{ inputs.package-manager }} exec tsc -- --noEmit
           ${{ inputs.package-manager }} run lint
-      - uses: cvch29/platform-actions/.github/actions/tooling-v2/node/test@main
+      - uses: cvch29/platform-actions/actions/tooling-v2/node/test@main
         with:
           package-manager: ${{ inputs.package-manager }}
-      - uses: cvch29/platform-actions/.github/actions/tooling-v2/node/build@main
+      - uses: cvch29/platform-actions/actions/tooling-v2/node/build@main
         with:
           package-manager: ${{ inputs.package-manager }}
 

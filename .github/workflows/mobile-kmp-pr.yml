@@ -28,12 +28,12 @@ jobs:
     needs: pr-validate
     runs-on: ${{ contains(inputs.targets, 'ios') && 'macos-latest' || 'ubuntu-latest' }}
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
-      - uses: cvch29/platform-actions/.github/actions/tooling-v2/kmp/setup@main
+      - uses: cvch29/platform-actions/actions/shared/checkout@main
+      - uses: cvch29/platform-actions/actions/tooling-v2/kmp/setup@main
         with:
           java-version: ${{ inputs.java-version }}
           targets: ${{ inputs.targets }}
-      - uses: cvch29/platform-actions/.github/actions/tooling-v2/kmp/build@main
+      - uses: cvch29/platform-actions/actions/tooling-v2/kmp/build@main
         with:
           targets: ${{ inputs.targets }}
           build-type: debug

@@ -52,15 +52,15 @@ jobs:
       sbom-path: ${{ steps.sbom.outputs.sbom-path }}
       component-count: ${{ steps.sbom.outputs.component-count }}
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
+      - uses: cvch29/platform-actions/actions/shared/checkout@main
       - name: Download Artifacts
-        uses: cvch29/platform-actions/.github/actions/shared/artifact-download@main
+        uses: cvch29/platform-actions/actions/shared/artifact-download@main
         with:
           artifact_name: android-release-files
           download_path: ./artifacts
       - name: Generate SBOM
         id: sbom
-        uses: cvch29/platform-actions/.github/actions/governance/sbom@main
+        uses: cvch29/platform-actions/actions/governance/sbom@main
         with:
           artifact-path: ${{ inputs.artifact-path }}
           image: ${{ inputs.image }}
@@ -73,11 +73,11 @@ jobs:
       #     subject-path: ${{ inputs.artifact-path }}
       # - name: Generate provenance attestation
       #   if: inputs.generate-provenance
-      #   uses: cvch29/platform-actions/.github/actions/governance/provenance@main
+      #   uses: cvch29/platform-actions/actions/governance/provenance@main
       #   with:
       #     artifact-path: ${{ inputs.artifact-path }}
       #     artifact-name: ${{ inputs.app-name }}
-      - uses: cvch29/platform-actions/.github/actions/governance/audit-log@main
+      - uses: cvch29/platform-actions/actions/governance/audit-log@main
         with:
           event-type: build
           environment: dev

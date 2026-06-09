@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: cvch29/platform-actions/.github/actions/domains/backend/maven-library/build@main
+      - uses: cvch29/platform-actions/actions/domains/backend/maven-library/build@main
         with:
           java-version: ${{ inputs.java-version }}
           skip-tests: 'false'
@@ -65,7 +65,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: cvch29/platform-actions/.github/actions/domains/backend/maven-library/publish@main
+      - uses: cvch29/platform-actions/actions/domains/backend/maven-library/publish@main
         with:
           java-version:    ${{ inputs.java-version }}
           server-id:       ${{ inputs.server-id }}
@@ -78,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: cvch29/platform-actions/.github/actions/shared/artifact-release-tag@main
+      - uses: cvch29/platform-actions/actions/shared/artifact-release-tag@main
         with:
           github-token: ${{ secrets.github-token }}
           app-version:  ${{ needs.setup.outputs.app-version }}

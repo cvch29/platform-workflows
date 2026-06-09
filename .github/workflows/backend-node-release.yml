@@ -83,13 +83,13 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       - name: Build
         id: build
-        uses: cvch29/platform-actions/.github/actions/domains/backend/node/build@main
+        uses: cvch29/platform-actions/actions/domains/backend/node/build@main
         with:
           docker-build:   ${{ inputs.deploy-target == 'aks' && 'true' || 'false' }}
           acr-registry:   ${{ inputs.acr-registry }}
           acr-image-name: ${{ needs.setup.outputs.app-name }}
           image-tag:      ${{ needs.setup.outputs.app-version }}
-      - uses: cvch29/platform-actions/.github/actions/shared/artifact-manage@main
+      - uses: cvch29/platform-actions/actions/shared/artifact-manage@main
         if: inputs.deploy-target != 'aks'
         with:
           app-name:    ${{ needs.setup.outputs.app-name }}
@@ -122,7 +122,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       - name: Deploy to AKS
         if: inputs.deploy-target == 'aks'
-        uses: cvch29/platform-actions/.github/actions/domains/backend/node/deploy/aks@main
+        uses: cvch29/platform-actions/actions/domains/backend/node/deploy/aks@main
         with:
           app-name:          ${{ needs.setup.outputs.app-name }}
           environment:       ${{ inputs.environment }}
@@ -135,7 +135,7 @@ jobs:
         if: inputs.deploy-target != 'aks'
         shell: bash
         run: echo "Deploy to ${{ inputs.deploy-target }} — download artifact and deploy"
-      - uses: cvch29/platform-actions/.github/actions/governance/audit-log@main
+      - uses: cvch29/platform-actions/actions/governance/audit-log@main
         if: always()
         with:
           event-type:  deploy
@@ -148,7 +148,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: cvch29/platform-actions/.github/actions/shared/artifact-release-tag@main
+      - uses: cvch29/platform-actions/actions/shared/artifact-release-tag@main
         with:
           github-token: ${{ secrets.github-token }}
           app-version:  ${{ needs.setup.outputs.app-version }}

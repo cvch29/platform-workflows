@@ -40,11 +40,11 @@ jobs:
       audit-token: ${{ steps.policy.outputs.audit-token }}
 
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
+      - uses: cvch29/platform-actions/actions/shared/checkout@main
 
       - name: Policy evaluation
         id: policy
-        uses: cvch29/platform-actions/.github/actions/intelligence/policy-engine@main
+        uses: cvch29/platform-actions/actions/intelligence/policy-engine@main
         with:
           environment: ${{ inputs.environment }}
           event-type: ${{ github.event_name }}
@@ -53,7 +53,7 @@ jobs:
 
       # - name: Compliance check
       #   id: compliance
-      #   uses: cvch29/platform-actions/.github/actions/intelligence/compliance-check@main
+      #   uses: cvch29/platform-actions/actions/intelligence/compliance-check@main
       #   with:
       #     environment: ${{ inputs.environment }}
       #     require-sbom: ${{ inputs.require-sbom }}

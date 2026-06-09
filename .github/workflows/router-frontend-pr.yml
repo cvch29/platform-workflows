@@ -28,11 +28,11 @@ jobs:
     outputs:
       framework: ${{ steps.detect.outputs.framework || inputs.framework }}
     steps:
-      - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
+      - uses: cvch29/platform-actions/actions/shared/checkout@main
       - name: Auto-detect
         if: inputs.framework == ''
         id: detect
-        uses: cvch29/platform-actions/.github/actions/intelligence/detect-runtime@main
+        uses: cvch29/platform-actions/actions/intelligence/detect-runtime@main
 
   react-pr:
     needs: detect

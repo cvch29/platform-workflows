@@ -71,7 +71,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Setup Environment
         id: setup-android
-        uses: cvch29/platform-actions/.github/actions/shared/setup-node@main
+        uses: cvch29/platform-actions/actions/shared/setup-node@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           node-build-path: ${{ inputs.node-build-path }}
@@ -89,8 +89,8 @@ jobs:
   #   needs: pr-validate
   #   runs-on: ubuntu-latest
   #   steps:
-  #     - uses: cvch29/platform-actions/.github/actions/shared/checkout@main
-  #     - uses: cvch29/platform-actions/.github/actions/tooling-v2/node/install@main
+  #     - uses: cvch29/platform-actions/actions/shared/checkout@main
+  #     - uses: cvch29/platform-actions/actions/tooling-v2/node/install@main
   #       with:
   #         node-version: ${{ inputs.node-version }}
   #         package-manager: ${{ inputs.package-manager }}
@@ -99,7 +99,7 @@ jobs:
   #       run: |
   #         ${{ inputs.package-manager }} run tsc --noEmit 2>/dev/null || true
   #         ${{ inputs.package-manager }} run lint 2>/dev/null || true
-  #     - uses: cvch29/platform-actions/.github/actions/tooling/node/test@main
+  #     - uses: cvch29/platform-actions/actions/tooling/node/test@main
   #       with:
   #         package-manager: ${{ inputs.package-manager }}
   #         coverage: true
