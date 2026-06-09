@@ -77,7 +77,7 @@ jobs:
 
   build_android:
     needs: setup
-    name: Build Android
+    # name: Build Android
     uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@main
     with:
       app-name: ${{ needs.setup.outputs.app-name }}
@@ -96,7 +96,7 @@ jobs:
 
   build_ios:
     needs: setup
-    name: Build iOS
+    # name: Build iOS
     uses: cvch29/platform-workflows/.github/workflows/mobile-ios-build.yml@main
     with:
       technology: ${{ inputs.technology }}
@@ -117,7 +117,7 @@ jobs:
 
   artifact_integrity:
     needs: [setup,build_android,build_ios]
-    name: Release Integrity
+    # name: Release Integrity
     uses: cvch29/platform-workflows/.github/workflows/shared-release-integrity.yml@main
     with:
       app-name: ${{ needs.setup.outputs.app-name }}

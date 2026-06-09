@@ -38,7 +38,7 @@ on:
 
 jobs:
   artifact_integrity:
-    # name: Release Integrity
+    name: Release Integrity
     runs-on:
       group: dso-linux
     container:
