@@ -95,7 +95,7 @@ on:
 jobs:
   setup:
     name: Setup
-    runs-on: ubuntu-latest
+    runs-on: arc-general
     outputs:
       app-version: ${{ steps.version.outputs.version }}
       app-name:    ${{ steps.version.outputs.name }}
@@ -119,10 +119,11 @@ jobs:
     name: Build
     needs: setup
     if: inputs.enable-build == true
-    runs-on: ${{ inputs.container-image-name-runner != '' && 'self-hosted' || 'ubuntu-latest' }}
-    container:
-      image: ${{ inputs.container-image-name-runner }}
-      options: ${{ inputs.container-image-name-runner != '' && inputs.container-image-resource-runner || '' }}
+    runs-on: arc-general
+    # runs-on: ${{ inputs.container-image-name-runner != '' && 'self-hosted' || 'ubuntu-latest' }}
+    # container:
+    #   image: ${{ inputs.container-image-name-runner }}
+    #   options: ${{ inputs.container-image-name-runner != '' && inputs.container-image-resource-runner || '' }}
     outputs:
       image-ref:    ${{ steps.build.outputs.image-ref }}
       image-digest: ${{ steps.build.outputs.image-digest }}
