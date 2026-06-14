@@ -67,8 +67,7 @@ jobs:
       - name: Download Artifacts
         uses: cvch29/platform-actions/actions/shared/artifact-download@main
         with:
-          artifact_name: android-release-files
-          download_path: ./artifacts
+          name: "test"
 
       - name: Distribute to Firebase App Distribution
         uses: cvch29/platform-actions/actions/domains/mobile/android/distribute/firebase-app@main
