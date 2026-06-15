@@ -47,42 +47,43 @@ jobs:
   build:
     if: success() && (inputs.enable-android == true)
     name: Build Android
-    runs-on:
-      group: dso-linux
+    runs-on: arc-mobile
+    # runs-on:
+    #   group: dso-linux
     env:
       GRADLE_USER_HOME: /tmp/gradle-${{ github.run_id }}-${{ github.run_attempt }}
       METRO_CACHE: /tmp/metro-cache
       NODE_OPTIONS: --max-old-space-size=8192
-    container:
-      image: ${{ inputs.container-image-name-runner }}
-      options: ${{ inputs.container-image-resource-runner }}
-      volumes:
-        - /opt/cache/yarn:/opt/yarn
-        - /opt/cache/gradle/modules-2:/opt/gradle-shared/modules-2
-        - /opt/cache/gradle/transforms-3:/opt/gradle-shared/transforms-3
-        - /opt/cache/gradle/build-cache-1:/opt/gradle-shared/build-cache-1
-        - /opt/cache/gradle/wrapper:/opt/gradle-shared/wrapper
-        - /opt/cache/metro:/tmp/metro-cache
-        - /opt/cache/cxx:/workspace/.cxx
+    # container:
+    #   image: ${{ inputs.container-image-name-runner }}
+    #   options: ${{ inputs.container-image-resource-runner }}
+      # volumes:
+      #   - /opt/cache/yarn:/opt/yarn
+      #   - /opt/cache/gradle/modules-2:/opt/gradle-shared/modules-2
+      #   - /opt/cache/gradle/transforms-3:/opt/gradle-shared/transforms-3
+      #   - /opt/cache/gradle/build-cache-1:/opt/gradle-shared/build-cache-1
+      #   - /opt/cache/gradle/wrapper:/opt/gradle-shared/wrapper
+      #   - /opt/cache/metro:/tmp/metro-cache
+      #   - /opt/cache/cxx:/workspace/.cxx
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
-      - name: Restore shared gradle cache
-        run: |
-          mkdir -p $GRADLE_USER_HOME/caches
-          mkdir -p $GRADLE_USER_HOME/wrapper
+      # - name: Restore shared gradle cache
+      #   run: |
+      #     mkdir -p $GRADLE_USER_HOME/caches
+      #     mkdir -p $GRADLE_USER_HOME/wrapper
 
-          ln -snf /opt/gradle-shared/modules-2 \
-            $GRADLE_USER_HOME/caches/modules-2
+      #     ln -snf /opt/gradle-shared/modules-2 \
+      #       $GRADLE_USER_HOME/caches/modules-2
 
-          ln -snf /opt/gradle-shared/transforms-3 \
-            $GRADLE_USER_HOME/caches/transforms-3
+      #     ln -snf /opt/gradle-shared/transforms-3 \
+      #       $GRADLE_USER_HOME/caches/transforms-3
 
-          ln -snf /opt/gradle-shared/build-cache-1 \
-            $GRADLE_USER_HOME/caches/build-cache-1
+      #     ln -snf /opt/gradle-shared/build-cache-1 \
+      #       $GRADLE_USER_HOME/caches/build-cache-1
 
-          ln -snf /opt/gradle-shared/wrapper \
-            $GRADLE_USER_HOME/wrapper/dists
+      #     ln -snf /opt/gradle-shared/wrapper \
+      #       $GRADLE_USER_HOME/wrapper/dists
 
       - name: Install Dependencies
         if: ${{ inputs.technology == 'react-native' }}
