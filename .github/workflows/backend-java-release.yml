@@ -97,23 +97,16 @@ jobs:
     name: Setup
     runs-on: arc-general
     outputs:
-      app-version: ${{ steps.version.outputs.version }}
-      app-name:    ${{ steps.version.outputs.name }}
+      app-version: ${{ steps.setup-android.outputs.app-version }}
+      app-name: ${{ steps.setup-android.outputs.app-name }}
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-      - name: Get version
-        id: version
-        shell: bash
-        run: |
-          if [ -f "gradlew" ]; then
-            VERSION=$(./gradlew properties -q 2>/dev/null | grep "^version:" | awk '{print $2}' || echo "0.0.0")
-          elif [ -f "pom.xml" ]; then
-            VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout 2>/dev/null || echo "0.0.0")
-          else
-            VERSION="0.0.0"
-          fi
-          echo "version=$VERSION"           >> $GITHUB_OUTPUT
-          echo "name=${{ inputs.app-name }}" >> $GITHUB_OUTPUT
+      - name: Setup Environment
+        id: setup-android
+        uses: cvch29/platform-actions/actions/shared/setup-maven@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          pom-path: "pom.xml"
 
   build:
     name: Build
