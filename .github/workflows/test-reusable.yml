@@ -91,3 +91,4 @@ jobs:
           # echo "Resolved Vault Vars:"
           # echo "${{ steps.vault-keys.outputs.resolved-vars }}"
           env
+          echo "AM_URL: $AM_URL"
