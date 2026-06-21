@@ -70,17 +70,17 @@ jobs:
 
       - name: Resolver keys de Env
         id: env-keys
-        uses: cvch29/platform-actions/actions/shared/envs-keys@main
+        uses: cvch29/platform-actions/actions/shared/envs-engine@main
         with:
           project: ${{ inputs.project }}
-          envs_json_path: ${{ inputs.envs_json_path }} # Opcional, para casos se use un json de envs distinto al default.
+          # envs_json: "false" # Opcional, para casos se use un json de envs distinto al default.
           env_keys: ${{ inputs.env_keys }}
 
       - name: Resolver keys de Hashicorp Vault
         id: vault-keys
-        uses: cvch29/platform-actions/actions/shared/secrets-hv-keys@main
+        uses: cvch29/platform-actions/actions/shared/secrets-hv-engine@main
         with:
-          project: ${{ inputs.project }}
+          # project: ${{ inputs.project }}
           # envs_json_path: ${{ inputs.envs_json_path }} # Opcional, para casos se use un json de vault distinto al default.
           vault_path: ${{ inputs.vault_path }}
           vault_keys: ${{ inputs.vault_keys }}
