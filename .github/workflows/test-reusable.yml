@@ -81,7 +81,7 @@ jobs:
         uses: cvch29/platform-actions/actions/shared/resolve-secrets-hv-keys@main
         with:
           project: ${{ inputs.project }}
-          envs_json_path: ${{ inputs.envs_json_path }} # Opcional, para casos se use un json de vault distinto al default.
+          # envs_json_path: ${{ inputs.envs_json_path }} # Opcional, para casos se use un json de vault distinto al default.
           vault_path: ${{ inputs.vault_path }}
           vault_keys: ${{ inputs.vault_keys }}
           vault_addr: ${{ secrets.VAULT_ADDR }}
@@ -92,7 +92,7 @@ jobs:
         run: |
           echo "Resolved Env Vars:"
           echo "${{ steps.env-keys.outputs.resolved-vars }}"
-          # echo "Resolved Vault Vars:"
-          # echo "${{ steps.vault-keys.outputs.resolved-vars }}"
-          env
-          echo "AM_URL: $AM_URL"
+          echo "Resolved Vault Vars:"
+          echo "${{ steps.vault-keys.outputs.resolved-vars }}"
+          # env
+          # echo "AM_URL: $AM_URL"
