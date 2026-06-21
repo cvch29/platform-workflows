@@ -50,7 +50,8 @@ on:
         required: true
       VAULT_SECRET_ID:
         required: true
-
+      VAULT_ADDR:
+        required: true
 jobs:
   release:
     runs-on: arc-mobile
