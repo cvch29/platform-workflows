@@ -75,9 +75,9 @@ jobs:
           envs_json_path: ${{ inputs.envs_json_path }} # Opcional, para casos se use un json de envs distinto al default.
           env_keys: ${{ inputs.env_keys }}
 
-      - name: Resolver keys de Vault
+      - name: Resolver keys de Hashicorp Vault
         id: vault-keys
-        uses: cvch29/platform-actions/actions/shared/resolve-secrets-vault-keys@main
+        uses: cvch29/platform-actions/actions/shared/resolve-secrets-hv-keys@main
         with:
           project: ${{ inputs.project }}
           envs_json_path: ${{ inputs.envs_json_path }} # Opcional, para casos se use un json de vault distinto al default.
