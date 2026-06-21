@@ -81,8 +81,10 @@ jobs:
         with:
           project: ${{ inputs.project }}
           envs_json_path: ${{ inputs.envs_json_path }} # Opcional, para casos se use un json de vault distinto al default.
-          vault_keys: ${{ inputs.vault_keys }}
           vault_path: ${{ inputs.vault_path }}
+          vault_keys: ${{ inputs.vault_keys }}
+          vault_role_id: ${{ secrets.VAULT_ROLE_ID }}
+          vault_secret_id: ${{ secrets.VAULT_SECRET_ID }}
 
       - name: "Test resolved variables"
         run: |
