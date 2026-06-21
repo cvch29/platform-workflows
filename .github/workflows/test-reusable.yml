@@ -90,3 +90,4 @@ jobs:
           echo "${{ steps.env-keys.outputs.resolved-vars }}"
           # echo "Resolved Vault Vars:"
           # echo "${{ steps.vault-keys.outputs.resolved-vars }}"
+          env
