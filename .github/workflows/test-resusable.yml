@@ -1,0 +1,72 @@
+name: Android · Release
+
+on:
+  workflow_call:
+    inputs:
+      project:
+        description: 'Nombre del proyecto/dominio (ej: android)'
+        required: false
+        type: string
+        default: 'android'
+      deploy_aab:
+        description: 'Forzar compilación de AAB aunque el ambiente no sea producción'
+        required: false
+        type: boolean
+        default: false
+      envs_json_path:
+        required: false
+        type: string
+        default: './.scripts/configs/envs.json'
+      vault_path:
+        description: >
+          Path en Vault donde vive el secreto de la app. Default cubre el
+          caso típico; cambiar solo si tu app usa un path distinto.
+        required: false
+        type: string
+        default: 'apps-integradas/canales/ncd/aplicacion/frontend/android'
+
+      env_keys:
+        description: 'Keys del env info que quieras pasar a android-build. Formato "key:VAR" separadas por coma.'
+        required: false
+        type: string
+        default: >-
+          env:${{ vars.ENV }},
+          env_name:${{ vars.ENV_NAME }},
+          am_url:${{ vars.AM_URL }},
+          api_url:${{ vars.API_URL }},
+          realm_path:${{ vars.REALM_PATH }}
+
+      secret_keys:
+        description: 'Keys adicionales de Vault que quieras pasar a android-build o android-deploy-appcenter. Formato "key:VAR" separadas por coma.'
+        required: false
+        type: string
+        default: >-
+          ANDROID_STORE_PWD:ANDROID_STORE_PWD:base64,
+          ANDROID_KEY_PWD:ANDROID_KEY_PWD:base64,
+          DEXGUARD_KEY:DEXGUARD_KEY:base64,
+          ANDROID_KEY_ALIAS:ANDROID_KEY_ALIAS,
+          SSL_CERTIFICADO_IG:SSL_CERTIFICADO_IG:base64,
+          FACEPHI_LICENSE:FACEPHI_LICENSE:text
+    secrets:
+      VAULT_ROLE_ID:
+        required: true
+      VAULT_SECRET_ID:
+        required: true
+
+jobs:
+  release:
+    runs-on:
+      group: arc-general
+    steps:
+      - name: Checkout app
+        uses: actions/checkout@v4
+
+
+      - name: "Test variables"
+        run: |
+          echo "Project: ${{ inputs.project }}"
+          echo "Deploy AAB: ${{ inputs.deploy_aab }}"
+          echo "Envs JSON Path: ${{ inputs.envs_json_path }}"
+          echo "Vault Path: ${{ inputs.vault_path }}"
+          echo "Env Keys: ${{ inputs.env_keys }}"
+          echo "Secret Keys: ${{ inputs.secret_keys }}"
