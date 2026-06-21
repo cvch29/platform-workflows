@@ -55,8 +55,7 @@ on:
 
 jobs:
   release:
-    runs-on:
-      group: arc-general
+    runs-on: arc-general
     steps:
       - name: Checkout app
         uses: actions/checkout@v4
