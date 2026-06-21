@@ -58,14 +58,14 @@ jobs:
       - name: Checkout app
         uses: actions/checkout@v4
 
-      # - name: "Test variables"
-      #   run: |
-      #     echo "Project: ${{ inputs.project }}"
-      #     echo "Deploy AAB: ${{ inputs.deploy_aab }}"
-      #     echo "Envs JSON Path: ${{ inputs.envs_json_path }}"
-      #     echo "Vault Path: ${{ inputs.vault_path }}"
-      #     echo "Env Keys: ${{ inputs.env_keys }}"
-      #     echo "Vault Keys: ${{ inputs.vault_keys }}"
+      - name: "Test variables"
+        run: |
+          echo "Project: ${{ inputs.project }}"
+          echo "Deploy AAB: ${{ inputs.deploy_aab }}"
+          echo "Envs JSON Path: ${{ inputs.envs_json_path }}"
+          echo "Vault Path: ${{ inputs.vault_path }}"
+          echo "Env Keys: ${{ inputs.env_keys }}"
+          echo "Vault Keys: ${{ inputs.vault_keys }}"
 
       - name: Resolver keys de Env
         id: env-keys
@@ -75,14 +75,14 @@ jobs:
           envs_json_path: ${{ inputs.envs_json_path }} # Opcional, para casos se use un json de envs distinto al default.
           env_keys: ${{ inputs.env_keys }}
 
-      # - name: Resolver keys de Vault
-      #   id: vault-keys
-      #   uses: cvch29/platform-actions/actions/shared/resolve-vault-keys@main
-      #   with:
-      #     project: ${{ inputs.project }}
-      #     envs_json_path: ${{ inputs.envs_json_path }} # Opcional, para casos se use un json de vault distinto al default.
-      #     vault_keys: ${{ inputs.vault_keys }}
-      #     vault_path: ${{ inputs.vault_path }}
+      - name: Resolver keys de Vault
+        id: vault-keys
+        uses: cvch29/platform-actions/actions/shared/resolve-secrets-vault-keys@main
+        with:
+          project: ${{ inputs.project }}
+          envs_json_path: ${{ inputs.envs_json_path }} # Opcional, para casos se use un json de vault distinto al default.
+          vault_keys: ${{ inputs.vault_keys }}
+          vault_path: ${{ inputs.vault_path }}
 
       - name: "Test resolved variables"
         run: |
