@@ -88,11 +88,13 @@ jobs:
           vault_role_id: ${{ secrets.VAULT_ROLE_ID }}
           vault_secret_id: ${{ secrets.VAULT_SECRET_ID }}
 
-      - name: "Test resolved variables"
+      - name: Debug outputs
         run: |
-          echo "Resolved Env Vars:"
-          echo "${{ steps.env-keys.outputs.resolved-vars }}"
-          echo "Resolved Vault Vars:"
-          echo "${{ steps.vault-keys.outputs.resolved-vars }}"
-          # env
-          # echo "AM_URL: $AM_URL"
+          echo "=== ENV VARS ==="
+          printf "%s\n" "$ENV_KEYS"
+
+          echo "=== VAULT VARS ==="
+          printf "%s\n" "$VAULT_KEYS"
+        env:
+          ENV_KEYS: ${{ steps.env-keys.outputs.resolved-vars }}
+          VAULT_KEYS: ${{ steps.vault-keys.outputs.resolved-vars }}
