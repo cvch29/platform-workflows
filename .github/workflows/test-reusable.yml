@@ -36,7 +36,7 @@ on:
           api_url:${{ vars.API_URL }},
           realm_path:${{ vars.REALM_PATH }}
 
-      secret_keys:
+      vault_keys:
         description: 'Keys adicionales de Vault que quieras pasar a android-build o android-deploy-appcenter. Formato "key:VAR" separadas por coma.'
         required: false
         type: string
