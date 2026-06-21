@@ -39,11 +39,11 @@ on:
         required: false
         type: string
         default: >-
-          ANDROID_STORE_PWD:ANDROID_STORE_PWD:text:base64,
-          ANDROID_KEY_PWD:ANDROID_KEY_PWD:text:base64,
-          DEXGUARD_KEY:DEXGUARD_KEY:text:base64,
+          ANDROID_STORE_PWD:ANDROID_STORE_PWD:text,
+          ANDROID_KEY_PWD:ANDROID_KEY_PWD:text,
+          DEXGUARD_KEY:DEXGUARD_KEY:text,
           ANDROID_KEY_ALIAS:ANDROID_KEY_ALIAS,
-          SSL_CERTIFICADO_IG:SSL_CERTIFICADO_IG:text:base64,
+          SSL_CERTIFICADO_IG:SSL_CERTIFICADO_IG:text,
           FACEPHI_LICENSE:FACEPHI_LICENSE:text
     secrets:
       VAULT_ROLE_ID:
@@ -70,7 +70,7 @@ jobs:
 
       - name: Resolver keys de Env
         id: env-keys
-        uses: cvch29/platform-actions/actions/shared/resolve-envs-keys@main
+        uses: cvch29/platform-actions/actions/shared/envs-keys@main
         with:
           project: ${{ inputs.project }}
           envs_json_path: ${{ inputs.envs_json_path }} # Opcional, para casos se use un json de envs distinto al default.
@@ -78,7 +78,7 @@ jobs:
 
       - name: Resolver keys de Hashicorp Vault
         id: vault-keys
-        uses: cvch29/platform-actions/actions/shared/resolve-secrets-hv-keys@main
+        uses: cvch29/platform-actions/actions/shared/secrets-hv-keys@main
         with:
           project: ${{ inputs.project }}
           # envs_json_path: ${{ inputs.envs_json_path }} # Opcional, para casos se use un json de vault distinto al default.
