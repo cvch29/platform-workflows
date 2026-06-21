@@ -24,6 +24,13 @@ on:
         required: false
         type: string
         default: 'apps-integradas/canales/ncd/aplicacion/frontend/android'
+      vault_prefix:
+        description: >
+          Prefijo de Vault para la app. Default cubre el caso típico; cambiar
+          solo si tu app usa un prefijo distinto.
+        required: false
+        type: string
+        default: 'apps-integradas/data'
       env_keys:
         description: 'Keys del env info que quieras pasar a android-build. Formato "key:VAR" separadas por coma.'
         required: false
@@ -68,7 +75,7 @@ jobs:
           echo "Env Keys: ${{ inputs.env_keys }}"
           echo "Vault Keys: ${{ inputs.vault_keys }}"
 
-      - name: Resolver keys de Env
+      - name: Get Env Vars
         id: env-keys
         uses: cvch29/platform-actions/actions/shared/envs-engine@main
         with:
@@ -76,14 +83,15 @@ jobs:
           # envs_json: "false" # Opcional, para casos se use un json de envs distinto al default.
           env_keys: ${{ inputs.env_keys }}
 
-      - name: Resolver keys de Hashicorp Vault
-        id: vault-keys
+      - name: Get Vault Secrets
+        id: vault-secrets
         uses: cvch29/platform-actions/actions/shared/secrets-hv-engine@main
         with:
           # project: ${{ inputs.project }}
           # envs_json_path: ${{ inputs.envs_json_path }} # Opcional, para casos se use un json de vault distinto al default.
           vault_path: ${{ inputs.vault_path }}
           vault_keys: ${{ inputs.vault_keys }}
+          vault_prefix: ${{ inputs.vault_prefix }}
           vault_addr: ${{ secrets.VAULT_ADDR }}
           vault_role_id: ${{ secrets.VAULT_ROLE_ID }}
           vault_secret_id: ${{ secrets.VAULT_SECRET_ID }}
@@ -97,4 +105,4 @@ jobs:
           printf "%s\n" "$VAULT_KEYS"
         env:
           ENV_KEYS: ${{ steps.env-keys.outputs.resolved-vars }}
-          VAULT_KEYS: ${{ steps.vault-keys.outputs.resolved-vars }}
+          VAULT_KEYS: ${{ steps.vault-secrets.outputs.resolved-vars }}
