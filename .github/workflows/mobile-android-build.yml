@@ -91,20 +91,20 @@ jobs:
         with:
           working-directory: .
 
-      - name: Setup Keystore
-        if: ${{ inputs.sign }}
-        uses: cvch29/platform-actions/actions/shared/setup-certificate@main
-        with:
-          certificate-base64: ${{ secrets.keystore-base64 }}
-          certificate-file: ${{ secrets.keystore-path }}
+      # - name: Setup Keystore
+      #   if: ${{ inputs.sign }}
+      #   uses: cvch29/platform-actions/actions/shared/setup-certificate@main
+      #   with:
+      #     certificate-base64: ${{ secrets.keystore-base64 }}
+      #     certificate-file: ${{ secrets.keystore-path }}
 
       - name: Build Android
         uses: cvch29/platform-actions/actions/domains/mobile/android/build@main
         with:
           command: ${{ inputs.command }}
-          keystore-alias: ${{ secrets.keystore-alias }}
-          keystore-password: ${{ secrets.keystore-password }}
-          keystore-path: ${{ secrets.keystore-path }}
+          # keystore-alias: ${{ secrets.keystore-alias }}
+          # keystore-password: ${{ secrets.keystore-password }}
+          # keystore-path: ${{ secrets.keystore-path }}
 
       - name: Upload Artifacts
         uses: cvch29/platform-actions/actions/shared/artifact-manage@main
