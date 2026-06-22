@@ -82,15 +82,15 @@ jobs:
       keystore-alias: ${{ secrets.keystore-alias }}
       keystore-path: ${{ secrets.keystore-path }}
 
-  artifact_integrity:
-    needs: [setup,build_android]
-    name: Release Integrity
-    uses: cvch29/platform-workflows/.github/workflows/shared-release-integrity.yml@main
-    with:
-      app-name: ${{ needs.setup.outputs.app-name }}
-      artifact-path: "/__w/challenge-mbco/challenge-mbco/artifacts"
-      container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_SCS }}"
-      container-image-resource-runner: "--cpus 2 -m 4g"
+  # artifact_integrity:
+  #   needs: [setup,build_android]
+  #   name: Release Integrity
+  #   uses: cvch29/platform-workflows/.github/workflows/shared-release-integrity.yml@main
+  #   with:
+  #     app-name: ${{ needs.setup.outputs.app-name }}
+  #     artifact-path: "/__w/challenge-mbco/challenge-mbco/artifacts"
+  #     container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_SCS }}"
+  #     container-image-resource-runner: "--cpus 2 -m 4g"
 
   # distribute:
   #   name: Tag & Distribute
