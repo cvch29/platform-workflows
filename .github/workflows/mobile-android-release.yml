@@ -17,7 +17,7 @@ on:
         default: 'yarn'
       build-gradle-path:
         type: string
-        default: app/build.gradle.kts
+        default: app/build.gradle
       environment:
         type: string
         default: dev
