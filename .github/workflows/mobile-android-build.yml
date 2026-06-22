@@ -45,7 +45,7 @@ on:
         required: false
 jobs:
   build:
-    if: success() && (inputs.enable-android == true)
+    # if: success() && (inputs.enable-android == true)
     name: Build Android
     runs-on: arc-mobile
     # runs-on:
