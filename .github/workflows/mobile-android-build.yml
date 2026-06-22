@@ -47,7 +47,7 @@ jobs:
   build:
     if: success() && (inputs.enable-android == true)
     name: Build Android
-    runs-on: arc-mobile-aks
+    runs-on: arc-mobile
     # runs-on:
     #   group: dso-linux
     # env:
