@@ -111,7 +111,7 @@ jobs:
         with:
           app-name: ${{ inputs.app-name }}
           app-version: ${{ inputs.app-version }}
-          path: android
+          path: .
           pattern: |
             app/build/outputs/apk/release/*.apk
             app/build/outputs/bundle/release/*.aab
