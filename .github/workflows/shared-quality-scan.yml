@@ -66,7 +66,7 @@ on:
         description: 'Repository name (e.g. cvch29/java-sample-app)'
         type: string
         required: false
-        default: ${{ github.event.repository.full_name }}
+        default: ${{ github.event.repository.name }}
       # container-image-name-runner:
       #   type: string
       #   required: true
