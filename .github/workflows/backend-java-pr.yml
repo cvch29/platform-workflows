@@ -109,8 +109,8 @@ jobs:
       app-name: ${{ needs.setup.outputs.app-name }}
       language: kotlin
       app-version: ${{ needs.setup.outputs.app-version }}
-      container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_SCS }}"
-      container-image-resource-runner: "--cpus 2 -m 4g"
+      # container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_SCS }}"
+      # container-image-resource-runner: "--cpus 2 -m 4g"
       # sonar-host-url: ${{ secrets.sonar-host-url }}
       sonar-project-key: "mc-accounts"
       # sonar-token: ${{ secrets.sonar-token }}
