@@ -45,7 +45,7 @@ jobs:
         uses: cvch29/platform-actions/actions/shared/setup-gradle@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          build-gradle-path: ${{ inputs.build-gradle-path }}
+          # build-gradle-path: ${{ inputs.build-gradle-path }}
 
   # pr-validate:
   #   name: PR Validation
