@@ -205,14 +205,6 @@ jobs:
             -Dsonar.sourceEncoding=UTF-8
             ${{ inputs.properties }}
 
-      - name: Set up JDK
-        # if: inputs.language == 'java'
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: 'maven'    # ← cachea dependencias Maven
-
 
       # ── Push/Branch ───────────────────────────────────────
       - name: SonarQube Scan — Branch (Maven)
