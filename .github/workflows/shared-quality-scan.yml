@@ -173,7 +173,7 @@ jobs:
       #   # if: github.event_name == 'pull_request'
       #   uses: SonarSource/sonarqube-scan-action@713881670b6b3676cda39549040e2d88c70d582e #v8.2.0
       #   env:
-      #     SONAR_TOKEN: "sqa_c6ecaaf40feea721c5435d15364fb3994f974eb3"
+      #     SONAR_TOKEN: "sqa_8a154342bbd78024c29d8869baba5f7d2927f6f8"
       #     SONAR_HOST_URL: "http://192.168.1.199:9000/"
       #   with:
       #     args: >
@@ -191,7 +191,7 @@ jobs:
         if: github.event_name == 'pull_request'
         uses: SonarSource/sonarqube-scan-action@713881670b6b3676cda39549040e2d88c70d582e
         env:
-          SONAR_TOKEN: "sqa_c6ecaaf40feea721c5435d15364fb3994f974eb3"
+          SONAR_TOKEN: "sqa_8a154342bbd78024c29d8869baba5f7d2927f6f8"
           SONAR_HOST_URL: "http://192.168.1.199:9000/"
         with:
           # skipSignatureVerification: true
@@ -210,7 +210,7 @@ jobs:
         if: github.event_name == 'push'
         uses: SonarSource/sonarqube-scan-action@713881670b6b3676cda39549040e2d88c70d582e
         env:
-          SONAR_TOKEN: "sqa_c6ecaaf40feea721c5435d15364fb3994f974eb3"
+          SONAR_TOKEN: "sqa_8a154342bbd78024c29d8869baba5f7d2927f6f8"
           SONAR_HOST_URL: "http://192.168.1.199:9000/"
         with:
           # skipSignatureVerification: true
@@ -230,7 +230,7 @@ jobs:
         uses: cvch29/platform-actions/actions/security/sonar-break-build@main
         with:
           sonar-url: "http://192.168.1.199:9000/"
-          sonar-token: "sqa_c6ecaaf40feea721c5435d15364fb3994f974eb3"
+          sonar-token: "sqa_8a154342bbd78024c29d8869baba5f7d2927f6f8"
           # sonar-token: ${{ secrets.sonar-token }}
           project: ${{ inputs.repository-name }}
           branch: ${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.ref_name }}
