@@ -228,6 +228,9 @@ jobs:
 
       - name: Quality Gate
         uses: cvch29/platform-actions/actions/security/sonar-break-build@main
+        env:
+          QUALITY_GATE_ENABLED: 'true'          # ← activa el bloqueo
+          QUALITY_GATE_VALIDATE_EXCLUDE: 'false' # ← no excluir la validación
         with:
           sonar-url: "http://192.168.1.199:9000/"
           sonar-token: "squ_f0ee15f553b746d9cb7a7a6f454d68c29b44283f"
