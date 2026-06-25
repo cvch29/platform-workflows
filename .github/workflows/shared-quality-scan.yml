@@ -215,7 +215,7 @@ jobs:
         with:
           # skipSignatureVerification: true
           args: >
-            -Dsonar.projectKey=${{ inputs.sonar-project-key }}
+            -Dsonar.projectKey=${{ inputs.repository-name }}
             -Dsonar.projectVersion=${{ inputs.app-version }}
             -Dsonar.sources=.
             -Dsonar.branch.name=${{ github.ref_name }}
@@ -232,6 +232,6 @@ jobs:
           sonar-url: "http://192.168.1.199:9000/"
           sonar-token: "sqa_c6ecaaf40feea721c5435d15364fb3994f974eb3"
           # sonar-token: ${{ secrets.sonar-token }}
-          project: ${{ inputs.sonar-project-key }}
+          project: ${{ inputs.repository-name }}
           branch: ${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.ref_name }}
           quality-gate-name: "DevOps-Sonar26"
