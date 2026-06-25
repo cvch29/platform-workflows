@@ -21,6 +21,11 @@ on:
       gradle-build-path:
         type: string
         default: app/build.gradle.kts
+      properties:
+        description: 'Additional properties for SonarQube analysis'
+        type: string
+        required: false
+        default: ''
 jobs:
   setup:
     name: Setup
