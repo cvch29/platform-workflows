@@ -79,15 +79,8 @@ on:
     #   sonar-quality-gate:
     #     value: ${{ jobs.sonar.outputs.quality-gate-status }}
 jobs:
-
-  # ── SonarQube ───────────────────────────────────────────────────────────────
-  # Runs in parallel with CodeQL.
-  # sonar.qualitygate.wait=true means the Sonar Gradle/scanner task itself fails
-  # when the Quality Gate does not pass → this job fails → workflow fails.
-  # That is the "break the build" behavior.
   sonar:
     name: SonarQube Analysis
-    # if: inputs.run-sonar && inputs.sonar-host-url != ''
     runs-on: arc-general
     # container:
     #   image: ${{ inputs.container-image-name-runner }}
