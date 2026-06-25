@@ -131,12 +131,10 @@ jobs:
         uses: cvch29/platform-actions/actions/security/sonar@main
         with:
           language: ${{ inputs.language }}
-          sonar-host-url: "http://192.168.1.199:9000/"
-          sonar-token: "squ_f0ee15f553b746d9cb7a7a6f454d68c29b44283f"
+          sonar-host-url: ${{ inputs.sonar-host-url }}
+          sonar-token: ${{ secrets.sonar-token }}
           project-key: ${{ inputs.sonar-project-key }}
           app-version: ${{ inputs.app-version }}
-          # coverage-report-path: ${{ steps.coverage.outputs.report-path }}
-          # quality-gate-timeout: ${{ inputs.sonar-quality-gate-timeout }}
           properties: ${{ inputs.properties }}
 
       # - name: Setup SonarQube Analysis
