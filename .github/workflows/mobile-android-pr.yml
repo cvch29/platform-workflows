@@ -119,3 +119,7 @@ jobs:
       # sonar-host-url: ${{ secrets.sonar-host-url }}
       sonar-project-key: "challenge-mbco"
       # sonar-token: ${{ secrets.sonar-token }}
+      properties: >-
+        -Dsonar.exclusions=**/*.json, **/*.xml, **/*.html, **/*.yml, .git, .gitignore, Dockerfile, Dockerfile.**, **/*.dll, **/*.css, **/*.js
+        -Dsonar.language=kotlin
+        -Dsonar.java.binaries=.
