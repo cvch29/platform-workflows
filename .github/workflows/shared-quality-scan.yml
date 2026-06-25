@@ -209,7 +209,7 @@ jobs:
         # if: inputs.language == 'java'
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ inputs.java-version }}
+          java-version: '17'
           distribution: 'temurin'
           cache: 'maven'    # ← cachea dependencias Maven
 
