@@ -163,11 +163,6 @@ jobs:
       app-name: ${{ needs.setup.outputs.app-name }}
       language: java
       app-version: ${{ needs.setup.outputs.app-version }}
-      # container-image-name-runner: "${{ vars.REGISTRY }}/maven:${{ vars.CONTAINER_IMAGE_TAG_SCS }}"
-      # container-image-resource-runner: "--cpus 2 -m 4g"
-      # sonar-host-url: ${{ secrets.sonar-host-url }}
-      sonar-host-url: "http://192.168.1.199:9000/"
-      sonar-token: "squ_f0ee15f553b746d9cb7a7a6f454d68c29b44283f"
       sonar-project-key: "mc-accounts"
       properties: >-
         -Dsonar.exclusions=**/*.json,**/*.xml,**/*.html,**/*.yml,.git,.gitignore,Dockerfile,Dockerfile.**,**/*.dll,**/*.css,**/*.js
