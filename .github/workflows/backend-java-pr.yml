@@ -120,6 +120,5 @@ jobs:
       sonar-project-key: "mc-accounts"
       # sonar-token: ${{ secrets.sonar-token }}
       properties: >-
-        -Dsonar.exclusions=**/*.json, **/*.xml, **/*.html, **/*.yml, .git, .gitignore, Dockerfile, Dockerfile.**, **/*.dll, **/*.css, **/*.js
-        -Dsonar.language=java
+        -Dsonar.exclusions=**/*.json,**/*.xml,**/*.html,**/*.yml,.git,.gitignore,Dockerfile,Dockerfile.**,**/*.dll,**/*.css,**/*.js
         -Dsonar.java.binaries=.
