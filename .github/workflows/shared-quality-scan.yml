@@ -163,15 +163,32 @@ jobs:
       #     unzip -q sonar-scanner.zip
       #     echo "$PWD/sonar-scanner-8.1.0.6389-linux-x64/bin" >> $GITHUB_PATH
 
-# ── PR ────────────────────────────────────────────────
+      # - name: SonarQube Scan PR
+      #   # if: github.event_name == 'pull_request'
+      #   uses: SonarSource/sonarqube-scan-action@713881670b6b3676cda39549040e2d88c70d582e #v8.2.0
+      #   env:
+      #     SONAR_TOKEN: "sqa_c6ecaaf40feea721c5435d15364fb3994f974eb3"
+      #     SONAR_HOST_URL: "http://192.168.1.199:9000/"
+      #   with:
+      #     args: >
+      #       -Dsonar.projectKey=${{ inputs.sonar-project-key }}
+      #       -Dsonar.projectVersion=${{ inputs.app-version }}
+      #       -Dsonar.sources=.
+      #       -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
+      #       -Dsonar.pullrequest.branch=${{ github.head_ref }}
+      #       -Dsonar.pullrequest.base=${{ github.base_ref }}
+      #       -Dsonar.sourceEncoding=UTF-8
+      #       -Dsonar.language=${{ inputs.language }}
+
+
       - name: SonarQube Scan — Pull Request
         if: github.event_name == 'pull_request'
         uses: SonarSource/sonarqube-scan-action@713881670b6b3676cda39549040e2d88c70d582e
         env:
-          SONAR_TOKEN: ${{ secrets.sonar-token }}
-          SONAR_HOST_URL: ${{ inputs.sonar-host-url }}
+          SONAR_TOKEN: "sqa_c6ecaaf40feea721c5435d15364fb3994f974eb3"
+          SONAR_HOST_URL: "http://192.168.1.199:9000/"
         with:
-          skipSignatureVerification: true
+          # skipSignatureVerification: true
           args: >
             -Dsonar.projectKey=${{ inputs.sonar-project-key }}
             -Dsonar.projectVersion=${{ inputs.app-version }}
@@ -187,10 +204,10 @@ jobs:
         if: github.event_name == 'push'
         uses: SonarSource/sonarqube-scan-action@713881670b6b3676cda39549040e2d88c70d582e
         env:
-          SONAR_TOKEN: ${{ secrets.sonar-token }}
-          SONAR_HOST_URL: ${{ inputs.sonar-host-url }}
+          SONAR_TOKEN: "sqa_c6ecaaf40feea721c5435d15364fb3994f974eb3"
+          SONAR_HOST_URL: "http://192.168.1.199:9000/"
         with:
-          skipSignatureVerification: true
+          # skipSignatureVerification: true
           args: >
             -Dsonar.projectKey=${{ inputs.sonar-project-key }}
             -Dsonar.projectVersion=${{ inputs.app-version }}
@@ -199,7 +216,7 @@ jobs:
             -Dsonar.branch.target=main
             -Dsonar.sourceEncoding=UTF-8
             ${{ inputs.properties }}
-            
+
       # - name: Setup SonarQube Analysis
       #   uses: cvch29/platform-actions/actions/security/sonar-wontfix@main
 
