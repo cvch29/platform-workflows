@@ -178,6 +178,8 @@ jobs:
             -Dsonar.pullrequest.branch=${{ github.head_ref }}
             -Dsonar.pullrequest.base=${{ github.base_ref }}
             -Dsonar.sourceEncoding=UTF-8
+            -Dsonar.language=java
+            -Dsonar.java.binaries=.
             ${{ inputs.properties }}
 
       # - name: Setup SonarQube Analysis
