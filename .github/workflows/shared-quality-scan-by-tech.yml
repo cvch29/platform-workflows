@@ -32,7 +32,7 @@ on:
         required: false
         default: 'high'
       # ── Sonar inputs ────────────────────────────────────────────────────────
-      sonar-url:
+      sonar-host-url:
         description: 'SonarQube server URL (e.g. https://sonar.mybank.com)'
         type: string
         required: false
@@ -121,7 +121,7 @@ jobs:
         uses: cvch29/platform-actions/actions/security/sonar@main
         with:
           language: ${{ inputs.language }}
-          sonar-url: ${{ inputs.sonar-url }}
+          sonar-host-url: ${{ inputs.sonar-host-url }}
           sonar-token: ${{ inputs.sonar-token }}
           project-key: ${{ inputs.sonar-project-key }}
           app-version: ${{ inputs.app-version }}
@@ -138,7 +138,7 @@ jobs:
           QUALITY_GATE_ENABLED: 'true'          # ← activa el bloqueo
           QUALITY_GATE_VALIDATE_EXCLUDE: 'false' # ← no excluir la validación
         with:
-          sonar-url: ${{ inputs.sonar-url }}
+          sonar-host-url: ${{ inputs.sonar-host-url }}
           sonar-token: ${{ inputs.sonar-token }}
           project: ${{ inputs.repository-name }}
           branch: ${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.ref_name }}
