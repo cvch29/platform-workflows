@@ -107,7 +107,7 @@ jobs:
     uses: cvch29/platform-workflows/.github/workflows/shared-quality-scan.yml@main
     with:
       app-name: ${{ needs.setup.outputs.app-name }}
-      language: kotlin
+      language: java
       app-version: ${{ needs.setup.outputs.app-version }}
       # container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_SCS }}"
       # container-image-resource-runner: "--cpus 2 -m 4g"
