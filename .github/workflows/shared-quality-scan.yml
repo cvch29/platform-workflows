@@ -156,6 +156,13 @@ jobs:
         run: |
           env
 
+      - name: Install Sonar Scanner sin GPG
+        run: |
+          curl -sSLo sonar-scanner.zip \
+            https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-8.1.0.6389-linux-x64.zip
+          unzip -q sonar-scanner.zip
+          echo "$PWD/sonar-scanner-8.1.0.6389-linux-x64/bin" >> $GITHUB_PATH
+
       - name: SonarQube Scan PR
         # if: github.event_name == 'pull_request'
         uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995 #v8.1.0
