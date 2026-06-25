@@ -32,11 +32,16 @@ on:
         required: false
         default: 'high'
       # ── Sonar inputs ────────────────────────────────────────────────────────
-      sonar-host-url:
+      sonar-url:
         description: 'SonarQube server URL (e.g. https://sonar.mybank.com)'
         type: string
         required: false
-        default: ''
+        default: 'http://192.168.1.199:9000'
+      sonar-token:
+        description: 'SonarQube token (e.g. squ_1234567890abcdef)'
+        type: string
+        required: false
+        default: 'squ_3e318a15b37254b64ee79649a65db8dff27db344'
       sonar-project-key:
         description: 'SonarQube project key. Default: repo slug.'
         type: string
@@ -67,14 +72,6 @@ on:
         type: string
         required: false
         default: ${{ github.event.repository.name }}
-      # container-image-name-runner:
-      #   type: string
-      #   required: true
-      #   default: ''
-      # container-image-resource-runner:
-      #   type: string
-      #   required: true
-      #   default: '--cpus 2 -m 4g' 
     secrets:
       sonar-token:
         required: false
@@ -131,8 +128,8 @@ jobs:
         uses: cvch29/platform-actions/actions/security/sonar@main
         with:
           language: ${{ inputs.language }}
-          sonar-host-url: ${{ inputs.sonar-host-url }}
-          sonar-token: ${{ secrets.sonar-token }}
+          sonar-url: ${{ inputs.sonar-url }}
+          sonar-token: ${{ inputs.sonar-token }}
           project-key: ${{ inputs.sonar-project-key }}
           app-version: ${{ inputs.app-version }}
           properties: ${{ inputs.properties }}
@@ -148,8 +145,8 @@ jobs:
           QUALITY_GATE_ENABLED: 'true'          # ← activa el bloqueo
           QUALITY_GATE_VALIDATE_EXCLUDE: 'false' # ← no excluir la validación
         with:
-          sonar-url: "http://192.168.1.199:9000/"
-          sonar-token: "squ_f0ee15f553b746d9cb7a7a6f454d68c29b44283f"
+          sonar-url: ${{ inputs.sonar-url }}
+          sonar-token: ${{ inputs.sonar-token }}
           project: ${{ inputs.repository-name }}
           branch: ${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.ref_name }}
           quality-gate-name: "DevOps-Sonar26"
