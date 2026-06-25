@@ -132,6 +132,7 @@ jobs:
 
       - name: Show Variables
         run: |
+          env
           echo "branch: ${{ github.ref }}"
           echo "head_ref: ${{ github.head_ref }}"
           echo "base_ref: ${{ github.base_ref }}"
