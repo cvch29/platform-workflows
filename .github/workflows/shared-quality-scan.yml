@@ -163,13 +163,15 @@ jobs:
       #     unzip -q sonar-scanner.zip
       #     echo "$PWD/sonar-scanner-8.1.0.6389-linux-x64/bin" >> $GITHUB_PATH
 
-      - name: SonarQube Scan PR
-        # if: github.event_name == 'pull_request'
-        uses: SonarSource/sonarqube-scan-action@713881670b6b3676cda39549040e2d88c70d582e #v8.2.0
+# ── PR ────────────────────────────────────────────────
+      - name: SonarQube Scan — Pull Request
+        if: github.event_name == 'pull_request'
+        uses: SonarSource/sonarqube-scan-action@713881670b6b3676cda39549040e2d88c70d582e
         env:
-          SONAR_TOKEN: "sqa_c6ecaaf40feea721c5435d15364fb3994f974eb3"
-          SONAR_HOST_URL: "http://192.168.1.199:9000/"
+          SONAR_TOKEN: ${{ secrets.sonar-token }}
+          SONAR_HOST_URL: ${{ inputs.sonar-host-url }}
         with:
+          skipSignatureVerification: true
           args: >
             -Dsonar.projectKey=${{ inputs.sonar-project-key }}
             -Dsonar.projectVersion=${{ inputs.app-version }}
@@ -178,7 +180,26 @@ jobs:
             -Dsonar.pullrequest.branch=${{ github.head_ref }}
             -Dsonar.pullrequest.base=${{ github.base_ref }}
             -Dsonar.sourceEncoding=UTF-8
-            -Dsonar.language=${{ inputs.language }}
+            ${{ inputs.properties }}
+
+      # ── Push/Branch ───────────────────────────────────────
+      - name: SonarQube Scan — Branch
+        if: github.event_name == 'push'
+        uses: SonarSource/sonarqube-scan-action@713881670b6b3676cda39549040e2d88c70d582e
+        env:
+          SONAR_TOKEN: ${{ secrets.sonar-token }}
+          SONAR_HOST_URL: ${{ inputs.sonar-host-url }}
+        with:
+          skipSignatureVerification: true
+          args: >
+            -Dsonar.projectKey=${{ inputs.sonar-project-key }}
+            -Dsonar.projectVersion=${{ inputs.app-version }}
+            -Dsonar.sources=.
+            -Dsonar.branch.name=${{ github.ref_name }}
+            -Dsonar.branch.target=main
+            -Dsonar.sourceEncoding=UTF-8
+            ${{ inputs.properties }}
+            
       # - name: Setup SonarQube Analysis
       #   uses: cvch29/platform-actions/actions/security/sonar-wontfix@main
 
@@ -189,4 +210,4 @@ jobs:
           sonar-token: "sqa_c6ecaaf40feea721c5435d15364fb3994f974eb3"
           # sonar-token: ${{ secrets.sonar-token }}
           project: ${{ inputs.sonar-project-key }}
-          branch: ${{ github.event.pull_request.number }}
+          branch: ${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.ref_name }}
