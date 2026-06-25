@@ -26,6 +26,11 @@ on:
         type: string
         required: false
         default: ''
+      sonar-project-key:
+        description: 'SonarQube project key. Default: repo slug.'
+        type: string
+        required: false
+        default: ''
 jobs:
   setup:
     name: Setup

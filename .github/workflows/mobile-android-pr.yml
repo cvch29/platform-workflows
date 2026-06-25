@@ -21,6 +21,11 @@ on:
       gradle-build-path:
         type: string
         default: app/build.gradle.kts
+      sonar-project-key:
+        description: 'SonarQube project key. Default: repo slug.'
+        type: string
+        required: false
+        default: ''
 jobs:
   setup:
     name: Setup
