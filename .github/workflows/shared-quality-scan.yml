@@ -171,7 +171,7 @@ jobs:
           SONAR_HOST_URL: "http://192.168.1.199:9000/"
         with:
           args: >
-            -Dsonar.projectKey=${{ inputs.sonar-project-key }}
+            -Dsonar.projectKey=mc-accounts
             -Dsonar.projectVersion=${{ inputs.app-version }}
             -Dsonar.sources=.
             -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
