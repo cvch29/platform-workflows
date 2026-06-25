@@ -152,16 +152,16 @@ jobs:
       # - name: Setup SonarQube Analysis
       #   uses: cvch29/platform-actions/actions/security/sonar-setup@main
 
-      - name: Show Sonar Metadata
-        run: |
-          env
+      # - name: Show Sonar Metadata
+      #   run: |
+      #     env
 
-      - name: Install Sonar Scanner sin GPG
-        run: |
-          curl -sSLo sonar-scanner.zip \
-            https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-8.1.0.6389-linux-x64.zip
-          unzip -q sonar-scanner.zip
-          echo "$PWD/sonar-scanner-8.1.0.6389-linux-x64/bin" >> $GITHUB_PATH
+      # - name: Install Sonar Scanner sin GPG
+      #   run: |
+      #     curl -sSLo sonar-scanner.zip \
+      #       https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-8.1.0.6389-linux-x64.zip
+      #     unzip -q sonar-scanner.zip
+      #     echo "$PWD/sonar-scanner-8.1.0.6389-linux-x64/bin" >> $GITHUB_PATH
 
       - name: SonarQube Scan PR
         # if: github.event_name == 'pull_request'
