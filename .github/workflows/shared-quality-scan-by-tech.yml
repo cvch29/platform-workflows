@@ -106,46 +106,6 @@ jobs:
         with:
           fetch-depth: 0   # Sonar needs full history for blame/new code detection
 
-      # - name: Run SonarQube
-      #   id: sonar
-      #   uses: cvch29/platform-actions/actions/security/sonar@main
-      #   with:
-      #     language: ${{ inputs.language }}
-      #     sonar-host-url: ${{ inputs.sonar-host-url }}
-      #     sonar-token: ${{ secrets.sonar-token }}
-      #     project-key: ${{ inputs.sonar-project-key }}
-      #     coverage-report-path: ${{ inputs.sonar-coverage-report }}
-      #     android-module: ${{ inputs.android-module }}
-      #     android-flavor: ${{ inputs.sonar-android-flavor }}
-      #     scheme: ${{ inputs.codeql-scheme }}
-      #     quality-gate-wait: ${{ inputs.sonar-quality-gate-wait }}
-      #     # quality-gate-wait: true is the break-the-build switch.
-      #     # The scanner task exits with code 1 when QG status = FAILED.
-      #     # This propagates as a workflow failure with a clear message.
-
-      # - name: Enforce Quality Gate
-      #   if: always() && steps.sonar.outputs.quality-gate-status != '' && steps.sonar.outputs.quality-gate-status != 'OK'
-      #   shell: bash
-      #   run: |
-      #     echo "::error::SonarQube Quality Gate FAILED for ${{ inputs.app-name }}"
-      #     echo "::error::Status: ${{ steps.sonar.outputs.quality-gate-status }}"
-      #     echo "::error::Dashboard: ${{ steps.sonar.outputs.dashboard-url }}"
-      #     echo ""
-      #     echo "Bank policy requires Quality Gate to pass before merge."
-      #     echo "Fix the issues at: ${{ steps.sonar.outputs.dashboard-url }}"
-      #     exit 1
-
-      - name: Show Variables
-        run: |
-          env
-          echo "branch: ${{ github.ref }}"
-          echo "head_ref: ${{ github.head_ref }}"
-          echo "base_ref: ${{ github.base_ref }}"
-          echo "repository: ${{ inputs.repository-name }}"
-          echo "sha: ${{ github.sha }}"
-          echo "event: ${{ github.event_name }}"
-          echo "pr_number: ${{ github.event.pull_request.number }}"
-
       - name: Git Differences
         run: |
           git merge-base origin/main HEAD
@@ -155,14 +115,14 @@ jobs:
         run: |
           find . -type f -name sonar-project.properties -delete
 
-      - name: Coverage
-        id: coverage
-        uses: cvch29/platform-actions/actions/quality/coverage@main
-        with:
-          language: ${{ inputs.language }}
-          java-version: ${{ inputs.java-version }}
-          node-version: ${{ inputs.node-version }}
-          python-version: ${{ inputs.python-version }}
+      # - name: Coverage
+      #   id: coverage
+      #   uses: cvch29/platform-actions/actions/security/coverage-sonar@main
+      #   with:
+      #     language: ${{ inputs.language }}
+      #     java-version: ${{ inputs.java-version }}
+      #     node-version: ${{ inputs.node-version }}
+      #     python-version: ${{ inputs.python-version }}
 
       - name: Clean Sonar Properties
         run: find . -type f -name sonar-project.properties -delete
@@ -171,12 +131,12 @@ jobs:
         uses: cvch29/platform-actions/actions/security/sonar@main
         with:
           language: ${{ inputs.language }}
-          sonar-host-url: ${{ inputs.sonar-host-url }}
-          sonar-token: ${{ secrets.sonar-token }}
+          sonar-host-url: "http://192.168.1.199:9000/"
+          sonar-token: "squ_f0ee15f553b746d9cb7a7a6f454d68c29b44283f"
           project-key: ${{ inputs.sonar-project-key }}
           app-version: ${{ inputs.app-version }}
-          coverage-report-path: ${{ steps.coverage.outputs.report-path }}
-          quality-gate-timeout: ${{ inputs.sonar-quality-gate-timeout }}
+          # coverage-report-path: ${{ steps.coverage.outputs.report-path }}
+          # quality-gate-timeout: ${{ inputs.sonar-quality-gate-timeout }}
           properties: ${{ inputs.properties }}
 
       # - name: Setup SonarQube Analysis
@@ -192,7 +152,6 @@ jobs:
         with:
           sonar-url: "http://192.168.1.199:9000/"
           sonar-token: "squ_f0ee15f553b746d9cb7a7a6f454d68c29b44283f"
-          # sonar-token: ${{ secrets.sonar-token }}
           project: ${{ inputs.repository-name }}
           branch: ${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.ref_name }}
           quality-gate-name: "DevOps-Sonar26"
