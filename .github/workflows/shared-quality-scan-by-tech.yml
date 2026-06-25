@@ -91,7 +91,7 @@ jobs:
   sonar:
     name: SonarQube Analysis
     # if: inputs.run-sonar && inputs.sonar-host-url != ''
-    runs-on: arc-mobile
+    runs-on: arc-general
     # container:
     #   image: ${{ inputs.container-image-name-runner }}
     #   options: ${{ inputs.container-image-resource-runner }}
@@ -205,24 +205,18 @@ jobs:
             -Dsonar.sourceEncoding=UTF-8
             ${{ inputs.properties }}
 
+
       # ── Push/Branch ───────────────────────────────────────
-      - name: SonarQube Scan — Branch
-        if: github.event_name == 'push'
-        uses: SonarSource/sonarqube-scan-action@713881670b6b3676cda39549040e2d88c70d582e
-        env:
-          SONAR_TOKEN: "squ_f0ee15f553b746d9cb7a7a6f454d68c29b44283f"
-          SONAR_HOST_URL: "http://192.168.1.199:9000/"
-        with:
-          # skipSignatureVerification: true
-          args: >
-            -Dsonar.projectKey=${{ inputs.repository-name }}
-            -Dsonar.projectVersion=${{ inputs.app-version }}
-            -Dsonar.sources=.
-            -Dsonar.branch.name=${{ github.ref_name }}
-            -Dsonar.branch.target=main
-            -Dsonar.sourceEncoding=UTF-8
-            -Dsonar.qualitygate.wait=true
-            -Dsonar.qualitygate.timeout=300
+      - name: SonarQube Scan — Branch (Maven)
+        if: github.event_name == 'push' && inputs.language == 'java'
+        run: |
+          mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            -Dsonar.projectKey=${{ inputs.sonar-project-key }} \
+            -Dsonar.projectVersion=${{ inputs.app-version }} \
+            -Dsonar.host.url=${{ inputs.sonar-host-url }} \
+            -Dsonar.token=${{ secrets.sonar-token }} \
+            -Dsonar.branch.name=${{ github.ref_name }} \
+            -Dsonar.branch.target=main \
             ${{ inputs.properties }}
 
       # - name: Setup SonarQube Analysis
