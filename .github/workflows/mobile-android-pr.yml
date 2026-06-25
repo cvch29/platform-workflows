@@ -26,6 +26,11 @@ on:
         type: string
         required: false
         default: ''
+      build-gradle-path:
+        description: 'Path to build.gradle or build.gradle.kts file'
+        type: string
+        required: false
+        default: app/build.gradle.kts
 jobs:
   setup:
     name: Setup
