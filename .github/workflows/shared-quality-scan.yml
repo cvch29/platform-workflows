@@ -86,8 +86,7 @@ jobs:
   sonar:
     name: SonarQube Analysis
     # if: inputs.run-sonar && inputs.sonar-host-url != ''
-    runs-on:
-      group: dso-linux
+    runs-on: arc-mobile
     container:
       image: ${{ inputs.container-image-name-runner }}
       options: ${{ inputs.container-image-resource-runner }}
