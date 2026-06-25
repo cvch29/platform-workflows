@@ -190,5 +190,5 @@ jobs:
           sonar-url: "http://192.168.1.199:9000/"
           sonar-token: "sqa_c6ecaaf40feea721c5435d15364fb3994f974eb3"
           # sonar-token: ${{ secrets.sonar-token }}
-          project: ${{ inputs.sonar-project-key }}
+          project: mc-accounts
           branch: ${{ github.event.pull_request.number }}
