@@ -225,6 +225,8 @@ jobs:
 
       # - name: Setup SonarQube Analysis
       #   uses: cvch29/platform-actions/actions/security/sonar-wontfix@main
+      - name: Wait for CE processing
+        run: sleep 10
 
       - name: Quality Gate
         uses: cvch29/platform-actions/actions/security/sonar-break-build@main
