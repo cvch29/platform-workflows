@@ -208,15 +208,18 @@ jobs:
 
       # ── Push/Branch ───────────────────────────────────────
       - name: SonarQube Scan — Branch (Maven)
-        if: github.event_name == 'push' && inputs.language == 'java'
+        if: inputs.language == 'java' && github.event_name == 'push'
+        env:
+          SONAR_TOKEN: "squ_f0ee15f553b746d9cb7a7a6f454d68c29b44283f"
+          SONAR_HOST_URL: "http://192.168.1.199:9000/"
         run: |
-          mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+          mvn org.sonarsource.scanner.maven:sonar-maven-plugin:5.7.0.6970:sonar \
             -Dsonar.projectKey=${{ inputs.sonar-project-key }} \
             -Dsonar.projectVersion=${{ inputs.app-version }} \
-            -Dsonar.host.url=${{ inputs.sonar-host-url }} \
-            -Dsonar.token=${{ secrets.sonar-token }} \
             -Dsonar.branch.name=${{ github.ref_name }} \
             -Dsonar.branch.target=main \
+            -Dsonar.qualitygate.wait=true \
+            -Dsonar.qualitygate.timeout=300 \
             ${{ inputs.properties }}
 
       # - name: Setup SonarQube Analysis
