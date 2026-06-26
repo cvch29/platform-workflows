@@ -124,9 +124,6 @@ jobs:
         uses: cvch29/platform-actions/actions/security/coverage-sonar@main
         with:
           language: ${{ inputs.language }}
-          java-version: ${{ inputs.java-version }}
-          node-version: ${{ inputs.node-version }}
-          python-version: ${{ inputs.python-version }}
 
       - name: Clean Sonar Properties
         run: find . -type f -name sonar-project.properties -delete
