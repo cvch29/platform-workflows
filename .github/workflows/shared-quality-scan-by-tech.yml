@@ -119,7 +119,7 @@ jobs:
           language: ${{ inputs.language }}
           sonar-host-url: ${{ inputs.sonar-host-url }}
           sonar-token: ${{ inputs.sonar-token }}
-          project-key: ${{ inputs.sonar-project-key }}
+          project-key: ${{ inputs.repository-name }}
           app-version: ${{ inputs.app-version }}
           properties: ${{ inputs.properties }}
 

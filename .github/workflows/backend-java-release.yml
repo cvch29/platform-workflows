@@ -1,27 +1,4 @@
 name: 'Backend Java — Release'
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Golden path para releases de aplicaciones Java/Spring Boot.
-# Mismo patrón que mobile-rn-release.yml:
-#   setup → build → scs → artifact_release
-#
-# Soporta deploy a: aks | azure-webapp | azure-function
-#
-# Uso en el app repo:
-#   jobs:
-#     release:
-#       uses: cvch29/platform-workflows/.github/workflows/backend-java-release.yml@main
-#       with:
-#         app-name: payments-service
-#         deploy-target: aks
-#         acr-registry: mybank.azurecr.io
-#         aks-cluster-name: mybank-aks
-#         aks-resource-group: mybank-rg
-#         environment: dev
-#       secrets:
-#         github-token: ${{ secrets.GITHUB_TOKEN }}
-# ─────────────────────────────────────────────────────────────────────────────
-
 on:
   workflow_call:
     inputs:
