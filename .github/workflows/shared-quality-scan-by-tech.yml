@@ -109,7 +109,6 @@ jobs:
           sonar-token: ${{ secrets.sonar-token }}
           project-key: ${{ inputs.sonar-project-key }}
 
-
       # - name: Coverage
       #   id: coverage
       #   uses: cvch29/platform-actions/actions/security/coverage-sonar@main
