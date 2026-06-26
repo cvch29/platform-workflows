@@ -101,10 +101,6 @@ jobs:
           git merge-base origin/main HEAD
           git diff --name-only origin/main...HEAD | wc -l
 
-      - name: Clean Sonar Properties
-        run: |
-          find . -type f -name sonar-project.properties -delete
-
       # - name: Coverage
       #   id: coverage
       #   uses: cvch29/platform-actions/actions/security/coverage-sonar@main
