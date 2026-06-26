@@ -101,6 +101,15 @@ jobs:
           git merge-base origin/main HEAD
           git diff --name-only origin/main...HEAD | wc -l
 
+      - name: Sonar Setup
+        id: sonar-setup
+        uses: cvch29/platform-actions/actions/security/sonar-setup@main
+        with:
+          sonar-host-url: ${{ inputs.sonar-host-url }}
+          sonar-token: ${{ secrets.sonar-token }}
+          project-key: ${{ inputs.sonar-project-key }}
+
+
       # - name: Coverage
       #   id: coverage
       #   uses: cvch29/platform-actions/actions/security/coverage-sonar@main
