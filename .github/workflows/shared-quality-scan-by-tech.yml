@@ -119,11 +119,11 @@ jobs:
           reference-branch: main
           gitflow: ${{ inputs.gitflow }}
 
-      - name: Coverage
-        id: coverage
-        uses: cvch29/platform-actions/actions/security/coverage-sonar@main
-        with:
-          language: ${{ inputs.language }}
+      # - name: Coverage
+      #   id: coverage
+      #   uses: cvch29/platform-actions/actions/security/coverage-sonar@main
+      #   with:
+      #     language: ${{ inputs.language }}
 
       - name: Clean Sonar Properties
         run: find . -type f -name sonar-project.properties -delete
@@ -136,7 +136,7 @@ jobs:
           sonar-token: ${{ inputs.sonar-token }}
           project-key: ${{ inputs.repository-name }}
           app-version: ${{ inputs.app-version }}
-          coverage-report-path: ${{ steps.coverage.outputs.report-path }}
+          # coverage-report-path: ${{ steps.coverage.outputs.report-path }}
           quality-gate-timeout: "300"
           properties: ${{ inputs.properties }}
 
