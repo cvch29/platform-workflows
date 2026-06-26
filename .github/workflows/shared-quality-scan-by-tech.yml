@@ -106,7 +106,7 @@ jobs:
         with:
           sonar-host-url: ${{ inputs.sonar-host-url }}
           sonar-token: ${{ inputs.sonar-token }}
-          project-key: ${{ inputs.sonar-project-key }}
+          project-key: ${{ inputs.repository-name }}
 
       # - name: Coverage
       #   id: coverage
