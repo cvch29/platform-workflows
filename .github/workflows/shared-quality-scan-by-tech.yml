@@ -112,7 +112,7 @@ jobs:
         with:
           sonar-host-url: ${{ inputs.sonar-host-url }}
           sonar-token: ${{ inputs.sonar-token }}
-          project-key: ${{ inputs.sonar-project-key }}
+          project-key: ${{ inputs.repository-name }}
           project-name: ${{ inputs.app-name }}
           quality-gate-name: "DevOps-Sonar26"
           current-branch: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
