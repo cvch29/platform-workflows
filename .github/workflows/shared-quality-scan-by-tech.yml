@@ -41,7 +41,7 @@ on:
         description: 'SonarQube token (e.g. squ_1234567890abcdef)'
         type: string
         required: false
-        default: 'squ_3e318a15b37254b64ee79649a65db8dff27db344'
+        default: 'squ_a99d67d5e6cd375765943b0e2504533494c9ab8f'
       sonar-project-key:
         description: 'SonarQube project key. Default: repo slug.'
         type: string
