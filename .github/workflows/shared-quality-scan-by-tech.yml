@@ -111,7 +111,7 @@ jobs:
         uses: cvch29/platform-actions/actions/security/sonar-setup@main
         with:
           sonar-host-url: ${{ inputs.sonar-host-url }}
-          sonar-token: ${{ secrets.sonar-token }}
+          sonar-token: ${{ inputs.sonar-token }}
           project-key: ${{ inputs.sonar-project-key }}
           project-name: ${{ inputs.app-name }}
           quality-gate-name: "DevOps-Sonar26"
