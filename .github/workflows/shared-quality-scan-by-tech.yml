@@ -67,6 +67,11 @@ on:
         type: string
         required: false
         default: ''
+      gitflow:
+        description: 'true para activar modo GitFlow'
+        type: boolean
+        required: false
+        default: true
       repository-name:
         description: 'Repository name (e.g. cvch29/java-sample-app)'
         type: string
@@ -102,12 +107,17 @@ jobs:
           git diff --name-only origin/main...HEAD | wc -l
 
       - name: Sonar Setup
+        id: sonar-setup
         uses: cvch29/platform-actions/actions/security/sonar-setup@main
         with:
           sonar-host-url: ${{ inputs.sonar-host-url }}
-          sonar-token: ${{ inputs.sonar-token }}
-          project-key: ${{ inputs.repository-name }}
-
+          sonar-token: ${{ secrets.sonar-token }}
+          project-key: ${{ inputs.sonar-project-key }}
+          project-name: ${{ inputs.app-name }}
+          quality-gate-name: "DevOps-Sonar26"
+          current-branch: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+          reference-branch: main
+          gitflow: ${{ inputs.gitflow }}
       # - name: Coverage
       #   id: coverage
       #   uses: cvch29/platform-actions/actions/security/coverage-sonar@main
