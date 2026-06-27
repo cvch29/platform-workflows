@@ -62,7 +62,7 @@ on:
 jobs:
   setup:
     name: Setup
-    runs-on: ubuntu-latest
+    runs-on: arc-general
     outputs:
       app-version: ${{ steps.setup-android.outputs.app-version }}
       app-name: ${{ steps.setup-android.outputs.app-name }}
