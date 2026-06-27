@@ -126,8 +126,7 @@ jobs:
       sonar-project-key: "mc-accounts"
       properties: >-
         -Dsonar.exclusions=**/*.json,**/*.xml,**/*.html,**/*.yml,.git,.gitignore,Dockerfile,Dockerfile.**,**/*.dll,**/*.css,**/*.js
-        -Dsonar.java.binaries=.
-        # -Dsonar.java.libraries=**/*.jar
+        -Dsonar.gradle.task=sonarqube
 
   # artifact_integrity:
   #   needs: [setup,build_android,build_ios]
