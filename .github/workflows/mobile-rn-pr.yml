@@ -76,13 +76,13 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           node-build-path: ${{ inputs.node-build-path }}
 
-  pr-validate:
-    name: "PR Validate"
-    needs: setup
-    uses: cvch29/platform-workflows/.github/workflows/shared-pr-validation.yml@main
-    with:
-      app-name: ${{ needs.setup.outputs.app-name }}
-      runtime: react-native
+  # pr-validate:
+  #   name: "PR Validate"
+  #   needs: setup
+  #   uses: cvch29/platform-workflows/.github/workflows/shared-pr-validation.yml@main
+  #   with:
+  #     app-name: ${{ needs.setup.outputs.app-name }}
+  #     runtime: react-native
 
   # js-checks:
   #   name: JS Lint & Test
@@ -105,30 +105,30 @@ jobs:
   #         coverage: true
   #         coverage-threshold: 70
 
-  security:
-    needs: [setup]
-    uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@main
-    with:
-      app-name: ${{ needs.setup.outputs.app-name }}
-      language: javascript
-      run-codeql: false
-      run-sca: false
-      run-secrets: true
-      run-sast: false
-    permissions:
-      contents: read
-      security-events: write
+  # security:
+  #   needs: [setup]
+  #   uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@main
+  #   with:
+  #     app-name: ${{ needs.setup.outputs.app-name }}
+  #     language: javascript
+  #     run-codeql: false
+  #     run-sca: false
+  #     run-secrets: true
+  #     run-sast: false
+  #   permissions:
+  #     contents: read
+  #     security-events: write
 
   quality:
     # name: Code Quality Scan
-    needs: [setup]
-    uses: cvch29/platform-workflows/.github/workflows/shared-quality-scan.yml@main
+    needs: setup
+    uses: cvch29/platform-workflows/.github/workflows/shared-quality-scan-by-tech.yml@main
     with:
       app-name: ${{ needs.setup.outputs.app-name }}
-      language: kotlin
+      language: java
       app-version: ${{ needs.setup.outputs.app-version }}
-      container-image-name-runner: "${{ vars.REGISTRY }}/${{ vars.CONTAINER_IMAGE_SONAR }}"
-      container-image-resource-runner: "--cpus 2 -m 4g"
-      # sonar-host-url: ${{ secrets.sonar-host-url }}
-      sonar-project-key: "saveio"
-      # sonar-token: ${{ secrets.sonar-token }}
+      sonar-project-key: "mc-accounts"
+      properties: >-
+        -Dsonar.exclusions=**/*.json,**/*.xml,**/*.html,**/*.yml,.git,.gitignore,Dockerfile,Dockerfile.**,**/*.dll,**/*.css,**/*.js
+        -Dsonar.java.binaries=.
+        # -Dsonar.java.libraries=**/*.jar

@@ -75,45 +75,59 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           node-build-path: ${{ inputs.node-build-path }}
 
-  build_android:
-    needs: setup
-    # name: Build Android
-    uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@main
-    with:
-      app-name: ${{ needs.setup.outputs.app-name }}
-      app-version: ${{ needs.setup.outputs.app-version }}
-      command: ${{ inputs.command }}
-      enable-android: ${{ inputs.enable-android }}
-      technology: ${{ inputs.technology }}
-      container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_BUILD }}"
-      container-image-resource-runner: "--cpus 10 -m 12g"
-      sign: true
-    secrets:
-      keystore-base64: ${{ secrets.keystore-base64 }}
-      keystore-password: ${{ secrets.keystore-password }}
-      keystore-alias: ${{ secrets.keystore-alias }}
-      keystore-path: ${{ secrets.keystore-path }}
+  # build_android:
+  #   needs: setup
+  #   # name: Build Android
+  #   uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@main
+  #   with:
+  #     app-name: ${{ needs.setup.outputs.app-name }}
+  #     app-version: ${{ needs.setup.outputs.app-version }}
+  #     command: ${{ inputs.command }}
+  #     enable-android: ${{ inputs.enable-android }}
+  #     technology: ${{ inputs.technology }}
+  #     container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_BUILD }}"
+  #     container-image-resource-runner: "--cpus 10 -m 12g"
+  #     sign: true
+  #   secrets:
+  #     keystore-base64: ${{ secrets.keystore-base64 }}
+  #     keystore-password: ${{ secrets.keystore-password }}
+  #     keystore-alias: ${{ secrets.keystore-alias }}
+  #     keystore-path: ${{ secrets.keystore-path }}
 
-  build_ios:
+  # build_ios:
+  #   needs: setup
+  #   # name: Build iOS
+  #   uses: cvch29/platform-workflows/.github/workflows/mobile-ios-build.yml@main
+  #   with:
+  #     technology: ${{ inputs.technology }}
+  #     app-version: ${{ needs.setup.outputs.app-version }}
+  #     app-name: ${{ needs.setup.outputs.app-name }}
+  #     enable-ios: ${{ inputs.enable-ios }}
+  #     configuration: ${{ inputs.configuration }}
+  #     p12-file: ${{ inputs.p12-file }}
+  #     profile-name: ${{ inputs.profile-name }}
+  #     profile-type: ${{ inputs.profile-type }}
+  #   secrets:
+  #     p12-base64: ${{ secrets.p12-base64 }}
+  #     p12-password: ${{ secrets.p12-password }}
+  #     apple-api-key-id: ${{ secrets.apple-api-key-id }}
+  #     apple-api-issuer-id: ${{ secrets.apple-api-issuer-id }}
+  #     apple-api-key-base64: ${{ secrets.apple-api-key-base64 }}
+  #     ixguard-license-key: ${{ secrets.ixguard-license-key }}
+
+  quality:
+    # name: Code Quality Scan
     needs: setup
-    # name: Build iOS
-    uses: cvch29/platform-workflows/.github/workflows/mobile-ios-build.yml@main
+    uses: cvch29/platform-workflows/.github/workflows/shared-quality-scan-by-tech.yml@main
     with:
-      technology: ${{ inputs.technology }}
-      app-version: ${{ needs.setup.outputs.app-version }}
       app-name: ${{ needs.setup.outputs.app-name }}
-      enable-ios: ${{ inputs.enable-ios }}
-      configuration: ${{ inputs.configuration }}
-      p12-file: ${{ inputs.p12-file }}
-      profile-name: ${{ inputs.profile-name }}
-      profile-type: ${{ inputs.profile-type }}
-    secrets:
-      p12-base64: ${{ secrets.p12-base64 }}
-      p12-password: ${{ secrets.p12-password }}
-      apple-api-key-id: ${{ secrets.apple-api-key-id }}
-      apple-api-issuer-id: ${{ secrets.apple-api-issuer-id }}
-      apple-api-key-base64: ${{ secrets.apple-api-key-base64 }}
-      ixguard-license-key: ${{ secrets.ixguard-license-key }}
+      language: java
+      app-version: ${{ needs.setup.outputs.app-version }}
+      sonar-project-key: "mc-accounts"
+      properties: >-
+        -Dsonar.exclusions=**/*.json,**/*.xml,**/*.html,**/*.yml,.git,.gitignore,Dockerfile,Dockerfile.**,**/*.dll,**/*.css,**/*.js
+        -Dsonar.java.binaries=.
+        # -Dsonar.java.libraries=**/*.jar
 
   # artifact_integrity:
   #   needs: [setup,build_android,build_ios]
