@@ -221,8 +221,6 @@ jobs:
             -Dsonar.branch.name=${{ github.ref_name }}
             -Dsonar.branch.target=main
             -Dsonar.sourceEncoding=UTF-8
-            # -Dsonar.qualitygate.wait=true
-            # -Dsonar.qualitygate.timeout=300
             ${{ inputs.properties }}
 
       # - name: Setup SonarQube Analysis
