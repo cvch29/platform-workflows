@@ -106,6 +106,15 @@ jobs:
           git merge-base origin/main HEAD
           git diff --name-only origin/main...HEAD | wc -l
 
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.sonar/cache
+          key: sonar-maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            sonar-maven-${{ runner.os }}-
+
       - name: Sonar Setup
         id: sonar-setup
         uses: cvch29/platform-actions/actions/security/sonar-setup@main
