@@ -77,6 +77,11 @@ on:
         type: string
         required: false
         default: ${{ github.event.repository.name }}
+      analysis-mode:
+        description: 'pr → new code only | branch → full branch bajo rama destino'
+        type: string
+        required: false
+        default: 'pr'
     secrets:
       sonar-token:
         required: false
@@ -106,6 +111,16 @@ jobs:
       #     git merge-base origin/main HEAD
       #     git diff --name-only origin/main...HEAD | wc -l
 
+      - name: Determinar analysis-mode
+        id: mode
+        shell: bash
+        run: |
+          if [ "${{ github.base_ref }}" = "develop" ]; then
+            echo "value=pr" >> $GITHUB_OUTPUT
+          else
+            echo "value=branch" >> $GITHUB_OUTPUT
+          fi
+          
       - name: Actualizar rama con target
         if: github.event_name == 'pull_request'
         shell: bash
@@ -154,9 +169,10 @@ jobs:
           sonar-token: ${{ inputs.sonar-token }}
           project-key: ${{ inputs.repository-name }}
           app-version: "1.2.0-${{ github.run_number }}"
-          # coverage-report-path: ${{ steps.coverage.outputs.report-path }}
           quality-gate-timeout: "300"
+          analysis-mode: ${{ inputs.analysis-mode }}
           properties: ${{ inputs.properties }}
+          # coverage-report-path: ${{ steps.coverage.outputs.report-path }}
 
       # - name: Setup SonarQube Analysis
       #   uses: cvch29/platform-actions/actions/security/sonar-wontfix@main

@@ -132,17 +132,6 @@ jobs:
   #         retention-days: 1
   #         if-no-files-found: warn
 
-  quality:
-    # name: Code Quality Scan
-    needs: setup
-    uses: cvch29/platform-workflows/.github/workflows/shared-quality-scan-by-tech.yml@main
-    with:
-      app-name: ${{ needs.setup.outputs.app-name }}
-      language: java
-      app-version: ${{ needs.setup.outputs.app-version }}
-      sonar-project-key: "mc-accounts"
-      properties: >-
-        -Dsonar.exclusions=**/*.json,**/*.xml,**/*.html,**/*.yml,.git,.gitignore,Dockerfile,Dockerfile.**,**/*.dll,**/*.css,**/*.js
   # scs:
   #   name: Supply Chain Security
   #   needs: [setup, build]
