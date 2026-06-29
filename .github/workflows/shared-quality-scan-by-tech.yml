@@ -153,7 +153,7 @@ jobs:
           sonar-host-url: ${{ inputs.sonar-host-url }}
           sonar-token: ${{ inputs.sonar-token }}
           project-key: ${{ inputs.repository-name }}
-          app-version: ${{ inputs.app-version }}
+          app-version: "1.2.0-${{ github.run_number }}"
           # coverage-report-path: ${{ steps.coverage.outputs.report-path }}
           quality-gate-timeout: "300"
           properties: ${{ inputs.properties }}
