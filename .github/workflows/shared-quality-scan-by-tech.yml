@@ -101,10 +101,19 @@ jobs:
         with:
           fetch-depth: 0   # Sonar needs full history for blame/new code detection
 
-      - name: Git Differences
+      # - name: Git Differences
+      #   run: |
+      #     git merge-base origin/main HEAD
+      #     git diff --name-only origin/main...HEAD | wc -l
+
+      - name: Actualizar rama con target
+        if: github.event_name == 'pull_request'
+        shell: bash
         run: |
-          git merge-base origin/main HEAD
-          git diff --name-only origin/main...HEAD | wc -l
+          git config user.email "github-actions@github.com"
+          git config user.name "github-actions"
+          git fetch origin ${{ github.base_ref }}
+          git merge origin/${{ github.base_ref }} --no-edit --no-ff
 
       - uses: actions/cache@v4
         with:
