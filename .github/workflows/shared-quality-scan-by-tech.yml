@@ -120,7 +120,7 @@ jobs:
           else
             echo "value=branch" >> $GITHUB_OUTPUT
           fi
-          
+
       - name: Actualizar rama con target
         if: github.event_name == 'pull_request'
         shell: bash
@@ -170,7 +170,7 @@ jobs:
           project-key: ${{ inputs.repository-name }}
           app-version: "1.2.0-${{ github.run_number }}"
           quality-gate-timeout: "300"
-          analysis-mode: ${{ inputs.analysis-mode }}
+          analysis-mode: ${{ steps.mode.outputs.value }}
           properties: ${{ inputs.properties }}
           # coverage-report-path: ${{ steps.coverage.outputs.report-path }}
 
