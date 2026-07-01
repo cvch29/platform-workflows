@@ -148,7 +148,8 @@ jobs:
           project-key: ${{ inputs.repository-name }}
           project-name: ${{ inputs.app-name }}
           quality-gate-name: "DevOps-Sonar26"
-          current-branch: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+          # current-branch: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+          current-branch: ${{ github.head_ref }}
           reference-branch: main
           gitflow: ${{ inputs.gitflow }}
 
