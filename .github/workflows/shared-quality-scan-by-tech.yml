@@ -170,7 +170,7 @@ jobs:
           project-key: ${{ inputs.repository-name }}
           app-version: "1.2.0-${{ github.run_number }}"
           quality-gate-timeout: "300"
-          analysis-mode: ${{ steps.mode.outputs.value }}
+          analysis-mode: "branch"
           properties: ${{ inputs.properties }}
           # coverage-report-path: ${{ steps.coverage.outputs.report-path }}
 
