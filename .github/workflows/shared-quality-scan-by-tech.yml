@@ -111,6 +111,17 @@ jobs:
       #     git merge-base origin/main HEAD
       #     git diff --name-only origin/main...HEAD | wc -l
 
+      - name: Show Variables
+        run: |
+          env
+          echo "branch: ${{ github.ref }}"
+          echo "head_ref: ${{ github.head_ref }}"
+          echo "base_ref: ${{ github.base_ref }}"
+          echo "repository: ${{ inputs.repository-name }}"
+          echo "sha: ${{ github.sha }}"
+          echo "event: ${{ github.event_name }}"
+          echo "pr_number: ${{ github.event.pull_request.number }}"
+
       - name: Determinar analysis-mode
         id: mode
         shell: bash
