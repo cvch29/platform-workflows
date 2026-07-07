@@ -125,8 +125,8 @@ jobs:
       - name: Show Variables
         run: |
           env
-          echo "secret test: ${{ secrets.testsecret-token }}"
-          echo "var test: ${{ inputs.testvar-token }}"
+          echo "secret test: ${{ secrets.TEST_SECRET_TOKEN }}"
+          echo "var test: ${{ vars.TEST_VAR_TOKEN }}"
 
       # - name: Determinar analysis-mode
       #   id: mode
