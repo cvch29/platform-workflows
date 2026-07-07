@@ -124,7 +124,6 @@ jobs:
 
       - name: Show Variables
         run: |
-          env
           echo "secret test: ${{ secrets.TEST_SECRET_TOKEN }}"
           echo "var test: ${{ vars.TEST_VAR_TOKEN }}"
 
