@@ -194,12 +194,12 @@ jobs:
           
       - name: SonarQube Scan — Pull Request
         if: github.event_name == 'pull_request'
-        uses: SonarSource/sonarqube-scan-action@713881670b6b3676cda39549040e2d88c70d582e
+        uses: SonarSource/sonarqube-scan-action@713881670b6b3676cda39549040e2d88c70d582e #v8.2.0
         env:
           SONAR_TOKEN: "squ_a99d67d5e6cd375765943b0e2504533494c9ab8f"
           SONAR_HOST_URL: "http://192.168.1.199:9000/"
         with:
-          skipSignatureVerification: true
+          skipSignatureVerification: false
           args: >
             -Dsonar.projectKey=${{ inputs.sonar-project-key }}
             -Dsonar.projectVersion=${{ inputs.app-version }}
