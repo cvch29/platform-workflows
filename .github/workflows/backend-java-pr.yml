@@ -109,8 +109,8 @@ jobs:
   quality:
     # name: Code Quality Scan
     needs: setup
-    # uses: cvch29/platform-workflows/.github/workflows/shared-quality-scan-by-tech.yml@main
-    uses: cvch29/platform-workflows/.github/workflows/shared-quality-scan.yml@main
+    uses: cvch29/platform-workflows/.github/workflows/shared-quality-scan-by-tech.yml@main
+    # uses: cvch29/platform-workflows/.github/workflows/shared-quality-scan.yml@main
     with:
       app-name: ${{ needs.setup.outputs.app-name }}
       language: java
