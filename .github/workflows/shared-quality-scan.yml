@@ -201,7 +201,8 @@ jobs:
         with:
           skipSignatureVerification: true
           args: >
-            -Dsonar.projectKey=${{ inputs.sonar-project-key }}
+            -Dsonar.projectKey=${{ github.event.repository.name }}
+            -Dsonar.projectName=${{ github.event.repository.name }}
             -Dsonar.projectVersion=${{ inputs.app-version }}
             -Dsonar.sources=.
             -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
