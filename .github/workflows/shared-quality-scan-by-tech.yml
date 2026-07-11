@@ -169,11 +169,11 @@ jobs:
           reference-branch: main
           gitflow: ${{ inputs.gitflow }}
 
-      - name: Coverage
-        id: coverage
-        uses: cvch29/platform-actions/actions/security/coverage-sonar@main
-        with:
-          language: ${{ inputs.language }}
+      # - name: Coverage
+      #   id: coverage
+      #   uses: cvch29/platform-actions/actions/security/coverage-sonar@main
+      #   with:
+      #     language: ${{ inputs.language }}
 
       - name: Clean Sonar Properties
         run: find . -type f -name sonar-project.properties -delete
