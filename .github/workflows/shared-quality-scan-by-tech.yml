@@ -85,31 +85,31 @@ on:
     secrets:
       sonar-token:
         required: false
-    # outputs:
-    #   sonar-quality-gate:
-    #     value: ${{ jobs.sonar.outputs.quality-gate-status }}
+    outputs:
+      sonar-quality-gate:
+        value: ${{ jobs.sonar.outputs.quality-gate-status }}
 jobs:
   sonar:
     name: SonarQube Analysis
     runs-on: arc-general
-    # container:
-    #   image: ${{ inputs.container-image-name-runner }}
-    #   options: ${{ inputs.container-image-resource-runner }}
+    container:
+      image: ${{ inputs.container-image-name-runner }}
+      options: ${{ inputs.container-image-resource-runner }}
     permissions:
       contents: read
-    # outputs:
-    #   quality-gate-status: ${{ steps.sonar.outputs.quality-gate-status }}
-    #   dashboard-url: ${{ steps.sonar.outputs.dashboard-url }}
+    outputs:
+      quality-gate-status: ${{ steps.sonar.outputs.quality-gate-status }}
+      dashboard-url: ${{ steps.sonar.outputs.dashboard-url }}
 
     steps:
       - uses: cvch29/platform-actions/actions/shared/checkout@main
         with:
           fetch-depth: 0   # Sonar needs full history for blame/new code detection
 
-      # - name: Git Differences
-      #   run: |
-      #     git merge-base origin/main HEAD
-      #     git diff --name-only origin/main...HEAD | wc -l
+      - name: Git Differences
+        run: |
+          git merge-base origin/main HEAD
+          git diff --name-only origin/main...HEAD | wc -l
 
       - name: Show Variables
         run: |
@@ -127,84 +127,84 @@ jobs:
           echo "secret test: ${{ secrets.TEST_SECRET_TOKEN }}"
           echo "var test: ${{ vars.TEST_VAR_TOKEN }}"
 
-      # - name: Determinar analysis-mode
-      #   id: mode
-      #   shell: bash
-      #   run: |
-      #     if [ "${{ github.base_ref }}" = "develop" ]; then
-      #       echo "value=pr" >> $GITHUB_OUTPUT
-      #     else
-      #       echo "value=branch" >> $GITHUB_OUTPUT
-      #     fi
+      - name: Determinar analysis-mode
+        id: mode
+        shell: bash
+        run: |
+          if [ "${{ github.base_ref }}" = "develop" ]; then
+            echo "value=pr" >> $GITHUB_OUTPUT
+          else
+            echo "value=branch" >> $GITHUB_OUTPUT
+          fi
 
-      # - name: Actualizar rama con target
-      #   if: github.event_name == 'pull_request'
-      #   shell: bash
-      #   run: |
-      #     git config user.email "github-actions@github.com"
-      #     git config user.name "github-actions"
-      #     git fetch origin ${{ github.base_ref }}
-      #     git merge origin/${{ github.base_ref }} --no-edit --no-ff
+      - name: Actualizar rama con target
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          git config user.email "github-actions@github.com"
+          git config user.name "github-actions"
+          git fetch origin ${{ github.base_ref }}
+          git merge origin/${{ github.base_ref }} --no-edit --no-ff
 
-      # - uses: actions/cache@v4
-      #   with:
-      #     path: |
-      #       ~/.m2/repository
-      #       ~/.sonar/cache
-      #     key: sonar-maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
-      #     restore-keys: |
-      #       sonar-maven-${{ runner.os }}-
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.sonar/cache
+          key: sonar-maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            sonar-maven-${{ runner.os }}-
 
-      # - name: Sonar Setup
-      #   id: sonar-setup
-      #   uses: cvch29/platform-actions/actions/security/sonar-setup@main
-      #   with:
-      #     sonar-host-url: ${{ inputs.sonar-host-url }}
-      #     sonar-token: ${{ inputs.sonar-token }}
-      #     project-key: ${{ inputs.repository-name }}
-      #     project-name: ${{ inputs.app-name }}
-      #     quality-gate-name: "DevOps-Sonar26"
-      #     # current-branch: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
-      #     current-branch: ${{ github.head_ref }}
-      #     reference-branch: main
-      #     gitflow: ${{ inputs.gitflow }}
+      - name: Sonar Setup
+        id: sonar-setup
+        uses: cvch29/platform-actions/actions/security/sonar-setup@main
+        with:
+          sonar-host-url: ${{ inputs.sonar-host-url }}
+          sonar-token: ${{ inputs.sonar-token }}
+          project-key: ${{ inputs.repository-name }}
+          project-name: ${{ inputs.app-name }}
+          quality-gate-name: "DevOps-Sonar26"
+          # current-branch: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+          current-branch: ${{ github.head_ref }}
+          reference-branch: main
+          gitflow: ${{ inputs.gitflow }}
 
-      # # - name: Coverage
-      # #   id: coverage
-      # #   uses: cvch29/platform-actions/actions/security/coverage-sonar@main
-      # #   with:
-      # #     language: ${{ inputs.language }}
+      - name: Coverage
+        id: coverage
+        uses: cvch29/platform-actions/actions/security/coverage-sonar@main
+        with:
+          language: ${{ inputs.language }}
 
-      # - name: Clean Sonar Properties
-      #   run: find . -type f -name sonar-project.properties -delete
+      - name: Clean Sonar Properties
+        run: find . -type f -name sonar-project.properties -delete
 
-      # - name: Sonar Analysis
-      #   uses: cvch29/platform-actions/actions/security/sonar@main
-      #   with:
-      #     language: ${{ inputs.language }}
-      #     sonar-host-url: ${{ inputs.sonar-host-url }}
-      #     sonar-token: ${{ inputs.sonar-token }}
-      #     project-key: ${{ inputs.repository-name }}
-      #     app-version: "1.2.0-${{ github.run_number }}"
-      #     quality-gate-timeout: "300"
-      #     analysis-mode: "branch"
-      #     properties: ${{ inputs.properties }}
-      #     # coverage-report-path: ${{ steps.coverage.outputs.report-path }}
+      - name: Sonar Analysis
+        uses: cvch29/platform-actions/actions/security/sonar@main
+        with:
+          language: ${{ inputs.language }}
+          sonar-host-url: ${{ inputs.sonar-host-url }}
+          sonar-token: ${{ inputs.sonar-token }}
+          project-key: ${{ inputs.repository-name }}
+          app-version: "1.2.0-${{ github.run_number }}"
+          quality-gate-timeout: "300"
+          analysis-mode: "branch"
+          properties: ${{ inputs.properties }}
+          # coverage-report-path: ${{ steps.coverage.outputs.report-path }}
 
-      # # - name: Setup SonarQube Analysis
-      # #   uses: cvch29/platform-actions/actions/security/sonar-wontfix@main
-      # - name: Wait for CE processing
-      #   run: sleep 10
+      # - name: Setup SonarQube Analysis
+      #   uses: cvch29/platform-actions/actions/security/sonar-wontfix@main
+      - name: Wait for CE processing
+        run: sleep 10
 
-      # - name: Quality Gate
-      #   uses: cvch29/platform-actions/actions/security/sonar-break-build@main
-      #   env:
-      #     QUALITY_GATE_ENABLED: 'true'          # ← activa el bloqueo
-      #     QUALITY_GATE_VALIDATE_EXCLUDE: 'false' # ← no excluir la validación
-      #   with:
-      #     sonar-host-url: ${{ inputs.sonar-host-url }}
-      #     sonar-token: ${{ inputs.sonar-token }}
-      #     project: ${{ inputs.repository-name }}
-      #     # branch: ${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.ref_name }}
-      #     branch: ${{ github.head_ref }}
-      #     quality-gate-name: "DevOps-Sonar26"
+      - name: Quality Gate
+        uses: cvch29/platform-actions/actions/security/sonar-break-build@main
+        env:
+          QUALITY_GATE_ENABLED: 'true'          # ← activa el bloqueo
+          QUALITY_GATE_VALIDATE_EXCLUDE: 'false' # ← no excluir la validación
+        with:
+          sonar-host-url: ${{ inputs.sonar-host-url }}
+          sonar-token: ${{ inputs.sonar-token }}
+          project: ${{ inputs.repository-name }}
+          # branch: ${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.ref_name }}
+          branch: ${{ github.head_ref }}
+          quality-gate-name: "DevOps-Sonar26"
