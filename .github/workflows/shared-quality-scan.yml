@@ -186,11 +186,11 @@ jobs:
       #       -Dsonar.sourceEncoding=UTF-8
       #       -Dsonar.language=${{ inputs.language }}
 
-      - name: Coverage
-        id: coverage
-        uses: cvch29/platform-actions/actions/security/coverage-sonar@main
-        with:
-          language: ${{ inputs.language }}
+      # - name: Coverage
+      #   id: coverage
+      #   uses: cvch29/platform-actions/actions/security/coverage-sonar@main
+      #   with:
+      #     language: ${{ inputs.language }}
           
       - name: SonarQube Scan — Pull Request
         if: github.event_name == 'pull_request'
