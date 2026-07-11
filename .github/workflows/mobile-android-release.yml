@@ -61,39 +61,39 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           build-gradle-path: ${{ inputs.build-gradle-path }}
           
-  # build_android:
-  #   # if: success() && (inputs.enable-android == true)
-  #   needs: setup
-  #   name: Build Android
-  #   uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@main
-  #   with:
-  #     app-name: ${{ needs.setup.outputs.app-name }}
-  #     command: ${{ inputs.command }}
-  #     app-version: ${{ needs.setup.outputs.app-version }}
-  #     # build-type: release
-  #     # flavor: ${{ inputs.flavor }}
-  #     technology: ${{ inputs.technology }}
-  #     sign: true
-  #     container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_BUILD }}"
-  #     container-image-resource-runner: "--cpus 6 -m 12g"
-  #   secrets:
-  #     keystore-base64: ${{ secrets.keystore-base64 }}
-  #     keystore-password: ${{ secrets.keystore-password }}
-  #     keystore-alias: ${{ secrets.keystore-alias }}
-  #     keystore-path: ${{ secrets.keystore-path }}
-
-  quality:
-    # name: Code Quality Scan
+  build_android:
+    # if: success() && (inputs.enable-android == true)
     needs: setup
-    uses: cvch29/platform-workflows/.github/workflows/shared-quality-scan.yml@main
+    name: Build Android
+    uses: cvch29/platform-workflows/.github/workflows/mobile-android-build.yml@main
     with:
       app-name: ${{ needs.setup.outputs.app-name }}
-      language: java
+      command: ${{ inputs.command }}
       app-version: ${{ needs.setup.outputs.app-version }}
-      sonar-project-key: "mc-accounts"
-      properties: >-
-        -Dsonar.exclusions=**/*.json,**/*.xml,**/*.html,**/*.yml,.git,.gitignore,Dockerfile,Dockerfile.**,**/*.dll,**/*.css,**/*.js
-        -Dsonar.java.binaries=.
+      # build-type: release
+      # flavor: ${{ inputs.flavor }}
+      technology: ${{ inputs.technology }}
+      sign: true
+      container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_BUILD }}"
+      container-image-resource-runner: "--cpus 6 -m 12g"
+    secrets:
+      keystore-base64: ${{ secrets.keystore-base64 }}
+      keystore-password: ${{ secrets.keystore-password }}
+      keystore-alias: ${{ secrets.keystore-alias }}
+      keystore-path: ${{ secrets.keystore-path }}
+
+  # quality:
+  #   # name: Code Quality Scan
+  #   needs: setup
+  #   uses: cvch29/platform-workflows/.github/workflows/shared-quality-scan.yml@main
+  #   with:
+  #     app-name: ${{ needs.setup.outputs.app-name }}
+  #     language: java
+  #     app-version: ${{ needs.setup.outputs.app-version }}
+  #     sonar-project-key: "mc-accounts"
+  #     properties: >-
+  #       -Dsonar.exclusions=**/*.json,**/*.xml,**/*.html,**/*.yml,.git,.gitignore,Dockerfile,Dockerfile.**,**/*.dll,**/*.css,**/*.js
+  #       -Dsonar.java.binaries=.
 
   # artifact_integrity:
   #   needs: [setup,build_android]
