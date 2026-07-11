@@ -18,9 +18,9 @@ on:
         type: boolean
         required: false
         default: true
-      gradle-build-path:
+      pom-path:
         type: string
-        default: app/build.gradle.kts
+        default: app/pom.xml
       properties:
         description: 'Additional properties for SonarQube analysis'
         type: string
@@ -45,7 +45,7 @@ jobs:
         uses: cvch29/platform-actions/actions/shared/setup-maven@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          pom-path: "pom.xml"
+          pom-path: "${{ inputs.pom-path }}"
 
   # pr-validate:
   #   name: PR Validation
