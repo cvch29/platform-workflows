@@ -338,6 +338,7 @@ jobs:
 
       - name: Git Differences
         run: |
+          ls -la
           git merge-base origin/main HEAD
           git diff --name-only origin/main...HEAD | wc -l
 
