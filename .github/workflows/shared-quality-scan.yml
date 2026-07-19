@@ -338,7 +338,7 @@ jobs:
 
       - name: Git Differences
         run: |
-          ls -la
+          ls -la ${{ github.workspace }}/jacocoUnitTestReport.xml
           git merge-base origin/main HEAD
           git diff --name-only origin/main...HEAD | wc -l
 
@@ -377,7 +377,7 @@ jobs:
             -Dsonar.pullrequest.branch=${{ github.head_ref }}
             -Dsonar.pullrequest.base=${{ github.base_ref }}
             -Dsonar.sourceEncoding=UTF-8
-            -Dsonar.coverage.jacoco.xmlReportPaths=jacocoUnitTestReport.xml
+            -Dsonar.coverage.jacoco.xmlReportPaths=${{ github.workspace }}/jacocoUnitTestReport.xml
             ${{ inputs.properties }}
 
       - name: SonarQube Scan — Branch
