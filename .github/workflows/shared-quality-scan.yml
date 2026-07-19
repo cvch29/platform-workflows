@@ -357,7 +357,7 @@ jobs:
             ${{ inputs.properties }}
 
       - name: Quality Gate
-        uses: cvch29/platform-actions/actions/security/sonar-break-build@main
+        uses: cvch29/platform-actions/actions/security/sonar-break-build-v2@main
         env:
           QUALITY_GATE_ENABLED: 'true'
           QUALITY_GATE_VALIDATE_EXCLUDE: 'false'
