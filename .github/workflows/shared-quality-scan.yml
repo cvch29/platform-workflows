@@ -337,12 +337,8 @@ jobs:
             -Dsonar.projectVersion=${{ inputs.app-version }}-${{ github.run_number }}
             -Dsonar.sources=data/src/
             -Dsonar.branch.name=${{ github.ref_name }}
-            -Dsonar.branch.target=main
             -Dsonar.sourceEncoding=UTF-8
             ${{ inputs.properties }}
-
-      - name: Wait for CE processing
-        run: sleep 35
 
       - name: Quality Gate
         uses: cvch29/platform-actions/actions/security/sonar-break-build@main
