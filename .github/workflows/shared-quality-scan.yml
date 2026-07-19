@@ -362,7 +362,7 @@ jobs:
           QUALITY_GATE_ENABLED: 'true'
           QUALITY_GATE_VALIDATE_EXCLUDE: 'false'
         with:
-          sonar-host-url: "http://192.168.1.199:9000/"
+          sonar-host-url: "http://192.168.1.199:9000"
           sonar-token: "squ_a99d67d5e6cd375765943b0e2504533494c9ab8f"
           # sonar-token: ${{ secrets.sonar-token }}
           project: ${{ inputs.repository-name }}
