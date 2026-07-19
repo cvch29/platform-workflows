@@ -302,6 +302,20 @@ jobs:
           git merge-base origin/main HEAD
           git diff --name-only origin/main...HEAD | wc -l
 
+      - name: Validate Git history
+        run: |
+          echo "Git shallow status:"
+          git rev-parse --is-shallow-repository
+
+          echo "Current branch:"
+          git branch --show-current
+
+          echo "Available branches:"
+          git branch -a
+
+          echo "Git commits:"
+          git log --oneline -5
+
       - name: Clean Sonar Properties
         run: |
           find . -type f -name sonar-project.properties -delete
