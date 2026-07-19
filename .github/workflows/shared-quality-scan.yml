@@ -1,100 +1,292 @@
-name: 'Shared — Quality Scan'
+# name: 'Shared — Quality Scan'
+
+# on:
+#   workflow_call:
+#     inputs:
+#       app-name:
+#         type: string
+#         required: true
+#       app-version:
+#         type: string
+#         required: true
+#       language:
+#         description: 'javascript | java | kotlin | android | python | swift'
+#         type: string
+#         required: true
+#       environment:
+#         type: string
+#         required: false
+#         default: 'dev'
+#       # ── Tool toggles ────────────────────────────────────────────────────────
+#       run-sonar:
+#         type: boolean
+#         required: false
+#         default: true
+#       run-secrets:
+#         type: boolean
+#         required: false
+#         default: true
+#       severity-threshold:
+#         description: 'low | moderate | high | critical'
+#         type: string
+#         required: false
+#         default: 'high'
+#       # ── Sonar inputs ────────────────────────────────────────────────────────
+#       sonar-host-url:
+#         description: 'SonarQube server URL (e.g. https://sonar.mybank.com)'
+#         type: string
+#         required: false
+#         default: ''
+#       sonar-project-key:
+#         description: 'SonarQube project key. Default: repo slug.'
+#         type: string
+#         required: false
+#         default: ''
+#       sonar-quality-gate-wait:
+#         description: 'Break the build if Quality Gate fails. Bank policy: true.'
+#         type: boolean
+#         required: false
+#         default: true
+#       sonar-coverage-report:
+#         description: 'Path to coverage report for Sonar (lcov.info / jacoco XML / coverage.xml)'
+#         type: string
+#         required: false
+#         default: ''
+#       sonar-android-flavor:
+#         description: 'Android flavor for Sonar report paths'
+#         type: string
+#         required: false
+#         default: ''
+#       properties:
+#         description: 'Additional properties to pass to SonarQube (e.g. -Dsonar.exclusions=**/*.test.js)'
+#         type: string
+#         required: false
+#         default: ''
+#       repository-name:
+#         description: 'Repository name (e.g. cvch29/java-sample-app)'
+#         type: string
+#         required: false
+#         default: ${{ github.event.repository.name }}
+#       # container-image-name-runner:
+#       #   type: string
+#       #   required: true
+#       #   default: ''
+#       # container-image-resource-runner:
+#       #   type: string
+#       #   required: true
+#       #   default: '--cpus 2 -m 4g' 
+#     secrets:
+#       sonar-token:
+#         required: false
+#     # outputs:
+#     #   sonar-quality-gate:
+#     #     value: ${{ jobs.sonar.outputs.quality-gate-status }}
+# jobs:
+
+#   # ── SonarQube ───────────────────────────────────────────────────────────────
+#   # Runs in parallel with CodeQL.
+#   # sonar.qualitygate.wait=true means the Sonar Gradle/scanner task itself fails
+#   # when the Quality Gate does not pass → this job fails → workflow fails.
+#   # That is the "break the build" behavior.
+#   sonar:
+#     name: SonarQube Analysis
+#     # if: inputs.run-sonar && inputs.sonar-host-url != ''
+#     runs-on: arc-mobile
+#     # container:
+#     #   image: ${{ inputs.container-image-name-runner }}
+#     #   options: ${{ inputs.container-image-resource-runner }}
+#     permissions:
+#       contents: read
+#     # outputs:
+#     #   quality-gate-status: ${{ steps.sonar.outputs.quality-gate-status }}
+#     #   dashboard-url: ${{ steps.sonar.outputs.dashboard-url }}
+
+#     steps:
+#       - uses: cvch29/platform-actions/actions/shared/checkout@main
+#         with:
+#           fetch-depth: 0   # Sonar needs full history for blame/new code detection
+
+#       # - name: Run SonarQube
+#       #   id: sonar
+#       #   uses: cvch29/platform-actions/actions/security/sonar@main
+#       #   with:
+#       #     language: ${{ inputs.language }}
+#       #     sonar-host-url: ${{ inputs.sonar-host-url }}
+#       #     sonar-token: ${{ secrets.sonar-token }}
+#       #     project-key: ${{ inputs.sonar-project-key }}
+#       #     coverage-report-path: ${{ inputs.sonar-coverage-report }}
+#       #     android-module: ${{ inputs.android-module }}
+#       #     android-flavor: ${{ inputs.sonar-android-flavor }}
+#       #     scheme: ${{ inputs.codeql-scheme }}
+#       #     quality-gate-wait: ${{ inputs.sonar-quality-gate-wait }}
+#       #     # quality-gate-wait: true is the break-the-build switch.
+#       #     # The scanner task exits with code 1 when QG status = FAILED.
+#       #     # This propagates as a workflow failure with a clear message.
+
+#       # - name: Enforce Quality Gate
+#       #   if: always() && steps.sonar.outputs.quality-gate-status != '' && steps.sonar.outputs.quality-gate-status != 'OK'
+#       #   shell: bash
+#       #   run: |
+#       #     echo "::error::SonarQube Quality Gate FAILED for ${{ inputs.app-name }}"
+#       #     echo "::error::Status: ${{ steps.sonar.outputs.quality-gate-status }}"
+#       #     echo "::error::Dashboard: ${{ steps.sonar.outputs.dashboard-url }}"
+#       #     echo ""
+#       #     echo "Bank policy requires Quality Gate to pass before merge."
+#       #     echo "Fix the issues at: ${{ steps.sonar.outputs.dashboard-url }}"
+#       #     exit 1
+
+#       - name: Show Variables
+#         run: |
+#           env
+#           echo "branch: ${{ github.ref }}"
+#           echo "head_ref: ${{ github.head_ref }}"
+#           echo "base_ref: ${{ github.base_ref }}"
+#           echo "repository: ${{ inputs.repository-name }}"
+#           echo "sha: ${{ github.sha }}"
+#           echo "event: ${{ github.event_name }}"
+#           echo "pr_number: ${{ github.event.pull_request.number }}"
+
+#       - name: Git Differences
+#         run: |
+#           git merge-base origin/main HEAD
+#           git diff --name-only origin/main...HEAD | wc -l
+
+#       - name: Clean Sonar Properties
+#         run: |
+#           find . -type f -name sonar-project.properties -delete
+
+#       # - name: Setup SonarQube Analysis
+#       #   uses: cvch29/platform-actions/actions/security/sonar-setup@main
+
+#       # - name: Show Sonar Metadata
+#       #   run: |
+#       #     env
+
+#       # - name: Install Sonar Scanner sin GPG
+#       #   run: |
+#       #     curl -sSLo sonar-scanner.zip \
+#       #       https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-8.1.0.6389-linux-x64.zip
+#       #     unzip -q sonar-scanner.zip
+#       #     echo "$PWD/sonar-scanner-8.1.0.6389-linux-x64/bin" >> $GITHUB_PATH
+
+#       # - name: SonarQube Scan PR
+#       #   # if: github.event_name == 'pull_request'
+#       #   uses: SonarSource/sonarqube-scan-action@713881670b6b3676cda39549040e2d88c70d582e #v8.2.0
+#       #   env:
+#       #     SONAR_TOKEN: "squ_f0ee15f553b746d9cb7a7a6f454d68c29b44283f"
+#       #     SONAR_HOST_URL: "http://192.168.1.199:9000/"
+#       #   with:
+#       #     args: >
+#       #       -Dsonar.projectKey=${{ inputs.sonar-project-key }}
+#       #       -Dsonar.projectVersion=${{ inputs.app-version }}
+#       #       -Dsonar.sources=.
+#       #       -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
+#       #       -Dsonar.pullrequest.branch=${{ github.head_ref }}
+#       #       -Dsonar.pullrequest.base=${{ github.base_ref }}
+#       #       -Dsonar.sourceEncoding=UTF-8
+#       #       -Dsonar.language=${{ inputs.language }}
+
+#       # - name: Coverage
+#       #   id: coverage
+#       #   uses: cvch29/platform-actions/actions/security/coverage-sonar@main
+#       #   with:
+#       #     language: ${{ inputs.language }}
+          
+#       - name: SonarQube Scan — Pull Request
+#         if: github.event_name == 'pull_request'
+#         uses: SonarSource/sonarqube-scan-action@713881670b6b3676cda39549040e2d88c70d582e #v8.2.0
+#         env:
+#           SONAR_TOKEN: "squ_a99d67d5e6cd375765943b0e2504533494c9ab8f"
+#           SONAR_HOST_URL: "http://192.168.1.199:9000/"
+#         with:
+#           # skipSignatureVerification: true
+#           args: >
+#             -Dsonar.projectKey=${{ github.event.repository.name }}
+#             -Dsonar.projectName=${{ github.event.repository.name }}
+#             -Dsonar.projectVersion=${{ inputs.app-version }}
+#             -Dsonar.sources=.
+#             -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
+#             -Dsonar.pullrequest.branch=${{ github.head_ref }}
+#             -Dsonar.pullrequest.base=${{ github.base_ref }}
+#             -Dsonar.sourceEncoding=UTF-8
+#             ${{ inputs.properties }}
+
+#       # ── Push/Branch ───────────────────────────────────────
+#       - name: SonarQube Scan — Branch
+#         if: github.event_name == 'push'
+#         uses: SonarSource/sonarqube-scan-action@713881670b6b3676cda39549040e2d88c70d582e
+#         env:
+#           SONAR_TOKEN: "squ_a99d67d5e6cd375765943b0e2504533494c9ab8f"
+#           SONAR_HOST_URL: "http://192.168.1.199:9000/"
+#         with:
+#           # skipSignatureVerification: true
+#           args: >
+#             -Dsonar.projectKey=${{ inputs.repository-name }}
+#             -Dsonar.projectVersion=${{ inputs.app-version }}
+#             -Dsonar.sources=.
+#             -Dsonar.branch.name=${{ github.ref_name }}
+#             -Dsonar.branch.target=main
+#             -Dsonar.sourceEncoding=UTF-8
+#             ${{ inputs.properties }}
+
+#       # - name: Setup SonarQube Analysis
+#       #   uses: cvch29/platform-actions/actions/security/sonar-wontfix@main
+#       - name: Wait for CE processing
+#         run: sleep 10
+
+#       - name: Quality Gate
+#         uses: cvch29/platform-actions/actions/security/sonar-break-build@main
+#         env:
+#           QUALITY_GATE_ENABLED: 'true'          # ← activa el bloqueo
+#           QUALITY_GATE_VALIDATE_EXCLUDE: 'false' # ← no excluir la validación
+#         with:
+#           sonar-host-url: "http://192.168.1.199:9000/"
+#           sonar-token: "squ_a99d67d5e6cd375765943b0e2504533494c9ab8f"
+#           # sonar-token: ${{ secrets.sonar-token }}
+#           project: ${{ inputs.repository-name }}
+#           branch: ${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.ref_name }}
+#           quality-gate-name: "DevOps-Sonar26"
+
+
+
+name: 'Shared - Quality Scan'
 
 on:
   workflow_call:
     inputs:
       app-name:
         type: string
-        required: true
+        required: false
       app-version:
         type: string
-        required: true
+        required: false
+        default: 'v1.0.0'
       language:
         description: 'javascript | java | kotlin | android | python | swift'
         type: string
-        required: true
+        required: false
       environment:
         type: string
         required: false
         default: 'dev'
-      # ── Tool toggles ────────────────────────────────────────────────────────
-      run-sonar:
-        type: boolean
-        required: false
-        default: true
-      run-secrets:
-        type: boolean
-        required: false
-        default: true
-      severity-threshold:
-        description: 'low | moderate | high | critical'
+      sonar-host:
         type: string
         required: false
-        default: 'high'
-      # ── Sonar inputs ────────────────────────────────────────────────────────
-      sonar-host-url:
-        description: 'SonarQube server URL (e.g. https://sonar.mybank.com)'
-        type: string
-        required: false
-        default: ''
-      sonar-project-key:
-        description: 'SonarQube project key. Default: repo slug.'
-        type: string
-        required: false
-        default: ''
-      sonar-quality-gate-wait:
-        description: 'Break the build if Quality Gate fails. Bank policy: true.'
-        type: boolean
-        required: false
-        default: true
-      sonar-coverage-report:
-        description: 'Path to coverage report for Sonar (lcov.info / jacoco XML / coverage.xml)'
-        type: string
-        required: false
-        default: ''
-      sonar-android-flavor:
-        description: 'Android flavor for Sonar report paths'
-        type: string
-        required: false
-        default: ''
-      properties:
-        description: 'Additional properties to pass to SonarQube (e.g. -Dsonar.exclusions=**/*.test.js)'
-        type: string
-        required: false
-        default: ''
+        default: 'http://10.202.42.158:9000'
       repository-name:
-        description: 'Repository name (e.g. cvch29/java-sample-app)'
         type: string
         required: false
         default: ${{ github.event.repository.name }}
-      # container-image-name-runner:
-      #   type: string
-      #   required: true
-      #   default: ''
-      # container-image-resource-runner:
-      #   type: string
-      #   required: true
-      #   default: '--cpus 2 -m 4g' 
     secrets:
-      sonar-token:
-        required: false
-    # outputs:
-    #   sonar-quality-gate:
-    #     value: ${{ jobs.sonar.outputs.quality-gate-status }}
+      SONAR_TOKEN:
+        required: true
+      GH_TOKEN:
+        required: true
 jobs:
-
-  # ── SonarQube ───────────────────────────────────────────────────────────────
-  # Runs in parallel with CodeQL.
-  # sonar.qualitygate.wait=true means the Sonar Gradle/scanner task itself fails
-  # when the Quality Gate does not pass → this job fails → workflow fails.
-  # That is the "break the build" behavior.
   sonar:
     name: SonarQube Analysis
-    # if: inputs.run-sonar && inputs.sonar-host-url != ''
-    runs-on: arc-mobile
-    # container:
-    #   image: ${{ inputs.container-image-name-runner }}
-    #   options: ${{ inputs.container-image-resource-runner }}
+    runs-on: 
+      group: arc-mobile
     permissions:
       contents: read
     # outputs:
@@ -102,147 +294,66 @@ jobs:
     #   dashboard-url: ${{ steps.sonar.outputs.dashboard-url }}
 
     steps:
-      - uses: cvch29/platform-actions/actions/shared/checkout@main
-        with:
-          fetch-depth: 0   # Sonar needs full history for blame/new code detection
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
-      # - name: Run SonarQube
-      #   id: sonar
-      #   uses: cvch29/platform-actions/actions/security/sonar@main
-      #   with:
-      #     language: ${{ inputs.language }}
-      #     sonar-host-url: ${{ inputs.sonar-host-url }}
-      #     sonar-token: ${{ secrets.sonar-token }}
-      #     project-key: ${{ inputs.sonar-project-key }}
-      #     coverage-report-path: ${{ inputs.sonar-coverage-report }}
-      #     android-module: ${{ inputs.android-module }}
-      #     android-flavor: ${{ inputs.sonar-android-flavor }}
-      #     scheme: ${{ inputs.codeql-scheme }}
-      #     quality-gate-wait: ${{ inputs.sonar-quality-gate-wait }}
-      #     # quality-gate-wait: true is the break-the-build switch.
-      #     # The scanner task exits with code 1 when QG status = FAILED.
-      #     # This propagates as a workflow failure with a clear message.
-
-      # - name: Enforce Quality Gate
-      #   if: always() && steps.sonar.outputs.quality-gate-status != '' && steps.sonar.outputs.quality-gate-status != 'OK'
-      #   shell: bash
+      # - name: Git Differences
       #   run: |
-      #     echo "::error::SonarQube Quality Gate FAILED for ${{ inputs.app-name }}"
-      #     echo "::error::Status: ${{ steps.sonar.outputs.quality-gate-status }}"
-      #     echo "::error::Dashboard: ${{ steps.sonar.outputs.dashboard-url }}"
-      #     echo ""
-      #     echo "Bank policy requires Quality Gate to pass before merge."
-      #     echo "Fix the issues at: ${{ steps.sonar.outputs.dashboard-url }}"
-      #     exit 1
-
-      - name: Show Variables
-        run: |
-          env
-          echo "branch: ${{ github.ref }}"
-          echo "head_ref: ${{ github.head_ref }}"
-          echo "base_ref: ${{ github.base_ref }}"
-          echo "repository: ${{ inputs.repository-name }}"
-          echo "sha: ${{ github.sha }}"
-          echo "event: ${{ github.event_name }}"
-          echo "pr_number: ${{ github.event.pull_request.number }}"
-
-      - name: Git Differences
-        run: |
-          git merge-base origin/main HEAD
-          git diff --name-only origin/main...HEAD | wc -l
+      #     git merge-base origin/main HEAD
+      #     git diff --name-only origin/main...HEAD | wc -l
 
       - name: Clean Sonar Properties
         run: |
           find . -type f -name sonar-project.properties -delete
 
-      # - name: Setup SonarQube Analysis
-      #   uses: cvch29/platform-actions/actions/security/sonar-setup@main
-
-      # - name: Show Sonar Metadata
-      #   run: |
-      #     env
-
-      # - name: Install Sonar Scanner sin GPG
-      #   run: |
-      #     curl -sSLo sonar-scanner.zip \
-      #       https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-8.1.0.6389-linux-x64.zip
-      #     unzip -q sonar-scanner.zip
-      #     echo "$PWD/sonar-scanner-8.1.0.6389-linux-x64/bin" >> $GITHUB_PATH
-
-      # - name: SonarQube Scan PR
-      #   # if: github.event_name == 'pull_request'
-      #   uses: SonarSource/sonarqube-scan-action@713881670b6b3676cda39549040e2d88c70d582e #v8.2.0
-      #   env:
-      #     SONAR_TOKEN: "squ_f0ee15f553b746d9cb7a7a6f454d68c29b44283f"
-      #     SONAR_HOST_URL: "http://192.168.1.199:9000/"
-      #   with:
-      #     args: >
-      #       -Dsonar.projectKey=${{ inputs.sonar-project-key }}
-      #       -Dsonar.projectVersion=${{ inputs.app-version }}
-      #       -Dsonar.sources=.
-      #       -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
-      #       -Dsonar.pullrequest.branch=${{ github.head_ref }}
-      #       -Dsonar.pullrequest.base=${{ github.base_ref }}
-      #       -Dsonar.sourceEncoding=UTF-8
-      #       -Dsonar.language=${{ inputs.language }}
-
-      # - name: Coverage
-      #   id: coverage
-      #   uses: cvch29/platform-actions/actions/security/coverage-sonar@main
-      #   with:
-      #     language: ${{ inputs.language }}
-          
       - name: SonarQube Scan — Pull Request
         if: github.event_name == 'pull_request'
-        uses: SonarSource/sonarqube-scan-action@713881670b6b3676cda39549040e2d88c70d582e #v8.2.0
+        uses: SonarSource/sonarqube-scan-action@713881670b6b3676cda39549040e2d88c70d582e
         env:
-          SONAR_TOKEN: "squ_a99d67d5e6cd375765943b0e2504533494c9ab8f"
-          SONAR_HOST_URL: "http://192.168.1.199:9000/"
+          SONAR_TOKEN: "http://192.168.1.199:9000/"
+          SONAR_HOST_URL: "squ_a99d67d5e6cd375765943b0e2504533494c9ab8f"
         with:
           # skipSignatureVerification: true
           args: >
-            -Dsonar.projectKey=${{ github.event.repository.name }}
-            -Dsonar.projectName=${{ github.event.repository.name }}
-            -Dsonar.projectVersion=${{ inputs.app-version }}
-            -Dsonar.sources=.
+            -Dsonar.projectKey=${{ inputs.repository-name }}
+            -Dsonar.projectName=${{ inputs.repository-name }}
+            -Dsonar.projectVersion=${{ inputs.app-version }}-${{ github.run_number }}
+            -Dsonar.sources=data/src/
             -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
             -Dsonar.pullrequest.branch=${{ github.head_ref }}
             -Dsonar.pullrequest.base=${{ github.base_ref }}
             -Dsonar.sourceEncoding=UTF-8
             ${{ inputs.properties }}
 
-      # ── Push/Branch ───────────────────────────────────────
       - name: SonarQube Scan — Branch
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         uses: SonarSource/sonarqube-scan-action@713881670b6b3676cda39549040e2d88c70d582e
         env:
-          SONAR_TOKEN: "squ_a99d67d5e6cd375765943b0e2504533494c9ab8f"
-          SONAR_HOST_URL: "http://192.168.1.199:9000/"
+          SONAR_TOKEN: "http://192.168.1.199:9000/"
+          SONAR_HOST_URL: "squ_a99d67d5e6cd375765943b0e2504533494c9ab8f"
         with:
           # skipSignatureVerification: true
           args: >
             -Dsonar.projectKey=${{ inputs.repository-name }}
-            -Dsonar.projectVersion=${{ inputs.app-version }}
-            -Dsonar.sources=.
+            -Dsonar.projectName=${{ inputs.repository-name }}
+            -Dsonar.projectVersion=${{ inputs.app-version }}-${{ github.run_number }}
+            -Dsonar.sources=data/src/
             -Dsonar.branch.name=${{ github.ref_name }}
             -Dsonar.branch.target=main
             -Dsonar.sourceEncoding=UTF-8
             ${{ inputs.properties }}
 
-      # - name: Setup SonarQube Analysis
-      #   uses: cvch29/platform-actions/actions/security/sonar-wontfix@main
       - name: Wait for CE processing
         run: sleep 10
 
       - name: Quality Gate
         uses: cvch29/platform-actions/actions/security/sonar-break-build@main
         env:
-          QUALITY_GATE_ENABLED: 'true'          # ← activa el bloqueo
-          QUALITY_GATE_VALIDATE_EXCLUDE: 'false' # ← no excluir la validación
+          QUALITY_GATE_ENABLED: 'true'
+          QUALITY_GATE_VALIDATE_EXCLUDE: 'false'
         with:
           sonar-host-url: "http://192.168.1.199:9000/"
           sonar-token: "squ_a99d67d5e6cd375765943b0e2504533494c9ab8f"
           # sonar-token: ${{ secrets.sonar-token }}
           project: ${{ inputs.repository-name }}
           branch: ${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.ref_name }}
-          quality-gate-name: "DevOps-Sonar26"
+          quality-gate-name: "QG-Mobile"

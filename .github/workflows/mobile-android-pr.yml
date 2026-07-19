@@ -31,10 +31,103 @@ on:
         type: string
         required: false
         default: app/build.gradle.kts
+# jobs:
+#   setup:
+#     name: Setup
+#     runs-on: arc-mobile
+#     outputs:
+#       app-version: ${{ steps.setup-android.outputs.app-version }}
+#       app-name: ${{ steps.setup-android.outputs.app-name }}
+#     steps:
+#       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+#       - name: Setup Environment
+#         id: setup-android
+#         uses: cvch29/platform-actions/actions/shared/setup-gradle@main
+#         with:
+#           github-token: ${{ secrets.GITHUB_TOKEN }}
+#           # build-gradle-path: ${{ inputs.build-gradle-path }}
+
+#   # pr-validate:
+#   #   name: PR Validation
+#   #   needs: setup
+#   #   uses: cvch29/platform-workflows/.github/workflows/shared-pr-validation.yml@main
+#   #   with:
+#   #     app-name: ${{ inputs.app-name }}
+#   #     runtime: kotlin
+
+#   # build-test:
+#   #   name: Unit Test and Lint
+#   #   needs: pr-validate
+#   #   runs-on: ubuntu-latest
+#   #   permissions:
+#   #     contents: read
+#   #     checks: write
+#   #   steps:
+#   #     - uses: cvch29/platform-actions/actions/shared/checkout@main
+#   #     - uses: cvch29/platform-actions/actions/tooling-v2/java/setup-jdk@main
+#   #       with:
+#   #         java-version: ${{ inputs.java-version }}
+#   #     - uses: cvch29/platform-actions/actions/shared-v2/cache@main
+#   #       with:
+#   #         runtime: gradle
+#   #     - name: Android Lint
+#   #       if: inputs.run-lint
+#   #       shell: bash
+#   #       run: ./gradlew lint
+#   #     - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+#   #       if: inputs.run-lint && always()
+#   #       with:
+#   #         name: lint-results-${{ github.run_id }}
+#   #         path: '**/build/reports/lint-results*.html'
+#   #         retention-days: 7
+#   #     - name: Unit tests
+#   #       if: inputs.run-unit-tests
+#   #       uses: cvch29/platform-actions/actions/tooling-v2/java/gradle-test@main
+#   #       with:
+#   #         tasks: testDebugUnitTest
+#   #     - name: Debug build smoke
+#   #       uses: cvch29/platform-actions/actions/domains-v2/mobile/android/build@main
+#   #       with:
+#   #         build-type: debug
+#   #         output-type: apk
+
+#   # security:
+#   #   name: Security Scan
+#   #   needs: pr-validate
+#   #   uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@main
+#   #   with:
+#   #     app-name: ${{ inputs.app-name }}
+#   #     language: kotlin
+#   #     run-codeql: true
+#   #     run-sca: true
+#   #     run-secrets: true
+#   #     run-sast: false
+#   #   permissions:
+#   #     contents: read
+#   #     security-events: write
+
+#   quality:
+#     # name: Code Quality Scan
+#     needs: setup
+#     uses: cvch29/platform-workflows/.github/workflows/shared-quality-scan.yml@main
+#     with:
+#       app-name: ${{ needs.setup.outputs.app-name }}
+#       language: kotlin
+#       app-version: ${{ needs.setup.outputs.app-version }}
+#       # container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_SCS }}"
+#       # container-image-resource-runner: "--cpus 2 -m 4g"
+#       # sonar-host-url: ${{ secrets.sonar-host-url }}
+#       sonar-project-key: "challenge-mbco"
+#       # sonar-token: ${{ secrets.sonar-token }}
+#       properties: >-
+#         -Dsonar.exclusions=**/*.json,**/*.xml,**/*.html,**/*.yml,.git,.gitignore,Dockerfile,Dockerfile.**,**/*.dll,**/*.css,**/*.js
+#         -Dsonar.kotlin.binaries=.
+
 jobs:
   setup:
     name: Setup
-    runs-on: arc-mobile
+    runs-on: 
+      group: rg-arc-ncd-mobile-develop
     outputs:
       app-version: ${{ steps.setup-android.outputs.app-version }}
       app-name: ${{ steps.setup-android.outputs.app-name }}
@@ -45,80 +138,15 @@ jobs:
         uses: cvch29/platform-actions/actions/shared/setup-gradle@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          # build-gradle-path: ${{ inputs.build-gradle-path }}
-
-  # pr-validate:
-  #   name: PR Validation
-  #   needs: setup
-  #   uses: cvch29/platform-workflows/.github/workflows/shared-pr-validation.yml@main
-  #   with:
-  #     app-name: ${{ inputs.app-name }}
-  #     runtime: kotlin
-
-  # build-test:
-  #   name: Unit Test and Lint
-  #   needs: pr-validate
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     contents: read
-  #     checks: write
-  #   steps:
-  #     - uses: cvch29/platform-actions/actions/shared/checkout@main
-  #     - uses: cvch29/platform-actions/actions/tooling-v2/java/setup-jdk@main
-  #       with:
-  #         java-version: ${{ inputs.java-version }}
-  #     - uses: cvch29/platform-actions/actions/shared-v2/cache@main
-  #       with:
-  #         runtime: gradle
-  #     - name: Android Lint
-  #       if: inputs.run-lint
-  #       shell: bash
-  #       run: ./gradlew lint
-  #     - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-  #       if: inputs.run-lint && always()
-  #       with:
-  #         name: lint-results-${{ github.run_id }}
-  #         path: '**/build/reports/lint-results*.html'
-  #         retention-days: 7
-  #     - name: Unit tests
-  #       if: inputs.run-unit-tests
-  #       uses: cvch29/platform-actions/actions/tooling-v2/java/gradle-test@main
-  #       with:
-  #         tasks: testDebugUnitTest
-  #     - name: Debug build smoke
-  #       uses: cvch29/platform-actions/actions/domains-v2/mobile/android/build@main
-  #       with:
-  #         build-type: debug
-  #         output-type: apk
-
-  # security:
-  #   name: Security Scan
-  #   needs: pr-validate
-  #   uses: cvch29/platform-workflows/.github/workflows/shared-security-scan.yml@main
-  #   with:
-  #     app-name: ${{ inputs.app-name }}
-  #     language: kotlin
-  #     run-codeql: true
-  #     run-sca: true
-  #     run-secrets: true
-  #     run-sast: false
-  #   permissions:
-  #     contents: read
-  #     security-events: write
+          build-gradle-path: ${{ inputs.build-gradle-path }}
+          
 
   quality:
-    # name: Code Quality Scan
-    needs: setup
+    # needs: setup
     uses: cvch29/platform-workflows/.github/workflows/shared-quality-scan.yml@main
     with:
-      app-name: ${{ needs.setup.outputs.app-name }}
+      app-name: "test"
       language: kotlin
-      app-version: ${{ needs.setup.outputs.app-version }}
-      # container-image-name-runner: "${{ vars.REGISTRY }}/android:${{ vars.CONTAINER_IMAGE_TAG_SCS }}"
-      # container-image-resource-runner: "--cpus 2 -m 4g"
-      # sonar-host-url: ${{ secrets.sonar-host-url }}
-      sonar-project-key: "challenge-mbco"
-      # sonar-token: ${{ secrets.sonar-token }}
-      properties: >-
-        -Dsonar.exclusions=**/*.json,**/*.xml,**/*.html,**/*.yml,.git,.gitignore,Dockerfile,Dockerfile.**,**/*.dll,**/*.css,**/*.js
-        -Dsonar.kotlin.binaries=.
+      app-version: "v1s"
+    # secrets:
+    #   github-token: ${{ secrets.GITHUB_TOKEN }}
