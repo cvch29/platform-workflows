@@ -308,8 +308,8 @@ jobs:
         if: github.event_name == 'pull_request'
         uses: SonarSource/sonarqube-scan-action@713881670b6b3676cda39549040e2d88c70d582e
         env:
-          SONAR_TOKEN: "http://192.168.1.199:9000/"
-          SONAR_HOST_URL: "squ_a99d67d5e6cd375765943b0e2504533494c9ab8f"
+          SONAR_TOKEN: "squ_a99d67d5e6cd375765943b0e2504533494c9ab8f"
+          SONAR_HOST_URL: "http://192.168.1.199:9000/"
         with:
           # skipSignatureVerification: true
           args: >
@@ -327,8 +327,8 @@ jobs:
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         uses: SonarSource/sonarqube-scan-action@713881670b6b3676cda39549040e2d88c70d582e
         env:
-          SONAR_TOKEN: "http://192.168.1.199:9000/"
-          SONAR_HOST_URL: "squ_a99d67d5e6cd375765943b0e2504533494c9ab8f"
+          SONAR_TOKEN: "squ_a99d67d5e6cd375765943b0e2504533494c9ab8f"
+          SONAR_HOST_URL: "http://192.168.1.199:9000/"
         with:
           # skipSignatureVerification: true
           args: >
