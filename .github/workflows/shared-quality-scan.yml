@@ -293,8 +293,8 @@ on:
       GH_TOKEN:
         required: false
 jobs:
-  unit-test:
-    name: Unit Tests
+  cov-unit-test:
+    name: Coverage Unit Tests
     runs-on: arc-mobile
     permissions:
       contents: read
@@ -316,6 +316,7 @@ jobs:
 
   sonar:
     name: SonarQube Analysis
+    needs: cov-unit-test
     runs-on: arc-mobile
     permissions:
       contents: read
