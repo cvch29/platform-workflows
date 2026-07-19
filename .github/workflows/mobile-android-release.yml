@@ -48,8 +48,7 @@ on:
 jobs:
   setup:
     name: Setup
-    runs-on: 
-      group: arc-general
+    runs-on: arc-general
     outputs:
       app-version: ${{ steps.setup-android.outputs.app-version }}
       app-name: ${{ steps.setup-android.outputs.app-name }}

@@ -285,8 +285,7 @@ on:
 jobs:
   sonar:
     name: SonarQube Analysis
-    runs-on: 
-      group: arc-mobile
+    runs-on: arc-mobile
     permissions:
       contents: read
     # outputs:
