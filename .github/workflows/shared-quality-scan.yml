@@ -342,7 +342,7 @@ jobs:
             ${{ inputs.properties }}
 
       - name: Wait for CE processing
-        run: sleep 30
+        run: sleep 35
 
       - name: Quality Gate
         uses: cvch29/platform-actions/actions/security/sonar-break-build@main
