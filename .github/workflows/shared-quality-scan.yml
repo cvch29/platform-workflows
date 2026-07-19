@@ -308,6 +308,14 @@ jobs:
         id: unit-test
         uses: cvch29/platform-actions/actions/domains/mobile/android/unit-test@main
 
+      - name: Validar coverage
+        run: |
+          ls -la 
+          ls -la ${{ github.workspace }}
+          ls -la ${{ github.workspace }}/app/build/reports/jacoco
+          ls -la ${{ github.workspace }}/**/build/reports/jacoco/**/*.xml
+
+
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
         with:
