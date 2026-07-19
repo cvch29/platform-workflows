@@ -279,9 +279,9 @@ on:
         default: ${{ github.event.repository.name }}
     secrets:
       SONAR_TOKEN:
-        required: true
+        required: false
       GH_TOKEN:
-        required: true
+        required: false
 jobs:
   sonar:
     name: SonarQube Analysis
