@@ -293,6 +293,27 @@ on:
       GH_TOKEN:
         required: false
 jobs:
+  unit-test:
+    name: Unit Tests
+    runs-on: arc-mobile
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          fetch-depth: 0   # Sonar needs full history for blame/new code detection
+          persist-credentials: false
+
+      - name: Unit test + Coverage
+        id: unit-test
+        uses: cvch29/platform-actions/actions/domains/mobile/android/unit-test@main
+
+      - name: Upload Coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: "**/build/reports/jacoco/**/*.xml"
+
   sonar:
     name: SonarQube Analysis
     runs-on: arc-mobile
@@ -302,6 +323,11 @@ jobs:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 0
+
+      - name: Download Coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: jacoco-report
 
       - name: Git Differences
         run: |
@@ -343,7 +369,7 @@ jobs:
             -Dsonar.pullrequest.branch=${{ github.head_ref }}
             -Dsonar.pullrequest.base=${{ github.base_ref }}
             -Dsonar.sourceEncoding=UTF-8
-            -Dsonar.jacoco.reportPaths=${{ inputs.coverage-report-path }}
+            -Dsonar.coverage.jacoco.xmlReportPaths=${{ inputs.coverage-report-path }}
             ${{ inputs.properties }}
 
       - name: SonarQube Scan — Branch
@@ -361,7 +387,7 @@ jobs:
             -Dsonar.sources=data/src/
             -Dsonar.branch.name=${{ github.ref_name }}
             -Dsonar.sourceEncoding=UTF-8
-            -Dsonar.jacoco.reportPaths=${{ inputs.coverage-report-path }}
+            -Dsonar.coverage.jacoco.xmlReportPaths=${{ inputs.coverage-report-path }}
             ${{ inputs.properties }}
 
       - name: Quality Gate
