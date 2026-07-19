@@ -312,7 +312,21 @@ jobs:
         run: |
           ls -la
           # find . -path "*jacocoUnitTest*Report*"
-          ls -la ${{ github.workspace }}/data/build/reports/jacoco/jacocoUnitTestReport/jacocoUnitTestReport.xml
+          ls -la ${{ github.workspace }}/data/build/reports/jacoco/jacocoUnitTestReport/
+
+          #Imprimir porcentaje
+          awk -F, ' { instructions += $4 + $5; covered += $5 } END { print " \n the current coverage: \n"; print 100*covered/instructions, " % coverage " }' ${{ github.workspace }}/data/build/reports/jacoco/jacocoUnitTestReport/jacocoUnitTestReport.csv
+
+          # capturando resultado
+          resultado=$(awk -F, ' { instructions += $4 + $5; covered += $5 } END { print 100*covered/instructions }' ${{ github.workspace }}/data/build/reports/jacoco/jacocoUnitTestReport/jacocoUnitTestReport.csv)
+          int=${resultado%.*}
+
+          # condicionando al superar umbral
+          if [ "${int}" -le "99" ]
+          then
+            echo "##vso[task.logissue type=warning] A partir del 1 de Septiembre, todo despliegue deberá contar el 100% de cobertura de pruebas unitarias."
+            echo "##vso[task.complete result=SucceededWithIssues;]"
+          fi
 
       - name: Upload Coverage
         uses: actions/upload-artifact@v4
