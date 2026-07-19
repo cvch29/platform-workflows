@@ -277,6 +277,11 @@ on:
         type: string
         required: false
         default: ${{ github.event.repository.name }}
+      properties:
+        description: 'Additional properties to pass to SonarQube (e.g. -Dsonar.exclusions=**/*.test.js)'
+        type: string
+        required: false
+        default: ''
     secrets:
       SONAR_TOKEN:
         required: false
