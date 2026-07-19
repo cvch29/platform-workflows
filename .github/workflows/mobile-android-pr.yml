@@ -126,8 +126,7 @@ on:
 jobs:
   setup:
     name: Setup
-    runs-on: 
-      group: rg-arc-ncd-mobile-develop
+    runs-on: arc-general
     outputs:
       app-version: ${{ steps.setup-android.outputs.app-version }}
       app-name: ${{ steps.setup-android.outputs.app-name }}
@@ -142,7 +141,7 @@ jobs:
           
 
   quality:
-    # needs: setup
+    needs: setup
     uses: cvch29/platform-workflows/.github/workflows/shared-quality-scan.yml@main
     with:
       app-name: "test"
