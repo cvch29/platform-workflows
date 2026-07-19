@@ -311,7 +311,7 @@ jobs:
       - name: Validar coverage
         run: |
           ls -la 
-          ls -la ${{ github.workspace }}/app/build
+          ls -la ${{ github.workspace }}/app
           ls -la ${{ github.workspace }}/app/build/reports/jacoco
           ls -la ${{ github.workspace }}/**/build/reports/jacoco/**/*.xml
 
