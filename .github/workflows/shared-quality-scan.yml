@@ -311,7 +311,7 @@ jobs:
       - name: Validar coverage
         run: |
           ls -la
-          find . -path "*jacocoUnitTest*Report*"
+          # find . -path "*jacocoUnitTest*Report*"
           ls -la ${{ github.workspace }}/data/build/reports/jacoco/jacocoUnitTestReport/jacocoUnitTestReport.xml
 
       - name: Upload Coverage
