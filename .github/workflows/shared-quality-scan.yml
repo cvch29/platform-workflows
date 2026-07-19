@@ -401,50 +401,50 @@ jobs:
           fi
 
 
-      # ------------------------------------------
-      # Task 1: Obtener Custom Properties GitHub
-      # Responsabilidad: leer configuración del repo
-      # ------------------------------------------
-      - name: Get GitHub Custom Properties
-        id: github_properties
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          OWNER="${{ github.repository_owner }}"
-          REPO="${{ github.event.repository.name }}"
+      # # ------------------------------------------
+      # # Task 1: Obtener Custom Properties GitHub
+      # # Responsabilidad: leer configuración del repo
+      # # ------------------------------------------
+      # - name: Get GitHub Custom Properties
+      #   id: github_properties
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     OWNER="${{ github.repository_owner }}"
+      #     REPO="${{ github.event.repository.name }}"
 
-          PROPERTIES=$(curl -s \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/$OWNER/$REPO/properties/values")
+      #     PROPERTIES=$(curl -s \
+      #       -H "Authorization: Bearer $GH_TOKEN" \
+      #       -H "Accept: application/vnd.github+json" \
+      #       "https://api.github.com/repos/$OWNER/$REPO/properties/values")
 
-          QUALITY_GATE=$(echo "$PROPERTIES" | jq -r \
-            '.[] | select(.property_name=="property_quality_gate") | .value')
+      #     QUALITY_GATE=$(echo "$PROPERTIES" | jq -r \
+      #       '.[] | select(.property_name=="property_quality_gate") | .value')
 
-          echo "quality_gate=$QUALITY_GATE" >> "$GITHUB_OUTPUT"
+      #     echo "quality_gate=$QUALITY_GATE" >> "$GITHUB_OUTPUT"
 
-      - name: Assign Quality Gate
-        run: |
-          QUALITY_GATE="${{ steps.github_properties.outputs.quality_gate }}"
-          PROJECT_KEY="${{ steps.github_properties.outputs.project_key }}"
+      # - name: Assign Quality Gate
+      #   run: |
+      #     QUALITY_GATE="${{ steps.github_properties.outputs.quality_gate }}"
+      #     PROJECT_KEY="${{ steps.github_properties.outputs.project_key }}"
 
-          if [ -z "$QUALITY_GATE" ] || [ "$QUALITY_GATE" == "null" ]; then
-            echo "No Quality Gate defined"
-            exit 0
-          fi
+      #     if [ -z "$QUALITY_GATE" ] || [ "$QUALITY_GATE" == "null" ]; then
+      #       echo "No Quality Gate defined"
+      #       exit 0
+      #     fi
 
-          GATE_ID=$(curl -s \
-            -u "$SONAR_TOKEN:" \
-            "$SONAR_HOST_URL/api/qualitygates/list" \
-            | jq -r \
-            ".qualitygates[] | select(.name==\"$QUALITY_GATE\") | .id")
+      #     GATE_ID=$(curl -s \
+      #       -u "$SONAR_TOKEN:" \
+      #       "$SONAR_HOST_URL/api/qualitygates/list" \
+      #       | jq -r \
+      #       ".qualitygates[] | select(.name==\"$QUALITY_GATE\") | .id")
 
-          curl -s \
-            -u "$SONAR_TOKEN:" \
-            -X POST \
-            "$SONAR_HOST_URL/api/qualitygates/select" \
-            -d "projectKey=$PROJECT_KEY" \
-            -d "gateId=$GATE_ID"
+      #     curl -s \
+      #       -u "$SONAR_TOKEN:" \
+      #       -X POST \
+      #       "$SONAR_HOST_URL/api/qualitygates/select" \
+      #       -d "projectKey=$PROJECT_KEY" \
+      #       -d "gateId=$GATE_ID"
 
       - name: SonarQube Scan — Pull Request
         if: github.event_name == 'pull_request'
