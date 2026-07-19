@@ -352,7 +352,7 @@ jobs:
 
       - name: Git Differences
         run: |
-          ls -la app/build
+          # ls -la app/build
           ls -la ${{ github.workspace }}/jacocoUnitTestReport.xml
           git merge-base origin/main HEAD
           git diff --name-only origin/main...HEAD | wc -l
