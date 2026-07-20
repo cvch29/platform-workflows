@@ -482,7 +482,6 @@ jobs:
             -Dsonar.sources=app/src/main
             -Dsonar.tests=app/src/test
             -Dsonar.java.source=17
-            -Dsonar.coverage.exclusions=**/build/**,**/*.xml,**/*.yml,**/*.yaml,**/*.json,**/docs/**,**/generated/**,**/target/**,**/R.java,**/BuildConfig.java
             -Dsonar.java.binaries=app/build/intermediates/javac,app/build/tmp/kotlin-classes
             -Dsonar.branch.name=${{ github.ref_name }}
             -Dsonar.sourceEncoding=UTF-8
